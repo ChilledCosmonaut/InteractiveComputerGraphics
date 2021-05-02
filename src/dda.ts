@@ -33,24 +33,28 @@ export function dda(
         let m: number = (pointBy - pointAy)/(pointBx - pointAx)
 
         if((pointAx - pointBx) < 0){
+            let t: number = pointAy - Math.round(m*pointAx)
             for(let x: number = pointAx + 1; x < pointBx; x++){
-                pixelSet( x, ConvertY(Math.round(m * x) + pointAy, height), width, data)
+                pixelSet( x, ConvertY(Math.round(m * x) + t, height), width, data)
             }
         } else {
+            let t: number = pointBy - Math.round(m*pointBx)
             for(let x: number = pointBx + 1; x < pointAx; x++){
-                pixelSet( x, ConvertY(Math.round(m * x) + pointBy, height), width, data)
+                pixelSet( x, ConvertY(Math.round(m * x) + t, height), width, data)
             }
         }
     } else {
         let m: number = (pointBx - pointAx)/(pointBy - pointAy)
 
         if((pointAy - pointBy) < 0){
+            let t: number = pointAx - Math.round(m*pointAy)
             for(let y: number = pointAy + 1; y < pointBy; y++){
-                pixelSet(Math.round(m * y) + pointAx, ConvertY( y, height), width, data)
+                pixelSet(Math.round(m * y) + t, ConvertY( y, height), width, data)
             }
         } else {
+            let t: number = pointBx - Math.round(m*pointBy)
             for(let y: number = pointBy + 1; y < pointAy; y++){
-                pixelSet(Math.round(m * y) + pointBx, ConvertY( y, height), width, data)
+                pixelSet(Math.round(m * y) + t, ConvertY( y, height), width, data)
             }
         }
     }
