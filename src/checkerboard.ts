@@ -14,19 +14,6 @@ export function checkerboard(data: Uint8ClampedArray, x: number, y: number, widt
     let patternDimensionWidth: number = width / 8;
 
     let colorIndex: number = (x + y * width) * 4;
-    /*if (x == 0 && y == 0){
-        for (let i = 0; i < data.length; i += 4) {
-            data[i + 0] = 155;        // R value
-            data[i + 1] = 155;        // G value
-            data[i + 2] = 155;        // B value
-            data[i + 3] = 255;
-        }
-    }
-
-    data[colorIndex + 0] = 0;        // R value
-    data[colorIndex + 1] = 0;        // G value
-    data[colorIndex + 2] = 0;        // B value
-    data[colorIndex + 3] = 255;*/
 
     if((y%(patternDimensionHeight*2)) < patternDimensionHeight){
         if ((x%(patternDimensionWidth*2)) < patternDimensionWidth){
