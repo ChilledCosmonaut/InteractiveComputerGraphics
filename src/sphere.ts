@@ -24,6 +24,17 @@ export default class Sphere {
    * @return The intersection if there is one, null if there is none
    */
   intersect(ray: Ray): Intersection | null {
-    // TODO
+    let x0new: Vector = ray.origin.sub(this.center);
+    let c: number = ((Math.pow((ray.direction.dot(x0new)), 2), - x0new.dot(x0new) + Math.pow(this.radius, 2)))
+    if (c < 0){
+      return null;
+    }
+
+    let prefix: number = ray.direction.dot(new Vector(-x0new.x, -x0new.y, -x0new.z, 0))
+    let t1: number = prefix + Math.sqrt(c);
+    let t2: number = prefix - Math.sqrt(c);
+
+    let th: number = t1 < t2 ? t1: t2;
+
   }
 }
