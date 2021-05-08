@@ -157,7 +157,7 @@ export default class Vector {
    * @return The new vector;
    */
   add(other: Vector): Vector {
-    // TODO
+    return new Vector(this.x + other.x, this.y + other.y, this.z + other.z, this.w + other.w)
   }
 
   /**
