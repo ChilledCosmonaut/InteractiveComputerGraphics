@@ -15,7 +15,10 @@ export default class Vector {
    * @param w The w component
    */
   constructor(x: number, y: number, z: number, w: number) {
-    // TODO
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.w = w;
   }
 
   /**
