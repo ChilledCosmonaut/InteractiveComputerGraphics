@@ -193,7 +193,7 @@ export default class Vector {
    * @return The result of the dot product
    */
   dot(other: Vector): number {
-    // TODO
+    return (this.x * other.x + this.y * other.y + this.z * other.z + this.w + other.w)
   }
 
   /**
@@ -228,7 +228,7 @@ export default class Vector {
    * @return True if the vectors carry equal numbers. The fourth element may be both equivalent to undefined to still return true.
    */
   equals(other: Vector): boolean {
-    // TODO
+    return (this.x == other.x && this.y == other.y && this.z == other.z)
   }
 
   /**
@@ -236,6 +236,6 @@ export default class Vector {
    * @return The length of the vector
    */
   get length(): number {
-    // TODO
+    return Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z)
   }
 }
