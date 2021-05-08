@@ -23,7 +23,7 @@ export default class Vector {
    * @return The x component of the vector
    */
   get x(): number {
-    // TODO
+    return this.data[0];
   }
 
   /**
@@ -31,7 +31,7 @@ export default class Vector {
    * @param val - The new value
    */
   set x(val: number) {
-    // TODO
+    this.data[0] = val;
   }
 
   /**
@@ -39,7 +39,7 @@ export default class Vector {
    * @return The first component of the vector
    */
   get r(): number {
-    // TODO
+    return this.data[0];
   }
 
   /**
@@ -47,7 +47,7 @@ export default class Vector {
    * @param val The new value
    */
   set r(val: number) {
-    // TODO
+    this.data[0] = val;
   }
 
   /**
@@ -55,7 +55,7 @@ export default class Vector {
    * @return The y component of the vector
    */
   get y(): number {
-    // TODO
+    return this.data[1];
   }
 
   /**
@@ -63,7 +63,7 @@ export default class Vector {
    * @param val The new value
    */
   set y(val: number) {
-    // TODO
+    this.data[1] = val;
   }
 
   /**
@@ -71,7 +71,7 @@ export default class Vector {
    * @return The second component of the vector
    */
   get g(): number {
-    // TODO
+    return this.data[1];
   }
 
   /**
@@ -79,7 +79,7 @@ export default class Vector {
    * @param val The new value
    */
   set g(val: number) {
-    // TODO
+    this.data[1] = val;
   }
 
   /**
@@ -87,7 +87,7 @@ export default class Vector {
    * @return The z component of the vector
    */
   get z(): number {
-    // TODO
+    return this.data[2];
   }
 
   /**
@@ -95,7 +95,7 @@ export default class Vector {
    * @param val The new value
    */
   set z(val: number) {
-    // TODO
+    this.data[2] = val;
   }
 
   /**
@@ -103,7 +103,7 @@ export default class Vector {
    * @return The third component of the vector
    */
   get b(): number {
-    // TODO
+    return this.data[2];
   }
 
   /**
@@ -111,7 +111,7 @@ export default class Vector {
    * @param val The new value
    */
   set b(val: number) {
-    // TODO
+    this.data[2] = val;
   }
 
   /**
@@ -119,7 +119,7 @@ export default class Vector {
    * @return The w component of the vector
    */
   get w(): number {
-    // TODO
+    return this.data[3];
   }
 
   /**
@@ -127,7 +127,9 @@ export default class Vector {
    * @param val The new value
    */
   set w(val: number) {
-    // TODO
+    if(val == 1 || val == 0){
+      this.data[3] = val;
+    }
   }
 
   /**
@@ -135,7 +137,7 @@ export default class Vector {
    * @return The fourth component of the vector
    */
   get a(): number {
-    // TODO
+    return this.data[3];
   }
 
   /**
@@ -143,7 +145,7 @@ export default class Vector {
    * @param val The new value
    */
   set a(val: number) {
-    // TODO
+    this.data[3] = val;
   }
 
   /**
