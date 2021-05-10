@@ -15,10 +15,7 @@ export default class Vector {
    * @param w The w component
    */
   constructor(x: number, y: number, z: number, w: number) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-    this.w = w;
+    this.data = [x, y, z, w]
   }
 
   /**
@@ -166,7 +163,7 @@ export default class Vector {
    * @return The new vector
    */
   sub(other: Vector): Vector {
-    // TODO
+    return new Vector(this.x - other.x, this.y - other.y, this.z - other.z, this.w - other.w)
   }
 
   /**
@@ -175,7 +172,7 @@ export default class Vector {
    * @return The new vector
    */
   mul(other: number): Vector {
-    // TODO
+    return new Vector(this.x * other, this.y * other, this.z * other, this.w * other)
   }
 
   /**
@@ -184,7 +181,7 @@ export default class Vector {
    * @return The new vector
    */
   div(other: number): Vector {
-    // TODO
+    return new Vector(this.x / other, this.y / other, this.z / other, this.w / other)
   }
 
   /**
@@ -203,7 +200,7 @@ export default class Vector {
    * @return The result of the cross product as new Vector
    */
   cross(other: Vector): Vector {
-    // TODO
+    return new Vector(this.y*other.z - this.z*other.y, this.z*other.x - this.x*other.z, this.x*other.y - this.y*other.x, 0)
   }
 
   /**
@@ -211,7 +208,7 @@ export default class Vector {
    * @return An array representation.
    */
   valueOf(): [number, number, number, number] {
-    // TODO
+    return this.data
   }
 
   /**
@@ -219,7 +216,8 @@ export default class Vector {
    * @returns this vector for easier function chaining
    */
   normalize(): Vector {
-    // TODO
+    let absolute: number = this.length
+    return this.div(absolute) 
   }
 
   /**
