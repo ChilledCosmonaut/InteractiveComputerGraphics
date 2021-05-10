@@ -127,9 +127,7 @@ export default class Vector {
    * @param val The new value
    */
   set w(val: number) {
-    if(val == 1 || val == 0){
       this.data[3] = val;
-    }
   }
 
   /**
@@ -190,7 +188,7 @@ export default class Vector {
    * @return The result of the dot product
    */
   dot(other: Vector): number {
-    return (this.x * other.x + this.y * other.y + this.z * other.z + this.w + other.w)
+    return (this.x * other.x + this.y * other.y + this.z * other.z + this.w * other.w)
   }
 
   /**
@@ -226,7 +224,10 @@ export default class Vector {
    * @return True if the vectors carry equal numbers. The fourth element may be both equivalent to undefined to still return true.
    */
   equals(other: Vector): boolean {
-    return (this.x == other.x && this.y == other.y && this.z == other.z)
+    return (Math.abs(this.x - other.x) < Number.EPSILON &&
+            Math.abs(this.y - other.y) < Number.EPSILON &&
+            Math.abs(this.z - other.z) < Number.EPSILON &&
+            Math.abs(this.w - other.w) < Number.EPSILON )
   }
 
   /**
@@ -234,6 +235,6 @@ export default class Vector {
    * @return The length of the vector
    */
   get length(): number {
-    return Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z)
+    return Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z + this.w*this.w)
   }
 }

@@ -25,9 +25,12 @@ export default class Sphere {
    */
   intersect(ray: Ray): Intersection | null {
     let x0new: Vector = ray.origin.sub(this.center);
-    let c: number = ((Math.pow((ray.direction.dot(x0new)), 2), - x0new.dot(x0new) + Math.pow(this.radius, 2)))
+    let c: number = (Math.pow((x0new.dot(ray.direction)), 2) - x0new.dot(x0new) + Math.pow(this.radius, 2))
+
     if (c < 0){
       return null;
+    } else{
+     return new Intersection(0,null,null)
     }
 
     let prefix: number = ray.direction.dot(new Vector(-x0new.x, -x0new.y, -x0new.z, 0))
@@ -36,5 +39,11 @@ export default class Sphere {
 
     let th: number = t1 < t2 ? t1: t2;
 
+    let intersectionPoint: Vector = ray.origin.add(ray.direction.mul(th))
+
+    let normal: Vector = intersectionPoint.sub(this.center)
+    normal = normal.normalize()
+
+    return new Intersection(th, intersectionPoint, normal)
   }
 }
