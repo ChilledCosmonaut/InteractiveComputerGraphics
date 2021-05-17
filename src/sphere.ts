@@ -29,11 +29,9 @@ export default class Sphere {
 
     if (c < 0){
       return null;
-    } else{
-     return new Intersection(0,null,null)
     }
 
-    let prefix: number = ray.direction.dot(new Vector(-x0new.x, -x0new.y, -x0new.z, 0))
+    let prefix: number = - ray.direction.dot(x0new)
     let t1: number = prefix + Math.sqrt(c);
     let t2: number = prefix - Math.sqrt(c);
 
