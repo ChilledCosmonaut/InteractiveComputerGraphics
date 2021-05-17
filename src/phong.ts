@@ -19,6 +19,36 @@ export default function phong(
   const kA = 0.8;
   const kD = 0.5;
   const kS = 0.5;
-  // TODO
+  
+  color = ambientLight(kA, color).add(diffuseLight(kD, lightPositions, intersection, color).add(
+    specularLight(kS, shininess, lightPositions, intersection, color, cameraPosition)
+  ))
+
   return color;
+}
+
+function ambientLight(kA: number, lA: Vector): Vector{
+  return lA.mul(kA)
+}
+
+function diffuseLight(kD: number, lightPositions: Array<Vector>, intersection: Intersection, lJ: Vector): Vector{
+  let diffuse: Vector = new Vector(0,0,0,0);
+
+  lightPositions.forEach(element => {
+    let lightDirection: Vector = element.sub(intersection.point).normalize()
+    diffuse.add(lJ.mul(Math.max(0, intersection.normal.dot(lightDirection))))
+  });
+  return diffuse.mul(kD)
+}
+
+function specularLight(kS: number, kE: number, lightPositions: Array<Vector>, intersection: Intersection, lJ: Vector, cameraPosition: Vector): Vector{
+  let diffuse: Vector = new Vector(0,0,0,0);
+
+  lightPositions.forEach(element => {
+    let lightDirection: Vector = element.sub(intersection.point).normalize()
+    let viewDirection: Vector = cameraPosition.sub(intersection.point).normalize()
+    let rJ: Vector = intersection.normal.mul(2 * intersection.normal.dot(lightDirection)).sub(lightDirection)
+    diffuse.add(lJ.mul(Math.pow(Math.max(0, rJ.dot(viewDirection)), kE)))
+  });
+  return diffuse.mul(kS)
 }
