@@ -24,6 +24,8 @@ export default function phong(
     specularLight(kS, shininess, lightPositions, intersection, lightColor, cameraPosition)
   ))
 
+    color.w = 255
+
   return color;
 }
 
