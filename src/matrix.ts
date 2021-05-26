@@ -127,7 +127,19 @@ export default class Matrix {
    * @return The result of the multiplication this*other
    */
   mul(other: Matrix): Matrix {
-    // TODO
+    let matrixValues: Array<number> = new Array<number>(16);
+
+    for (let i: number = 0; i < matrixValues.length; i++){
+      let currentValue: number = 0;
+      let currentRow: number = i%4;
+      let currentColumn: number = Math.floor(i/4);
+
+      for (let j: number = 0; j < 4; j++){
+        currentValue += this.getVal(currentRow, j) * other.getVal(j, currentColumn);
+      }
+      matrixValues[i] = currentValue;
+    }
+    return new Matrix(matrixValues);
   }
 
   /**
@@ -136,7 +148,12 @@ export default class Matrix {
    * @return The result of the multiplication this*other
    */
   mulVec(other: Vector): Vector {
-    // TODO
+    let newVector: Array<number> = new Array<number>(4)
+    for (let i: number = 0; i < newVector.length; i++) {
+      let currentValue: number = 0
+
+
+    }
   }
 
   /**
@@ -144,7 +161,6 @@ export default class Matrix {
    * @return A new matrix that is the transposed of this
    */
   transpose(): Matrix {
-    // TODO
   }
 
   /**
