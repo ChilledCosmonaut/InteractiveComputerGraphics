@@ -49,7 +49,11 @@ export default class Matrix {
    * @return The resulting translation matrix
    */
   static translation(translation: Vector): Matrix {
-    // TODO
+    let translator: Matrix = this.identity();
+    translator.setVal(0, 3, translation.x);
+    translator.setVal(1, 3, translation.y);
+    translator.setVal(2, 3, translation.z);
+    return translator;
   }
 
   /**
@@ -59,7 +63,25 @@ export default class Matrix {
    * @return The resulting rotation matrix
    */
   static rotation(axis: Vector, angle: number): Matrix {
-    // TODO
+    let rotator: Matrix = this.identity();
+
+    if(axis.x != 0){
+      rotator.setVal(1, 1, Math.cos(angle));
+      rotator.setVal(1, 2, -Math.sin(angle));
+      rotator.setVal(2, 1, Math.sin(angle));
+      rotator.setVal(2, 2, Math.cos(angle));
+    }else if(axis.y != 0){
+      rotator.setVal(0, 0, Math.cos(angle));
+      rotator.setVal(0, 2, Math.sin(angle));
+      rotator.setVal(2, 0, -Math.sin(angle));
+      rotator.setVal(2, 2, Math.cos(angle));
+    }else if(axis.z != 0){
+      rotator.setVal(0, 0, Math.cos(angle));
+      rotator.setVal(0, 1, -Math.sin(angle));
+      rotator.setVal(1, 0, Math.sin(angle));
+      rotator.setVal(1, 1, Math.cos(angle));
+    }
+    return rotator;
   }
 
   /**
@@ -68,7 +90,11 @@ export default class Matrix {
    * @return The resulting scaling matrix
    */
   static scaling(scale: Vector): Matrix {
-    // TODO
+    let scalor: Matrix = this.identity();
+    scalor.setVal(0, 0, scale.x);
+    scalor.setVal(1, 1, scale.y);
+    scalor.setVal(2, 2, scale.z);
+    return scalor;
   }
 
   /**
@@ -79,7 +105,7 @@ export default class Matrix {
    * @return The resulting lookat matrix
    */
   static lookat(eye: Vector, center: Vector, up: Vector): Matrix {
-    // TODO
+    return this.identity();
   }
 
   /**
@@ -93,7 +119,7 @@ export default class Matrix {
    * @return The rotation matrix
    */
   static frustum(left: number, right: number, bottom: number, top: number, near: number, far: number): Matrix {
-    // TODO
+    return this.identity();
   }
 
   /**
@@ -105,7 +131,7 @@ export default class Matrix {
    * @return The resulting matrix
    */
   static perspective(fovy: number, aspect: number, near: number, far: number): Matrix {
-    // TODO
+    return this.identity();
   }
 
   /**
@@ -148,12 +174,15 @@ export default class Matrix {
    * @return The result of the multiplication this*other
    */
   mulVec(other: Vector): Vector {
-    let newVector: Array<number> = new Array<number>(4)
-    for (let i: number = 0; i < newVector.length; i++) {
-      let currentValue: number = 0
-
-
+    let vectorValues: Array<number> = new Array<number>(4)
+    for (let currentRow: number = 0; currentRow < 4; currentRow++) {
+      let currentValue: number = 0;
+      for (let j: number = 0; j < 4; j++){
+        currentValue += this.getVal(currentRow, j) * other.data[j]
+      }
+      vectorValues[currentRow] = currentValue;
     }
+    return new Vector(vectorValues[0], vectorValues[1], vectorValues[2], vectorValues[3]);
   }
 
   /**
@@ -161,6 +190,7 @@ export default class Matrix {
    * @return A new matrix that is the transposed of this
    */
   transpose(): Matrix {
+    return Matrix.identity();
   }
 
   /**
