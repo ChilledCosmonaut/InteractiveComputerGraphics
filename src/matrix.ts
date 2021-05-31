@@ -153,19 +153,31 @@ export default class Matrix {
    * @return The result of the multiplication this*other
    */
   mul(other: Matrix): Matrix {
-    let matrixValues: Array<number> = new Array<number>(16);
+    /*let matrixValues: Array<number> = new Array<number>(16);
 
     for (let i: number = 0; i < matrixValues.length; i++){
       let currentValue: number = 0;
-      let currentRow: number = i%4;
-      let currentColumn: number = Math.floor(i/4);
+      let currentRow: number = Math.floor(i/4);
+      let currentColumn: number = i%4;
 
       for (let j: number = 0; j < 4; j++){
         currentValue += this.getVal(currentRow, j) * other.getVal(j, currentColumn);
       }
       matrixValues[i] = currentValue;
     }
-    return new Matrix(matrixValues);
+    return new Matrix(matrixValues);*/
+    let array :Array<number> = [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0]
+    let a = 0
+    let w = 0
+    for(let i = 0; i < 16; i++) {
+      if(i%4 === 0 && i > 0){
+        a++
+        w = 0
+      }
+      array[i] = this.getVal(a, 0) * other.getVal(0, w) + this.getVal(a, 1) * other.getVal(1,w) + this.getVal(a, 2) * other.getVal(2, w) + this.getVal(a, 3) * other.getVal(3, w)
+      w++
+    }
+    return new Matrix(array)
   }
 
   /**

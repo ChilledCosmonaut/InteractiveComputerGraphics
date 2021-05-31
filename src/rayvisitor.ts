@@ -102,11 +102,14 @@ export default class RayVisitor implements Visitor {
    */
   visitGroupNode(node: GroupNode) {
     // TODO traverse the graph and build the model matrix
-    this.transformation.push(node.transform.getMatrix());
-    this.inverseTransformation.push(node.transform.getInverseMatrix());
+    let lastIndex: number = this.transformation.length - 1;
+    this.transformation.push(this.transformation[lastIndex].mul(node.transform.getMatrix()));
+    this.inverseTransformation.push(node.transform.getInverseMatrix().mul(this.inverseTransformation[lastIndex]));
     for (let childCounter: number = 0; childCounter < node.child.length; childCounter++){
       node.child[childCounter].accept(this);
     }
+    this.transformation.pop();
+    this.inverseTransformation.pop();
   }
 
   /**
@@ -114,15 +117,9 @@ export default class RayVisitor implements Visitor {
    * @param node - The node to visit
    */
   visitSphereNode(node: SphereNode) {
-    let toWorld = Matrix.identity();
-    let fromWorld = Matrix.identity();
+    let toWorld = this.transformation[this.transformation.length - 1];
+    let fromWorld = this.inverseTransformation[this.inverseTransformation.length - 1];
     // TODO assign the model matrix and its inverse
-    for (let i: number = 0; i < this.transformation.length; i++){
-      toWorld = this.transformation[this.transformation.length - 1 - i].mul(toWorld);
-      fromWorld = this.inverseTransformation[i].mul(fromWorld);
-    }
-    this.transformation.pop();
-    this.inverseTransformation.pop();
 
     const ray = new Ray(fromWorld.mulVec(this.ray.origin), fromWorld.mulVec(this.ray.direction).normalize());
     let intersection = UNIT_SPHERE.intersect(ray);
