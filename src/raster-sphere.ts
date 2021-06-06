@@ -85,9 +85,7 @@ export default class RasterSphere {
         }
 
         let colors = [
-            0, 0, 255, 1,
-            0, 255, 0, 1,
-            255, 0, 0, 1
+            1, 0, 0, 1,
         ];
 
         const vertexBuffer = this.gl.createBuffer();

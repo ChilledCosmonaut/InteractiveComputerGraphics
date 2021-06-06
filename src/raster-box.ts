@@ -66,9 +66,10 @@ export default class RasterBox {
             5, 4, 1, 1, 0, 5
         ];
         let colors = [
-            0, 0, 255, 1,
-            0, 255, 0, 1,
-            255, 0, 0, 1
+            0, 0, 1, 1,
+            0, 1, 0, 1,
+            1, 0, 0, 1,
+            1, 1, 1, 1
         ];
         const vertexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
@@ -102,7 +103,7 @@ export default class RasterBox {
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.colorBuffer);
         const colorLocation = shader.getAttributeLocation("color");
         this.gl.enableVertexAttribArray(colorLocation);
-        this.gl.vertexAttribPointer(colorLocation, 3, this.gl.INT, false , 0, 0);
+        this.gl.vertexAttribPointer(colorLocation, 4, this.gl.INT, false , 0, 0);
 
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         this.gl.drawElements(this.gl.TRIANGLES, this.elements, this.gl.UNSIGNED_SHORT, 0);
