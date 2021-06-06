@@ -30,13 +30,15 @@ interface Renderable {
  * to render a Scenegraph
  */
 export class RasterVisitor implements Visitor {
-  // TODO declare instance variables here
-
+  // TODO declare instance variables her
+  transformation: Array<Matrix>;
+  inverseTransformation: Array<Matrix>;
   /**
    * Creates a new RasterVisitor
    * @param gl The 3D context to render to
    * @param shader The default shader to use
    * @param textureshader The texture shader to use
+   * @param renderables
    */
   constructor(
     private gl: WebGL2RenderingContext,
@@ -45,6 +47,10 @@ export class RasterVisitor implements Visitor {
     private renderables: WeakMap<Node, Renderable>
   ) {
     // TODO setup
+    this.inverseTransformation = new Array<Matrix>();
+    this.inverseTransformation.push(Matrix.identity());
+    this.transformation = new Array<Matrix>();
+    this.transformation.push(Matrix.identity());
   }
 
   /**
@@ -107,6 +113,14 @@ export class RasterVisitor implements Visitor {
    */
   visitGroupNode(node: GroupNode) {
     // TODO
+    let lastIndex: number = this.transformation.length - 1;
+    this.transformation.push(this.transformation[lastIndex].mul(node.transform.getMatrix()));
+    this.inverseTransformation.push(node.transform.getInverseMatrix().mul(this.inverseTransformation[lastIndex]));
+    for (let childCounter: number = 0; childCounter < node.child.length; childCounter++){
+      node.child[childCounter].accept(this);
+    }
+    this.transformation.pop();
+    this.inverseTransformation.pop();
   }
 
   /**
@@ -116,8 +130,8 @@ export class RasterVisitor implements Visitor {
   visitSphereNode(node: SphereNode) {
     const shader = this.shader;
     shader.use();
-    let toWorld = Matrix.identity();
-    let fromWorld = Matrix.identity();
+    let toWorld = this.transformation[this.transformation.length - 1];
+    let fromWorld = this.inverseTransformation[this.inverseTransformation.length - 1];
     // TODO Calculate the model matrix for the sphere
     shader.getUniformMatrix("M").set(toWorld);
 
@@ -140,7 +154,7 @@ export class RasterVisitor implements Visitor {
   visitAABoxNode(node: AABoxNode) {
     this.shader.use();
     let shader = this.shader;
-    let toWorld = Matrix.identity();
+    let toWorld = this.transformation[this.transformation.length - 1];
     // TODO Calculate the model matrix for the box
     shader.getUniformMatrix("M").set(toWorld);
     let V = shader.getUniformMatrix("V");
@@ -163,7 +177,7 @@ export class RasterVisitor implements Visitor {
     this.textureshader.use();
     let shader = this.textureshader;
 
-    let toWorld = Matrix.identity();
+    let toWorld = this.transformation[this.transformation.length - 1];
     // TODO calculate the model matrix for the box
     shader.getUniformMatrix("M").set(toWorld);
     let P = shader.getUniformMatrix("P");
@@ -218,7 +232,7 @@ export class RasterSetupVisitor {
    * @param node The node to visit
    */
   visitGroupNode(node: GroupNode) {
-    for (let child of node.children) {
+    for (let child of node.child) {
       child.accept(this);
     }
   }

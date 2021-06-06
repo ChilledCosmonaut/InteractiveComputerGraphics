@@ -1,5 +1,6 @@
 import Vector from './vector';
 import Shader from './shader';
+import Matrix from "./matrix";
 
 /**
  * A class creating buffers for an axis aligned box to render it with WebGL
@@ -13,7 +14,7 @@ export default class RasterBox {
      * The indices describing which vertices form a triangle
      */
     indexBuffer: WebGLBuffer;
-    // TODO private variable for color buffer
+    colorBuffer: WebGLBuffer;
     /**
      * The amount of indices
      */
@@ -64,6 +65,11 @@ export default class RasterBox {
             // bottom
             5, 4, 1, 1, 0, 5
         ];
+        let colors = [
+            0, 0, 255, 1,
+            0, 255, 0, 1,
+            255, 0, 0, 1
+        ];
         const vertexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
@@ -74,7 +80,11 @@ export default class RasterBox {
         this.indexBuffer = indexBuffer;
         this.elements = indices.length;
 
-        // TODO create and fill a buffer for colours
+        // TODO create and fill a buffer for colours *
+        const colorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Uint16Array(colors), gl.STATIC_DRAW);
+        this.colorBuffer = colorBuffer;
     }
 
     /**
@@ -88,12 +98,17 @@ export default class RasterBox {
         this.gl.vertexAttribPointer(positionLocation,
             3, this.gl.FLOAT, false, 0, 0);
 
-        // TODO bind colour buffer
+        // TODO bind colour buffer *
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.colorBuffer);
+        const colorLocation = shader.getAttributeLocation("color");
+        this.gl.enableVertexAttribArray(colorLocation);
+        this.gl.vertexAttribPointer(colorLocation, 3, this.gl.INT, false , 0, 0);
 
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         this.gl.drawElements(this.gl.TRIANGLES, this.elements, this.gl.UNSIGNED_SHORT, 0);
 
         this.gl.disableVertexAttribArray(positionLocation);
-        // TODO disable color vertex attrib array
+        // TODO disable color vertex attrib array *
+        this.gl.disableVertexAttribArray(colorLocation);
     }
 }

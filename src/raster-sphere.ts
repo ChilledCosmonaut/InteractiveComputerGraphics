@@ -18,6 +18,7 @@ export default class RasterSphere {
      */
     normalBuffer: WebGLBuffer;
     // TODO private variable for color buffer
+    colorBuffer: WebGLBuffer;
     /**
      * The amount of indices
      */
@@ -83,6 +84,12 @@ export default class RasterSphere {
             }
         }
 
+        let colors = [
+            0, 0, 255, 1,
+            0, 255, 0, 1,
+            255, 0, 0, 1
+        ];
+
         const vertexBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(vertices), this.gl.STATIC_DRAW);
@@ -98,6 +105,10 @@ export default class RasterSphere {
         this.elements = indices.length;
 
         // TODO create colorBuffer
+        const colorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Uint16Array(colors), gl.STATIC_DRAW);
+        this.colorBuffer = colorBuffer;
     }
 
     /**
@@ -110,12 +121,18 @@ export default class RasterSphere {
         this.gl.enableVertexAttribArray(positionLocation);
         this.gl.vertexAttribPointer(positionLocation, 3, this.gl.FLOAT, false, 0, 0);
         // TODO bind colour buffer
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.colorBuffer);
+        const colorLocation = shader.getAttributeLocation("color");
+        this.gl.enableVertexAttribArray(colorLocation);
+        this.gl.vertexAttribPointer(colorLocation, 3, this.gl.INT, false , 0, 0);
         // TODO bind normal buffer
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         this.gl.drawElements(this.gl.TRIANGLES, this.elements, this.gl.UNSIGNED_SHORT, 0);
 
         this.gl.disableVertexAttribArray(positionLocation);
-        // TODO disable color vertex attrib array
+        this.gl.disableVertexAttribArray(colorLocation);
+        //this.gl.disableVertexAttribArray(normalLocation);
+        // TODO disable color vertex attrib array *
         // TODO disable normal vertex attrib array
     }
 }

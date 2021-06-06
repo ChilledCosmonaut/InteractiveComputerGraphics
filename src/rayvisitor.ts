@@ -144,15 +144,9 @@ export default class RayVisitor implements Visitor {
    * @param node The node to visit
    */
   visitAABoxNode(node: AABoxNode) {
-    let toWorld = Matrix.identity();
-    let fromWorld = Matrix.identity();
+    let toWorld = this.transformation[this.transformation.length - 1];
+    let fromWorld = this.inverseTransformation[this.inverseTransformation.length - 1];
     // TODO assign the model matrix and its inverse
-    for (let i: number = 0; i < this.transformation.length; i++){
-      toWorld = toWorld.mul(this.transformation[this.transformation.length - i - 1]);
-      fromWorld = fromWorld.mul(this.inverseTransformation[i]);
-    }
-    this.transformation.pop();
-    this.inverseTransformation.pop();
 
     const ray = new Ray(fromWorld.mulVec(this.ray.origin), fromWorld.mulVec(this.ray.direction).normalize());
     let intersection = UNIT_AABOX.intersect(ray);
