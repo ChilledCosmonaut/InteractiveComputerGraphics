@@ -145,7 +145,10 @@ export class RasterVisitor implements Visitor {
     }
     // TODO set the normal matrix*
     let normalMatrix: Matrix = fromWorld.transpose();
-    const N = shader.getUniformMatrix("N").set(normalMatrix);
+    normalMatrix.setVal(3, 0, 0);
+    normalMatrix.setVal(3, 1, 0);
+    normalMatrix.setVal(3, 2, 0);
+    shader.getUniformMatrix("N").set(normalMatrix);
     this.renderables.get(node).render(shader);
   }
 

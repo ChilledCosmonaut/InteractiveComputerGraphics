@@ -19,7 +19,7 @@ varying vec3 v_normal;
 // Pass the vertex position in view space
 // to the fragment shader
 // TODO *
-varying vec4 vertexPosition;
+varying vec3 vertexPosition;
 
 
 void main() {
@@ -28,7 +28,7 @@ void main() {
   // Pass the color and transformed vertex position through
   // TODO *
   v_color = a_color;
-  vertexPosition = V * M * vec4(a_position, 1.0);
+  vertexPosition = (V * M * vec4(a_position, 1.0)).xyz;
   
   v_normal = normalize((V * N * vec4(a_normal, 0)).xyz);
 }

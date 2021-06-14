@@ -84,10 +84,12 @@ export default class RasterSphere {
             }
         }
 
-        let colors = [];
+        let colors = new Array(vertices.length);
 
-        for( let i: number = 0; i < vertices.length / 3; i++){
-            colors.push(0,0,1,1);
+        for( let i: number = 0; i < vertices.length; i += 3){
+            colors[i] = color.r;
+            colors[i + 1] = color.g;
+            colors[i + 2] = color.b;
         }
 
         const vertexBuffer = this.gl.createBuffer();
@@ -124,7 +126,7 @@ export default class RasterSphere {
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.colorBuffer);
         const colorLocation = shader.getAttributeLocation("a_color");
         this.gl.enableVertexAttribArray(colorLocation);
-        this.gl.vertexAttribPointer(colorLocation, 4, this.gl.FLOAT, false , 0, 0);
+        this.gl.vertexAttribPointer(colorLocation, 3, this.gl.FLOAT, false , 0, 0);
         // TODO bind normal buffer *
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.normalBuffer);
         const normalLocation = shader.getAttributeLocation("a_normal");
