@@ -132,7 +132,7 @@ export class RasterVisitor implements Visitor {
     shader.use();
     let toWorld = this.transformation[this.transformation.length - 1];
     let fromWorld = this.inverseTransformation[this.inverseTransformation.length - 1];
-    // TODO Calculate the model matrix for the sphere
+    // TODO Calculate the model matrix for the sphere*
     shader.getUniformMatrix("M").set(toWorld);
 
     const V = shader.getUniformMatrix("V");
@@ -143,7 +143,9 @@ export class RasterVisitor implements Visitor {
     if (P && this.perspective) {
       P.set(this.perspective);
     }
-    // TODO set the normal matrix
+    // TODO set the normal matrix*
+    let normalMatrix: Matrix = fromWorld.transpose();
+    const N = shader.getUniformMatrix("N").set(normalMatrix);
     this.renderables.get(node).render(shader);
   }
 

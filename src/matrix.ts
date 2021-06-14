@@ -105,7 +105,21 @@ export default class Matrix {
    * @return The resulting lookat matrix
    */
   static lookat(eye: Vector, center: Vector, up: Vector): Matrix {
-    return this.identity();
+    let f_zähler = center.sub(eye)
+    let f = f_zähler.div(f_zähler.length)
+    let s = f.cross(up).normalize()
+    let u = s.cross(f).normalize()
+
+    let lookatFactor1 = new Matrix([s.x, s.y, s.z, 0,
+                                        u.x, u.y, u.z, 0,
+                                        -f.x, -f.y, -f.z,
+                                        0, 0, 0, 0, 1])
+    let lookatFactor2 = new Matrix([1, 0, 0, -eye.x,
+                                        0, 1, 0, -eye.y,
+                                        0, 0, 1, -eye.z,
+                                        0, 0, 0, 1])
+    let lookatMatrix = lookatFactor1.mul(lookatFactor2)
+    return lookatMatrix
   }
 
   /**
@@ -202,7 +216,11 @@ export default class Matrix {
    * @return A new matrix that is the transposed of this
    */
   transpose(): Matrix {
-    return Matrix.identity();
+    let matrixData: Array<number> = new Array<number>(16);
+    for (let i: number = 0; i < matrixData.length; i++){
+      matrixData[i] = this.getVal(i%4,Math.floor(i/4))
+    }
+    return new Matrix(matrixData);
   }
 
   /**
