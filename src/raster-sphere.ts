@@ -90,6 +90,7 @@ export default class RasterSphere {
             colors[i] = color.r;
             colors[i + 1] = color.g;
             colors[i + 2] = color.b;
+            //colors[i + 3] = color.a;
         }
 
         const vertexBuffer = this.gl.createBuffer();

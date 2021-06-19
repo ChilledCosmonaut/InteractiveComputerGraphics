@@ -132,7 +132,16 @@ export default class Matrix {
    * @return The rotation matrix
    */
   static frustum(left: number, right: number, bottom: number, top: number, near: number, far: number): Matrix {
-    return this.identity();
+    let a = (right + left) / (right - left)
+    let b = (top + bottom) / (top - bottom)
+    let c = - ((far + near) / (far - near))
+    let d = - ((2 * far * near) / (far - near))
+    const i = 2 * near / (right - left)
+    const j = 2 * near / (top - bottom)
+    return new Matrix([i, 0, a, 0,
+                           0, j, b, 0,
+                           0, 0, c, d,
+                           0, 0, -1, 0]);
   }
 
   /**
@@ -144,7 +153,12 @@ export default class Matrix {
    * @return The resulting matrix
    */
   static perspective(fovy: number, aspect: number, near: number, far: number): Matrix {
-    return this.identity();
+    let top : number = near * Math.tan((Math.PI / 180) * (fovy / 2));
+    let bottom = -top;
+    let right : number = top * aspect;
+    let left : number = -right;
+    return Matrix.frustum(left, right, bottom, top, near, far);
+    //return Matrix.identity();
   }
 
   /**
