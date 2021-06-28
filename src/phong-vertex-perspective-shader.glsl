@@ -5,7 +5,9 @@ attribute vec3 a_normal;
 
 // Pass color as attribute and forward it
 // to the fragment shader
-// TODO
+// TODO *
+attribute vec4 a_color;
+varying vec3 v_color;
 
 uniform mat4 M;
 uniform mat4 V;
@@ -16,13 +18,16 @@ varying vec3 v_normal;
 
 // Pass the vertex position in view space
 // to the fragment shader
-// TODO
+// TODO *
+varying vec3 vertexPosition;
 
 void main() {
   gl_Position = P * V * M * vec4(a_position, 1.0);
   
   // Pass the color and transformed vertex position through
-  // TODO
+  // TODO *
+  v_color = a_color.xyz;
+  vertexPosition = (V * M * vec4(a_position, 1.0)).xyz;
   
   v_normal = normalize((V * N * vec4(a_normal, 0)).xyz);
 }
