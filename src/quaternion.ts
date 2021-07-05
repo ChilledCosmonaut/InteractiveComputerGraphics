@@ -37,8 +37,8 @@ export default class Quaternion {
         let qz = this.data.z;
         let qw = this.data.w;
         //nochmal anschauen...
-        let norm: number = 4;
-        //let norm = Math.pow(qx*qx + qy*qy + qz*qz + qw*qw,0.5);
+        //let norm: number = 4;
+        let norm = Math.pow(qx*qx + qy*qy + qz*qz + qw*qw,0.5);
         //q.data = q.data.mul(1/Math.pow(q.data.length,2));
         //return q;
         q.data = q.data.mul(1/(norm*norm))
@@ -51,10 +51,11 @@ export default class Quaternion {
         // TODO
         let Phi: number = Math.acos(this.data.dot(other.data));
         let slerpResult: Vector;
-        slerpResult = this.data
-            .mul(Math.sin(Phi*(1-t))/Math.sin(Phi))
-            .add(other.data.mul(Math.sin(Phi*t)/Math.sin(Phi)));
-        slerpq.data = slerpResult;
+        slerpResult = this.data.mul(
+            Math.sin(Phi*(1-t))/Math.sin(Phi))
+            .add(
+                other.data.mul(Math.sin(Phi*t)/Math.sin(Phi)));
+        slerpq = new Quaternion(slerpResult.x,slerpResult.y,slerpResult.z,slerpResult.w);
         //slerpq = (slerpq.quaternionMul(this.inverse)).scalarExponentMul(t).quaternionMul(this);
         //console.log(slerpq.data)
 
