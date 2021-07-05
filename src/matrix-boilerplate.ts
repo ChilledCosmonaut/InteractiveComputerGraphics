@@ -70,7 +70,6 @@ window.addEventListener('load', () => {
             range.oninput = () => {
                 rotation = Matrix.rotation(new Vector(0, 0, 1, 0),
                     Number(range.value));
-                console.log(range.value);
                 window.requestAnimationFrame(animate);
             }
             range.disabled = false;
