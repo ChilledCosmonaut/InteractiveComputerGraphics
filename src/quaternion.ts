@@ -112,10 +112,10 @@ export default class Quaternion {
     }
 
     scalarExponentMul(n: number): Quaternion{
-        let qx = this.data.x^n
-        let qy = this.data.y^n
-        let qz = this.data.z^n
-        let qw = this.data.w^n
+        let qx = Math.pow(this.data.x,n);
+        let qy = Math.pow(this.data.y,n);
+        let qz = Math.pow(this.data.z,n);
+        let qw = Math.pow(this.data.w,n);
         let quat = new Quaternion(qx, qy, qz, qw);
         return quat;
     }
