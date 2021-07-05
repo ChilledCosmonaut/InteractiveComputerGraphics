@@ -94,7 +94,12 @@ export default class Matrix {
     scalor.setVal(0, 0, scale.x);
     scalor.setVal(1, 1, scale.y);
     scalor.setVal(2, 2, scale.z);
-    return scalor;
+    return new Matrix([
+        scale.x, 0, 0, 0,
+        0, scale.y, 0, 0,
+        0, 0, scale.z, 0,
+        0, 0, 0, 1
+    ]);
   }
 
   /**
