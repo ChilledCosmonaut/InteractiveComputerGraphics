@@ -62,15 +62,6 @@ export class RotationNode extends AnimationNode {
     // change the matrix of the attached
     // group node to reflect a rotation
     // TODO
-    if(this.active){
-      //30° = 0.52359877 in Bogenmaß
-      let rotationPerSec: number = 0.52359877;
-      this.angle += rotationPerSec * (deltaT/1000);
-      this.angle %= 360;
-      console.log(this.angle);
-      //TODO für Linda: kommentieren! :)
-      this.groupNode.transform = new Rotation(this.axis, this.angle);
-    }
   }
 
 }
