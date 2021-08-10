@@ -22,7 +22,8 @@ for (let exercise of [
     "shading",
     "perspective",
     "animation",
-    "quaternion"
+    "quaternion",
+    "desktop"
 ]) {
     if (fs.existsSync(path.resolve(__dirname, `src/${exercise}-boilerplate.ts`))) {
         entries[exercise] = `./src/${exercise}-boilerplate.ts`;
