@@ -4,7 +4,7 @@ import Vector from './vector';
 import {
     GroupNode,
     SphereNode,
-    TextureBoxNode
+    TextureBoxNode,
 } from './nodes';
 import {
     RasterVisitor,
@@ -27,12 +27,13 @@ window.addEventListener('load', () => {
     // construct scene graph
     //        SG
     //         |
-    //    +----+-----+
-    //  T(gn1)     T(gn2)
+    //    +----+-----+--------+
+    //  T(gn1)     T(gn2)   BaseBox
     //    |          |
     //  Sphere     R(gn3)
     //               |
     //              Box
+
     const sg = new GroupNode(new Rotation(new Vector(0, 0, 1, 0), 0));
     const gn1 = new GroupNode(new Translation(new Vector(-0.75, -0.75, -3, 0)));
     sg.add(gn1);
@@ -44,6 +45,8 @@ window.addEventListener('load', () => {
     gn2.add(gn3);
     const cube = new TextureBoxNode('hci-logo.png');
     gn3.add(cube);
+    const baseBox = new GroupNode(new Translation(new Vector(1, 1, 1, 0)));
+    sg.add(baseBox);
 
     // setup for rendering
     const setupVisitor = new RasterSetupVisitor(gl);
