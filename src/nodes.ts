@@ -124,3 +124,30 @@ export class TextureBoxNode extends Node {
     visitor.visitTextureBoxNode(this);
   }
 }
+
+/**
+ * Class representing a Pyramid in the Scenegraph
+ * @extends Node
+ */
+export class PyramidNode extends Node {
+
+  /**
+   * Creates a new Pyramide.
+   * The Pyramide is defined around the origin
+   * with size 1.
+   * @param color The colour of the pyramid
+   */
+  constructor(
+      public color: Vector
+  ) {
+    super();
+  }
+
+  /**
+   * Accepts a visitor according to the visitor pattern
+   * @param visitor The visitor
+   */
+  accept(visitor: Visitor) {
+    visitor.visitPyramidNode(this);
+  }
+}
