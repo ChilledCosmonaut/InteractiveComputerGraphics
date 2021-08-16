@@ -1,13 +1,14 @@
 import RasterSphere from './raster-sphere';
 import RasterBox from './raster-box';
 import RasterTextureBox from './raster-texture-box';
+import RasterPyramid from "./raster-pyramid";
 import Vector from './vector';
 import Matrix from './matrix';
 import Visitor from './visitor';
 import {
   Node, GroupNode,
   SphereNode, AABoxNode,
-  TextureBoxNode
+  TextureBoxNode, PyramidNode
 } from './nodes';
 import Shader from './shader';
 
@@ -153,39 +154,33 @@ export class RasterVisitor implements Visitor {
   }
 
   /**
-   * Visits a box node
-   * @param node The node to visit
-   */
-  visitBoxNode(node: BoxNode) { //einfach reinkopieren ist doch redundant?
-    const shader = this.shader;
-    shader.use();
-    let toWorld = this.transformation[this.transformation.length - 1];
-    let fromWorld = this.inverseTransformation[this.inverseTransformation.length - 1];
-    // TODO Calculate the model matrix for the sphere*
-    shader.getUniformMatrix("M").set(toWorld);
-
-    const V = shader.getUniformMatrix("V");
-    if (V && this.lookat) {
-      V.set(this.lookat);
-    }
-    const P = shader.getUniformMatrix("P");
-    if (P && this.perspective) {
-      P.set(this.perspective);
-    }
-    // TODO set the normal matrix*
-    let normalMatrix: Matrix = fromWorld.transpose();
-    normalMatrix.setVal(3, 0, 0);
-    normalMatrix.setVal(3, 1, 0);
-    normalMatrix.setVal(3, 2, 0);
-    shader.getUniformMatrix("N").set(normalMatrix);
-    this.renderables.get(node).render(shader);
-  }
-
-  /**
    * Visits an axis aligned box node
    * @param  {AABoxNode} node - The node to visit
    */
   visitAABoxNode(node: AABoxNode) {
+    this.shader.use();
+    let shader = this.shader;
+    let toWorld = this.transformation[this.transformation.length - 1];
+    // TODO Calculate the model matrix for the box
+    shader.getUniformMatrix("M").set(toWorld);
+    let V = shader.getUniformMatrix("V");
+    if (V && this.lookat) {
+      V.set(this.lookat);
+    }
+    let P = shader.getUniformMatrix("P");
+    if (P && this.perspective) {
+      P.set(this.perspective);
+    }
+
+    this.renderables.get(node).render(shader);
+  }
+
+  //TODO: Inhalt anpassen; aktuell: kopie von AAboxNode
+  /**
+   * Visits an PyramidNode
+   * @param  {PyramidNode} node - The node to visit
+   */
+  visitPyramidNode(node: PyramidNode) {
     this.shader.use();
     let shader = this.shader;
     let toWorld = this.transformation[this.transformation.length - 1];
@@ -311,6 +306,18 @@ export class RasterSetupVisitor {
         new Vector(0.5, 0.5, 0.5, 1),
         node.texture
       )
+    );
+  }
+
+  visitPyramidNode(node: PyramidNode) {
+    this.objects.set(
+        node,
+        new RasterPyramid(
+            this.gl,
+            new Vector(-0.5, 0.5, -0.5, 1),
+            new Vector(0.5, 0.5, 0.5, 1),
+            1
+        )
     );
   }
 }

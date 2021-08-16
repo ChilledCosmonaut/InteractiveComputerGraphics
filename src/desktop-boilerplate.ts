@@ -5,6 +5,7 @@ import {
     GroupNode,
     SphereNode,
     TextureBoxNode,
+    AABoxNode, PyramidNode
 } from './nodes';
 import {
     RasterVisitor,
@@ -24,29 +25,46 @@ window.addEventListener('load', () => {
     const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
     const gl = canvas.getContext("webgl2");
 
-    // construct scene graph
+    // construct scene graph TODO :)
     //        SG
     //         |
-    //    +----+-----+--------+
-    //  T(gn1)     T(gn2)   BaseBox
-    //    |          |
-    //  Sphere     R(gn3)
-    //               |
+    //    +----------+-----+--------+
+    //  desktopBox     T(gn1)   T(dn1) = desktopNode
+    //              |
+    //       R(gn3)
+    //             |
     //              Box
 
-    const sg = new GroupNode(new Rotation(new Vector(0, 0, 1, 0), 0));
-    const gn1 = new GroupNode(new Translation(new Vector(-0.75, -0.75, -3, 0)));
+    const sg = new GroupNode(new Translation(new Vector(0, 0, -4, 0)));
+    const desktopBox = new AABoxNode(new Vector(1,1,0,0));
+    sg.add(desktopBox);
+    const groupNode1 = new GroupNode(new Translation(new Vector(0, 2, -5, 0)));
+    sg.add(groupNode1);
+    const groupNode2 = new GroupNode(new Rotation(new Vector(0, 0, 1, 0), 0));
+    groupNode1.add(groupNode2);
+    const sphere = new SphereNode(new Vector(1,1,0,0));
+    groupNode2.add(sphere);
+
+    const groupNode3 = new GroupNode(new Translation(new Vector(0,-2, -5, 0)));
+    sg.add(groupNode3);
+    const pyramid = new PyramidNode(new Vector(0,1,1,0));
+    groupNode3.add(pyramid);
+
+
+    /*const gn1 = new GroupNode(new Translation(new Vector(-0.75, -0.75, -3, 0)));
     sg.add(gn1);
     const sphere = new SphereNode(new Vector(.8, .4, .1, 1))
     gn1.add(sphere);
     const gn2 = new GroupNode(new Translation(new Vector(.2, .2, -1, 0)));
     sg.add(gn2);
-    const gn3 = new GroupNode(new Translation(new Vector(0, 0, 0, 0)));
+    const gn3 = new GroupNode(new Translation(new Vector(0, 0, 0, 0))); //TODO: Warum mit Translation statt Rotation?!
     gn2.add(gn3);
-    const cube = new TextureBoxNode('hci-logo.png');
-    gn3.add(cube);
-    const baseBox = new GroupNode(new Translation(new Vector(1, 1, 1, 0)));
-    sg.add(baseBox);
+    //const cube = new TextureBoxNode('hci-logo.png');
+    //gn3.add(cube)
+    const dn1 = new GroupNode(new Translation(new Vector(.2,.2,-0.9,0)));
+    sg.add(dn1);
+    const baseBox = new AABoxNode(new Vector(1,1,1,0));
+    dn1.add(baseBox); */
 
     // setup for rendering
     const setupVisitor = new RasterSetupVisitor(gl);
@@ -72,15 +90,16 @@ window.addEventListener('load', () => {
     );
     const visitor = new RasterVisitor(gl, phongShader, textureShader, setupVisitor.objects);
 
-    let animationNodes = [
-        new RotationNode(sg, new Vector(0, 0, 1, 0)),
-        new RotationNode(gn3, new Vector(0, 1, 0, 0))
-    ];
+    /*let animationNodes = [
+        //new RotationNode(sg, new Vector(0, 0, 1, 0)),
+        //new RotationNode(gn3, new Vector(0, 1, 0, 0))
+
+    ];*/
 
     function simulate(deltaT: number) {
-        for (let animationNode of animationNodes) {
+        /*for (let animationNode of animationNodes) {
             animationNode.simulate(deltaT);
-        }
+        }*/
     }
 
     let lastTimestamp = performance.now();
@@ -97,11 +116,11 @@ window.addEventListener('load', () => {
         window.requestAnimationFrame(animate)
     );
 
-    window.addEventListener('keydown', function (event) {
+    /*window.addEventListener('keydown', function (event) {
         switch (event.key) {
             case "ArrowUp":
                 animationNodes[0].toggleActive();
                 break;
         }
-    });
+    });*/
 });
