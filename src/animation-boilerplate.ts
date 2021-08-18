@@ -44,8 +44,7 @@ window.addEventListener('load', () => {
     gn2.add(gn3);
     const cube = new TextureBoxNode('hci-logo.png');
     gn3.add(cube);
-    const baseBox = new TextureBoxNode('hci-logo.png');
-    sg.add(baseBox);
+
 
     // setup for rendering
     const setupVisitor = new RasterSetupVisitor(gl);
@@ -96,6 +95,7 @@ window.addEventListener('load', () => {
         window.requestAnimationFrame(animate)
     );
 
+    //todo: Dienstag
     window.addEventListener('keydown', function (event) {
         switch (event.key) {
             case "ArrowUp":

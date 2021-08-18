@@ -134,7 +134,7 @@ export class PyramidNode extends Node {
   /**
    * Creates a new Pyramide.
    * The Pyramide is defined around the origin
-   * with size 1.
+   * with size 1. //todo
    * @param color The colour of the pyramid
    */
   constructor(
