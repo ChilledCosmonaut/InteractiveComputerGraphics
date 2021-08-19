@@ -13,6 +13,7 @@ import {
 } from './rastervisitor';
 import Shader from './shader';
 import {
+    DriverNode,
     RotationNode
 } from './animation-nodes';
 import phongVertexShader from './phong-vertex-perspective-shader.glsl';
@@ -76,10 +77,16 @@ window.addEventListener('load', () => {
     const visitor = new RasterVisitor(gl, phongShader, textureShader, setupVisitor.objects);
 
     let animationRotationNode = new RotationNode(gn0, new Vector(0, 1, 0, 0));
+    //let animationForwardTranslationNode = new TranslationNode(new Vector(0, 0, -1, 0));//todo
+    let animationForwardTranslationNode = new DriverNode(gn0);
+    //let animationRightTranslationNode = new DriverNode(gn0, angle + 90); //todo: angle in Grad?!
+
 
     function simulate(deltaT: number) {
         animationRotationNode.simulate(deltaT)
+        animationForwardTranslationNode.simulate(deltaT);
     }
+
 
     let lastTimestamp = performance.now();
 
@@ -106,7 +113,7 @@ window.addEventListener('load', () => {
                 jump(new Vector(0, 1, 0,0), groupNode3)
                 break;
             case "w": //vorwärts
-
+                animationForwardTranslationNode.toggleActive();
                 break;
             case "a": //links
                 break;
@@ -117,7 +124,7 @@ window.addEventListener('load', () => {
         }
     });
 
-    //todo: Mit welchem Typ will man die Achse übergeben/ beschreiben?
+
     //todo: auf der y-Achse hoch und runter hüpfen
     function jump(axis: Vector, groupNode: GroupNode){
         //new GroupNode(new Translation())
