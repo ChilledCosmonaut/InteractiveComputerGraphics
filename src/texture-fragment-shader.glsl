@@ -1,6 +1,7 @@
 precision mediump float;
 
 uniform sampler2D sampler;
+uniform sampler2D u_normal;
 
 varying vec2 v_texCoord;
 varying vec2 v_normalCoord;
@@ -16,7 +17,7 @@ void main(void) {
   //gl_FragColor = vec4(0.0, 0.0, 0.5, 1.0);
   vec3 color = texture2D(sampler, v_texCoord).xyz;
 
-  vec3 normal = texture2D(sampler, v_normalCoord).xyz;
+  vec3 normal = texture2D(u_normal, v_normalCoord).xyz;
   // Read fragment color from texture
   // TODO
 

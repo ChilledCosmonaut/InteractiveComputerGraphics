@@ -54,6 +54,8 @@ export default class RasterTextureBox {
     ) {
         const mi = minPoint;
         const ma = maxPoint;
+        console.log(mi);
+        console.log(ma);
         let vertices = [
             // front
             mi.x, mi.y, ma.z, ma.x, mi.y, ma.z, ma.x, ma.y, ma.z,
@@ -96,7 +98,7 @@ export default class RasterTextureBox {
 
         let normalMap = gl.createTexture();
         let normalImage = new Image();
-        cubeImage.onload = function () {
+        normalImage.onload = function () {
             gl.bindTexture(gl.TEXTURE_2D, normalMap);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, normalImage);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -132,6 +134,7 @@ export default class RasterTextureBox {
         gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(uv),
             gl.STATIC_DRAW);
         this.texCoords = uvBuffer;
+        this.normalCoords = uvBuffer;
     }
 
     /**
@@ -157,14 +160,14 @@ export default class RasterTextureBox {
         this.gl.drawArrays(this.gl.TRIANGLES, 0, this.elements);
 
         // Normal Map
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.texCoords);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.normalCoords);
         const normalCoordsLocation = shader.getAttributeLocation("a_normalCoord");
         this.gl.enableVertexAttribArray(normalCoordsLocation);
         this.gl.vertexAttribPointer(normalCoordsLocation, 2, this.gl.FLOAT, false, 0, 0);
 
-        this.gl.activeTexture(this.gl.TEXTURE0);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.texBuffer);
-        shader.getUniformInt("sampler").set(0);
+        this.gl.activeTexture(this.gl.TEXTURE1);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.normalBuffer);
+        shader.getUniformInt("u_normal").set(1);
         this.gl.drawArrays(this.gl.TRIANGLES, 0, this.elements);
 
         this.gl.disableVertexAttribArray(positionLocation);

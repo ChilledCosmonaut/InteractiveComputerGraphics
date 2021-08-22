@@ -42,10 +42,11 @@ window.addEventListener('load', () => {
     sg.add(gn2);
     const gn3 = new GroupNode(new Translation(new Vector(0, 0, 0, 0)));
     gn2.add(gn3);
-    const cube = new TextureBoxNode('hci-logo.png', '');
+    const cube = new TextureBoxNode('hci-logo.png', 'test_normal.jpg');
     gn3.add(cube);
-    const baseBox = new TextureBoxNode('hci-logo.png', '');
-    sg.add(baseBox);
+    //const baseBox = new TextureBoxNode('hci-logo.png', 'test_normal.jpg');
+    //sg.add(baseBox);
+
 
     // setup for rendering
     const setupVisitor = new RasterSetupVisitor(gl);
