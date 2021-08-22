@@ -67,7 +67,6 @@ export class RotationNode extends AnimationNode {
       let rotationPerSec: number = 0.52359877;
       this.angle += rotationPerSec * (deltaT/1000);
       this.angle %= 360;
-      console.log(this.angle);
       //TODO für Linda: kommentieren! :)
       this.groupNode.transform = new Rotation(this.axis, this.angle);
     }

@@ -111,8 +111,9 @@ export class TextureBoxNode extends Node {
    * The box's center is located at the origin
    * with all edges of length 1
    * @param texture The image filename for the texture
+   * @param normal The image filename for the normalMap
    */
-  constructor(public texture: string) {
+  constructor(public texture: string, public normal: string) {
     super();
   }
 
