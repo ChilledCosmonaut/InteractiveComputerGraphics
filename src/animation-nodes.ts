@@ -2,6 +2,7 @@ import Vector from './vector';
 import { GroupNode } from './nodes';
 import {Rotation, SQT, Translation} from './transformation';
 import Quaternion from './quaternion';
+import MatrixHelper from "./matrix-helper";
 
 /**
  * Class representing an Animation
@@ -67,27 +68,24 @@ export class RotationNode extends AnimationNode {
       let rotationPerSec: number = 0.52359877;
       this.angle += rotationPerSec * (deltaT/1000);
       this.angle %= 360;
-      console.log(this.angle);
+      //console.log(this.angle);
       //TODO für Linda: kommentieren! :)
       this.groupNode.transform = new Rotation(this.axis, this.angle);
     }
   }
 }
 
-
 /**
  * Class representing a Driver Animation
  * @extends AnimationNode
  */
 export class DriverNode extends AnimationNode {
-  /**
-   * The absolute angle of the rotation
-   */
-  position: Vector ;
-  /**
-   * The vector to move along
-   */
-  direction: Vector = new Vector(0, 1, 0, 0);
+
+  static forwardLocal = new Vector(0, 0, 1, 0);
+  static sidewardLocal = new Vector(1, 0, 0, 0);
+
+  forward = 0;
+  sideward = 0;
 
   /**
    * Creates a new DriverNode
@@ -96,11 +94,6 @@ export class DriverNode extends AnimationNode {
    */
   constructor(groupNode: GroupNode) {
     super(groupNode);
-    const m = groupNode.transform.getMatrix();
-    this.position = new Vector(
-        m.getVal(0, 3),
-        m.getVal(1, 3),
-        m.getVal(2, 3), 1)
   }
 
   /**
@@ -109,11 +102,21 @@ export class DriverNode extends AnimationNode {
    */
   simulate(deltaT: number) {
     if(this.active){
-      let unitsPerSec: number = 0.2; //todo: Geschwindigkeit: v = unitsPerSec
+      const matrix = this.groupNode.transform.getMatrix();
+
+      let unitsPerSec: number = 0.3; // Geschwindigkeit: v = unitsPerSec
       const s = unitsPerSec * (deltaT/1000);
-      console.log(this.position);
-      this.position = this.position.add(this.direction.mul(s));
-      this.groupNode.transform = new Translation(this.position);//todo: wenn die translation im construktor übergeben wird
+      let position: Vector = new MatrixHelper().getPositionOfMatrix(matrix);
+      const forw = DriverNode.forwardLocal.mul(this.forward);
+      const forwardGlobal = matrix.mulVec(forw);
+      //forwardGlobal.mul(this.forward)
+
+      const sidew = DriverNode.sidewardLocal.mul(this.sideward);
+      const sidewardGlobal = matrix.mulVec(sidew);
+
+      position = position.add(forwardGlobal.mul(s));
+      position = position.add(sidewardGlobal.mul(s));
+      this.groupNode.transform = new Translation(position); //todo: leserlicher machen?
     }
   }
 }

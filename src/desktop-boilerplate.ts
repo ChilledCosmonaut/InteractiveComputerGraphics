@@ -21,6 +21,8 @@ import phongFragmentShader from './phong-fragment-shader.glsl';
 import textureVertexShader from './texture-vertex-perspective-shader.glsl';
 import textureFragmentShader from './texture-fragment-shader.glsl';
 import { Rotation, Translation } from './transformation';
+import MatrixHelper from "./matrix-helper";
+import Matrix from "./matrix";
 
 window.addEventListener('load', () => {
     const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
@@ -29,10 +31,10 @@ window.addEventListener('load', () => {
     // construct scene graph
     //        SG
     //         |
-    //    +----------+-----+--------+
-    //  T(gn0)     T(gn1)   T(gn3) = desktopNode
-    //    |           |        |
-    // desktopBox  R(gn2)   Pyramid
+    //    +----------+-----+-----------------------     -----+
+    //  T(gn0)     T(gn1)   T(gn3) = desktopNode      T(gn4)
+    //    |           |        |                        |
+    // desktopBox  R(gn2)   Pyramid                    Box
     //                |
     //             Sphere
 
@@ -77,14 +79,16 @@ window.addEventListener('load', () => {
     const visitor = new RasterVisitor(gl, phongShader, textureShader, setupVisitor.objects);
 
     let animationRotationNode = new RotationNode(gn0, new Vector(0, 1, 0, 0));
-    //let animationForwardTranslationNode = new TranslationNode(new Vector(0, 0, -1, 0));//todo
-    let animationForwardTranslationNode = new DriverNode(gn0);
+    animationRotationNode.toggleActive()
+    //let animationDriverNode = new TranslationNode(new Vector(0, 0, -1, 0));//todo
+    let animationDriverNode = new DriverNode(gn0);
+    animationDriverNode.toggleActive()
     //let animationRightTranslationNode = new DriverNode(gn0, angle + 90); //todo: angle in Grad?!
 
 
     function simulate(deltaT: number) {
         animationRotationNode.simulate(deltaT)
-        animationForwardTranslationNode.simulate(deltaT);
+        animationDriverNode.simulate(deltaT);
     }
 
 
@@ -102,24 +106,34 @@ window.addEventListener('load', () => {
         window.requestAnimationFrame(animate)
     );
 
-    window.addEventListener('keydown', function (event) {
+    window.addEventListener('keypress', function (event) {
         switch (event.key) {
             case "q":
                 //todo: "auf der Stelle drehen lassen (etwa mit "Q" und "E"?!)" nach links und rechts drehen?
-                //todo: soll um die y-Achse gedreht werden oder in diese Richtung?
                 animationRotationNode.toggleActive()
                 break;
             case "t": //todo: spacebar anstatt t für test...
                 jump(new Vector(0, 1, 0,0), groupNode3)
                 break;
             case "w": //vorwärts
-                animationForwardTranslationNode.toggleActive();
+                animationDriverNode.forward = -1;
+                animationDriverNode.toggleActive();
                 break;
             case "a": //links
+                //animationDriverNode.toggleActive();
+                animationDriverNode.sideward = -1;
+                animationDriverNode.toggleActive();
+                /*let dir: Vector = new MatrixHelper().getDirectionOfMatrix(animationDriverNode.groupNode.transform.getMatrix());
+                if (animationDriverNode.active == false){
+                    animationDriverNode.toggleActive();
+                }*/
                 break;
             case "s": //rückwärts
+                animationDriverNode.forward = 1;
+                //animationDriverNode.toggleActive();
                 break;
             case "d": //rechts
+                animationDriverNode.sideward = 1;
                 break;
         }
     });
