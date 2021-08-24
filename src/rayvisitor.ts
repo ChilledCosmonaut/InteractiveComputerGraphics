@@ -7,7 +7,7 @@ import Visitor from './visitor';
 import phong from './phong';
 import {
   Node, GroupNode, SphereNode,
-  AABoxNode, TextureBoxNode, PyramidNode
+  AABoxNode, TextureBoxNode, PyramidNode, ObjNode
 } from './nodes';
 import AABox from './aabox';
 import {Transformation} from "./transformation";
@@ -178,4 +178,11 @@ export default class RayVisitor implements Visitor {
    * @param node The node to visit
    */
   visitPyramidNode(node: PyramidNode) { }
+
+
+  /**
+   * Visits a textured box node
+   * @param node The node to visit
+   */
+  visitObjNode(node: ObjNode) { }
 }
