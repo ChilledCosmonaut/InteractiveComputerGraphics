@@ -68,16 +68,11 @@ export default class RasterObjObject {
 
         let gl: WebGL2RenderingContext = this.gl;
 
-        let vertices = [1
-            /*mi.x, mi.y, ma.z,
-            ma.x, mi.y, ma.z,
-            ma.x, ma.y, ma.z,
-            mi.x, ma.y, ma.z,
-            ma.x, mi.y, mi.z,
-            mi.x, mi.y, mi.z,
-            mi.x, ma.y, mi.z,
-            ma.x, ma.y, mi.z*/
-        ];
+        let objFileText: string = this.retrieveObjFileAsText(filePath);
+        let parsedValues: Map<string, Array<number>> = this.parseObjPlainText(objFileText);
+
+        let vertices = this.assertVertices(parsedValues);
+
         let indices = [
             // front
             0, 1, 2, 2, 3, 0,
@@ -119,6 +114,11 @@ export default class RasterObjObject {
         this.colorBuffer = colorBuffer;
     }
 
+    retrieveObjFileAsText(filepath: string): string{
+
+        return "";
+    }
+
     parseObjPlainText(fileContent:string): Map<string, Array<number>>{
         const keywords = {
 
@@ -131,5 +131,15 @@ export default class RasterObjObject {
 
         }
         return new Map<string, Array<number>>();
+    }
+
+    assertVertices(valueMap: Map<string, Array<number>>): Array<number>{
+
+        return new Array<number>();
+    }
+
+    assertNormals(valueMap: Map<string, Array<number>>): Array<number>{
+
+        return new Array<number>();
     }
 }
