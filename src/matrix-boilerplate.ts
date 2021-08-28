@@ -45,7 +45,7 @@ window.addEventListener('load', () => {
         if (useScaleElement.checked) {
             matrix = matrix.mul(scale);
         }
-        const sphere = new Sphere(matrix.mulVec(new Vector(0.1, 0, -1.5, 1)), 0.4, new Vector(.3, 0, 0, 1));
+        const sphere = new Sphere(matrix.mulVec(new Vector(0.1, 0, 0, 1)), 0.7, new Vector(.3, 0, 0, 1));
         for (let x = 0; x < canvas.width; x++) {
             for (let y = 0; y < canvas.height; y++) {
                 const ray = Ray.makeRay(x, y, camera);

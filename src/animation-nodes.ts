@@ -68,8 +68,7 @@ export class RotationNode extends AnimationNode {
       let rotationPerSec: number = 0.52359877;
       this.angle += rotationPerSec * (deltaT/1000);
       this.angle %= 360;
-      //console.log(this.angle);
-      //TODO für Linda: kommentieren! :)
+      //TODO für moi: kommentieren! :)
       this.groupNode.transform = new Rotation(this.axis, this.angle);
     }
   }
@@ -81,11 +80,14 @@ export class RotationNode extends AnimationNode {
  */
 export class DriverNode extends AnimationNode {
 
+  //TODO:Bennenung von forwardLocal irreführend!
   static forwardLocal = new Vector(0, 0, 1, 0);
   static sidewardLocal = new Vector(1, 0, 0, 0);
 
-  forward = 0;
-  sideward = 0;
+  forward = false;
+  backward = false;
+  left = false;
+  right = false;
 
   /**
    * Creates a new DriverNode
@@ -100,22 +102,27 @@ export class DriverNode extends AnimationNode {
    * Advances the animation by deltaT
    * @param deltaT The time difference, the animation is advanced by
    */
+  //todo refactoring
   simulate(deltaT: number) {
     if(this.active){
       const matrix = this.groupNode.transform.getMatrix();
 
-      let unitsPerSec: number = 0.3; // Geschwindigkeit: v = unitsPerSec
+      let unitsPerSec: number = 1; // Geschwindigkeit: v = unitsPerSec
       const s = unitsPerSec * (deltaT/1000);
       let position: Vector = new MatrixHelper().getPositionOfMatrix(matrix);
-      const forw = DriverNode.forwardLocal.mul(this.forward);
-      const forwardGlobal = matrix.mulVec(forw);
-      //forwardGlobal.mul(this.forward)
-
-      const sidew = DriverNode.sidewardLocal.mul(this.sideward);
-      const sidewardGlobal = matrix.mulVec(sidew);
+      const forward = DriverNode.forwardLocal.mul(this.forward ? -1 : 0);
+      const forwardGlobal = matrix.mulVec(forward);
+      const back = DriverNode.forwardLocal.mul(this.backward ? 1 : 0);
+      const backwardGlobal = matrix.mulVec(back);
+      const left = DriverNode.sidewardLocal.mul(this.left ? -1 : 0);
+      const leftGlobal = matrix.mulVec(left);
+      const right = DriverNode.sidewardLocal.mul(this.right ? 1 : 0);
+      const rightGlobal = matrix.mulVec(right);
 
       position = position.add(forwardGlobal.mul(s));
-      position = position.add(sidewardGlobal.mul(s));
+      position = position.add(backwardGlobal.mul(s));
+      position = position.add(leftGlobal.mul(s));
+      position = position.add(rightGlobal.mul(s));
       this.groupNode.transform = new Translation(position); //todo: leserlicher machen?
     }
   }
@@ -160,5 +167,54 @@ export class SlerpNode extends AnimationNode {
       (this.groupNode.transform as SQT).rotation = rot;
     }
   }
+}
 
+
+/**
+ * Class representing a Jump Animation
+ * @extends AnimationNode
+ */
+export class JumperNode extends AnimationNode {
+
+  isJumping = false;
+  y0: number = null;
+  counter = 0;
+  /**
+   * increase bestimmt wie schnell der Jumper springt
+   * todo: Bennenung -> ähnlich wie Geschwindigkeit: v = unitsPerSec
+   */
+  increase = Math.PI / 100;
+  height = 2
+
+  /**
+   * Creates a new JumperNode
+   * @param groupNode The group node to attach to
+   * @param axis The axis to rotate around
+   */
+  constructor(groupNode: GroupNode) {
+    super(groupNode);
+  }
+
+  /**
+   * Advances the animation by deltaT
+   * @param deltaT The time difference, the animation is advanced by
+   */
+  simulate(deltaT: number) {
+    const matrix = this.groupNode.transform.getMatrix();
+    let position = new MatrixHelper().getPositionOfMatrix(matrix);
+    if(this.y0 === null) {
+      this.y0 = position.y
+    };
+
+    if(this.isJumping){
+      this.counter += this.increase
+      if (this.counter > Math.PI) {
+        this.isJumping = false;
+        this.counter = 0; // Der Jumper wird wieder auf den Ausgangszustand zurück gesetzt.
+      }
+
+      position.y = this.y0 + Math.sin(this.counter) * this.height;
+      this.groupNode.transform = new Translation(position); //todo: leserlicher machen?
+    }
+  }
 }

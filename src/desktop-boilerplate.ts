@@ -13,7 +13,7 @@ import {
 } from './rastervisitor';
 import Shader from './shader';
 import {
-    DriverNode,
+    DriverNode, JumperNode,
     RotationNode
 } from './animation-nodes';
 import phongVertexShader from './phong-vertex-perspective-shader.glsl';
@@ -31,10 +31,10 @@ window.addEventListener('load', () => {
     // construct scene graph
     //        SG
     //         |
-    //    +----------+-----+-----------------------     -----+
-    //  T(gn0)     T(gn1)   T(gn3) = desktopNode      T(gn4)
-    //    |           |        |                        |
-    // desktopBox  R(gn2)   Pyramid                    Box
+    //    +----------+-----+-----------------------
+    //  T(gn0)     T(gn1)   T(gn3) = desktopNode
+    //    |           |        |
+    // desktopBox  R(gn2)   Pyramid
     //                |
     //             Sphere
 
@@ -79,18 +79,14 @@ window.addEventListener('load', () => {
     const visitor = new RasterVisitor(gl, phongShader, textureShader, setupVisitor.objects);
 
     let animationRotationNode = new RotationNode(gn0, new Vector(0, 1, 0, 0));
-    animationRotationNode.toggleActive()
-    //let animationDriverNode = new TranslationNode(new Vector(0, 0, -1, 0));//todo
     let animationDriverNode = new DriverNode(gn0);
-    animationDriverNode.toggleActive()
-    //let animationRightTranslationNode = new DriverNode(gn0, angle + 90); //todo: angle in Grad?!
-
+    let animationJumperNode = new JumperNode(gn0);
 
     function simulate(deltaT: number) {
-        animationRotationNode.simulate(deltaT)
+        //animationRotationNode.simulate(deltaT) todo
         animationDriverNode.simulate(deltaT);
+        animationJumperNode.simulate(deltaT);
     }
-
 
     let lastTimestamp = performance.now();
 
@@ -106,42 +102,37 @@ window.addEventListener('load', () => {
         window.requestAnimationFrame(animate)
     );
 
-    window.addEventListener('keypress', function (event) {
-        switch (event.key) {
-            case "q":
-                //todo: "auf der Stelle drehen lassen (etwa mit "Q" und "E"?!)" nach links und rechts drehen?
-                animationRotationNode.toggleActive()
-                break;
-            case "t": //todo: spacebar anstatt t für test...
-                jump(new Vector(0, 1, 0,0), groupNode3)
-                break;
-            case "w": //vorwärts
-                animationDriverNode.forward = -1;
-                animationDriverNode.toggleActive();
-                break;
-            case "a": //links
-                //animationDriverNode.toggleActive();
-                animationDriverNode.sideward = -1;
-                animationDriverNode.toggleActive();
-                /*let dir: Vector = new MatrixHelper().getDirectionOfMatrix(animationDriverNode.groupNode.transform.getMatrix());
-                if (animationDriverNode.active == false){
-                    animationDriverNode.toggleActive();
-                }*/
-                break;
-            case "s": //rückwärts
-                animationDriverNode.forward = 1;
-                //animationDriverNode.toggleActive();
-                break;
-            case "d": //rechts
-                animationDriverNode.sideward = 1;
-                break;
-        }
+    //'keypress'
+    window.addEventListener('keydown', function (event) {
+        eineFunktion(event, true);//todo: Benennung verbessern
     });
 
+    window.addEventListener('keyup', function (event) {
+        eineFunktion(event, false);
+    });
 
-    //todo: auf der y-Achse hoch und runter hüpfen
-    function jump(axis: Vector, groupNode: GroupNode){
-        //new GroupNode(new Translation())
-        console.log("jump")
+    function eineFunktion(event: KeyboardEvent, ispressed: boolean) {
+        switch (event.key) {
+            case "q":
+                //todo: "auf Stelle drehen (mit "Q" und "E"?!)" nach links und rechts drehen?
+                break;
+            case ' ':
+                animationJumperNode.isJumping = true;
+                console.log("space bar pressed")
+                break;
+            case "w":
+                console.log("w wurde gepressed")
+                animationDriverNode.forward = ispressed;
+                break;
+            case "a":
+                animationDriverNode.left = ispressed
+                break;
+            case "s":
+                animationDriverNode.backward = ispressed;
+                break;
+            case "d":
+                animationDriverNode.right = ispressed;
+                break;
+        }
     }
 });
