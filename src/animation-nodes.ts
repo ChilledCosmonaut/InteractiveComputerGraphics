@@ -3,6 +3,7 @@ import { GroupNode } from './nodes';
 import {Rotation, SQT, Translation} from './transformation';
 import Quaternion from './quaternion';
 import MatrixHelper from "./matrix-helper";
+import Matrix from "./matrix";
 
 /**
  * Class representing an Animation
@@ -27,52 +28,60 @@ class AnimationNode {
   toggleActive() {
     this.active = !this.active;
   }
-
 }
+
 
 /**
  * Class representing a Rotation Animation
  * @extends AnimationNode
  */
 export class RotationNode extends AnimationNode {
-  /**
-   * The absolute angle of the rotation
-   */
-  angle: number;
-  /**
-   * The vector to rotate around
-   */
-  axis: Vector;
+
+  leftRotation = false;
+  rightRotation = false;
 
   /**
    * Creates a new RotationNode
    * @param groupNode The group node to attach to
    * @param axis The axis to rotate around
    */
-  constructor(groupNode: GroupNode, axis: Vector) {
+  constructor(groupNode: GroupNode, private axis: Vector) {
     super(groupNode);
-    this.angle = 0;
-    this.axis = axis;
   }
 
   /**
    * Advances the animation by deltaT
    * @param deltaT The time difference, the animation is advanced by
    */
+  //TODO für moi: kommentieren! :)
+  //changes the matrix of the attached group node to reflect a rotation
   simulate(deltaT: number) {
-    // change the matrix of the attached
-    // group node to reflect a rotation
-    // TODO*
-    if(this.active){
-      //30° = 0.52359877 in Bogenmaß
-      let rotationPerSec: number = 0.52359877;
-      this.angle += rotationPerSec * (deltaT/1000);
-      this.angle %= 360;
-      //TODO für moi: kommentieren! :)
-      this.groupNode.transform = new Rotation(this.axis, this.angle);
+    if(this.active && (this.leftRotation || this.rightRotation)) {
+
+        let matrix = this.groupNode.transform.getMatrix();
+        let inverseMatrix = this.groupNode.transform.getInverseMatrix(); //TODO: nochmal anschauen!
+
+        let rotationPerSec: number = 0.52359877;
+        const sign = (this.leftRotation ? 1 : 0) + (this.rightRotation ? -1 : 0)
+        const dAngle = sign * rotationPerSec * (deltaT/1000);
+        matrix = matrix.mul(new Rotation(this.axis, dAngle).getMatrix())
+
+        copyRotationMatrix(matrix, this.groupNode.transform.getMatrix());
+      //todo: InverseMatrix: nötig, weil die normale Matrix überschrieben wird und keine neue Transformation stattfindet(wobei automatisch die Inverse berechnet wird.)
+        copyRotationMatrix(inverseMatrix, this.groupNode.transform.getInverseMatrix());
     }
   }
 }
+
+
+function copyRotationMatrix(oldMatrix: Matrix, newMatrix: Matrix) {
+  for (let i = 0; i < 3; i++) {
+    for (let j = 0; j < 3 ; j++) {
+      newMatrix.setVal(i, j, oldMatrix.getVal(i, j));
+    }
+  }
+}
+
 
 /**
  * Class representing a Driver Animation
@@ -80,7 +89,7 @@ export class RotationNode extends AnimationNode {
  */
 export class DriverNode extends AnimationNode {
 
-  //TODO:Bennenung von forwardLocal irreführend!
+  //TODO:Bennenung von forwardLocal irreführend?!
   static forwardLocal = new Vector(0, 0, 1, 0);
   static sidewardLocal = new Vector(1, 0, 0, 0);
 
@@ -123,11 +132,20 @@ export class DriverNode extends AnimationNode {
       position = position.add(backwardGlobal.mul(s));
       position = position.add(leftGlobal.mul(s));
       position = position.add(rightGlobal.mul(s));
-      this.groupNode.transform = new Translation(position); //todo: leserlicher machen?
+
+      this.groupNode.transform = new Translation(position);
+
+      copyRotationMatrix(matrix, this.groupNode.transform.getMatrix());
+
+      //todo: inverse Matrix???!!!
+      /*
+      let matrixProdukt_1 = new Translation(position).getMatrix();
+      let matrixProdukt_2 = new Translation(position).getMatrix();
+      this.groupNode.transform = matrixProdukt_1.mul(matrixProdukt_2)
+       */
     }
   }
 }
-
 
 
 /**
@@ -175,10 +193,10 @@ export class SlerpNode extends AnimationNode {
  * @extends AnimationNode
  */
 export class JumperNode extends AnimationNode {
-
   isJumping = false;
   y0: number = null;
   counter = 0;
+
   /**
    * increase bestimmt wie schnell der Jumper springt
    * todo: Bennenung -> ähnlich wie Geschwindigkeit: v = unitsPerSec
@@ -205,16 +223,14 @@ export class JumperNode extends AnimationNode {
     if(this.y0 === null) {
       this.y0 = position.y
     };
-
     if(this.isJumping){
       this.counter += this.increase
       if (this.counter > Math.PI) {
         this.isJumping = false;
         this.counter = 0; // Der Jumper wird wieder auf den Ausgangszustand zurück gesetzt.
       }
-
       position.y = this.y0 + Math.sin(this.counter) * this.height;
-      this.groupNode.transform = new Translation(position); //todo: leserlicher machen?
+      this.groupNode.transform = new Translation(position);
     }
   }
 }

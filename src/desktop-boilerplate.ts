@@ -59,7 +59,7 @@ window.addEventListener('load', () => {
     setupVisitor.setup(sg);
 
     let camera = {
-        eye: new Vector(0, 0, 1, 1),
+        eye: new Vector(0, 3, 4, 1),
         center: new Vector(0, 0, 0, 1),
         up: new Vector(0, 1, 0, 0),
         fovy: 60,
@@ -83,8 +83,8 @@ window.addEventListener('load', () => {
     let animationJumperNode = new JumperNode(gn0);
 
     function simulate(deltaT: number) {
-        //animationRotationNode.simulate(deltaT) todo
         animationDriverNode.simulate(deltaT);
+        animationRotationNode.simulate(deltaT)
         animationJumperNode.simulate(deltaT);
     }
 
@@ -102,26 +102,26 @@ window.addEventListener('load', () => {
         window.requestAnimationFrame(animate)
     );
 
-    //'keypress'
     window.addEventListener('keydown', function (event) {
-        eineFunktion(event, true);//todo: Benennung verbessern
+        assignKeyToAction(event, true);
     });
 
     window.addEventListener('keyup', function (event) {
-        eineFunktion(event, false);
+        assignKeyToAction(event, false);
     });
 
-    function eineFunktion(event: KeyboardEvent, ispressed: boolean) {
+    function assignKeyToAction(event: KeyboardEvent, ispressed: boolean) {
         switch (event.key) {
-            case "q":
-                //todo: "auf Stelle drehen (mit "Q" und "E"?!)" nach links und rechts drehen?
+            case "q": //left roation
+                animationRotationNode.leftRotation = ispressed;
+                break;
+            case "e": //right roation
+                animationRotationNode.rightRotation = ispressed;
                 break;
             case ' ':
                 animationJumperNode.isJumping = true;
-                console.log("space bar pressed")
                 break;
             case "w":
-                console.log("w wurde gepressed")
                 animationDriverNode.forward = ispressed;
                 break;
             case "a":
