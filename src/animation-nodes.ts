@@ -67,7 +67,7 @@ export class RotationNode extends AnimationNode {
         matrix = matrix.mul(new Rotation(this.axis, dAngle).getMatrix())
 
         copyRotationMatrix(matrix, this.groupNode.transform.getMatrix());
-      //todo: InverseMatrix: nötig, weil die normale Matrix überschrieben wird und keine neue Transformation stattfindet(wobei automatisch die Inverse berechnet wird.)
+        //todo: InverseMatrix: nötig, weil die normale Matrix überschrieben wird und keine neue Transformation stattfindet(wobei automatisch die Inverse berechnet wird.)
         copyRotationMatrix(inverseMatrix, this.groupNode.transform.getInverseMatrix());
     }
   }
@@ -89,7 +89,6 @@ function copyRotationMatrix(oldMatrix: Matrix, newMatrix: Matrix) {
  */
 export class DriverNode extends AnimationNode {
 
-  //TODO:Bennenung von forwardLocal irreführend?!
   static forwardLocal = new Vector(0, 0, 1, 0);
   static sidewardLocal = new Vector(1, 0, 0, 0);
 
@@ -137,12 +136,10 @@ export class DriverNode extends AnimationNode {
 
       copyRotationMatrix(matrix, this.groupNode.transform.getMatrix());
 
-      //todo: inverse Matrix???!!!
-      /*
-      let matrixProdukt_1 = new Translation(position).getMatrix();
-      let matrixProdukt_2 = new Translation(position).getMatrix();
-      this.groupNode.transform = matrixProdukt_1.mul(matrixProdukt_2)
-       */
+      //copyRotationMatrix(inverseMatrix, this.groupNode.transform.getInverseMatrix());
+      for (let i = 0; i < 3; i++) { //tauscht die Vorzeichen der Translation aus
+        this.groupNode.transform.getInverseMatrix().setVal(i, 3, -1 * matrix.getVal(i, 3))
+      }
     }
   }
 }
@@ -231,6 +228,13 @@ export class JumperNode extends AnimationNode {
       }
       position.y = this.y0 + Math.sin(this.counter) * this.height;
       this.groupNode.transform = new Translation(position);
+
+      copyRotationMatrix(matrix, this.groupNode.transform.getMatrix());
+
+      for (let i = 0; i < 3; i++) { //tauscht die Vorzeichen der Translation aus
+        //todo: muss die Rotation auch in die inverse TranslationsMatrix kopiert und inversiert werden?
+        this.groupNode.transform.getInverseMatrix().setVal(i, 3, -1 * matrix.getVal(i, 3))
+      }
     }
   }
 }

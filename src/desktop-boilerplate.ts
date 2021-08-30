@@ -112,10 +112,10 @@ window.addEventListener('load', () => {
 
     function assignKeyToAction(event: KeyboardEvent, ispressed: boolean) {
         switch (event.key) {
-            case "q": //left roation
+            case "q":
                 animationRotationNode.leftRotation = ispressed;
                 break;
-            case "e": //right roation
+            case "e":
                 animationRotationNode.rightRotation = ispressed;
                 break;
             case ' ':
