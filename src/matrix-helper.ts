@@ -24,4 +24,12 @@ export default class MatrixHelper {
         return matrix.mulVec(blickRichtung)//Blickrichtung in Weltkoordinaten
 
     }
+
+    copyRotationMatrix(oldMatrix: Matrix, newMatrix: Matrix) {
+        for (let i = 0; i < 3; i++) {
+            for (let j = 0; j < 3 ; j++) {
+                newMatrix.setVal(i, j, oldMatrix.getVal(i, j));
+            }
+        }
+    }
 }
