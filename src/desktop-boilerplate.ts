@@ -19,7 +19,7 @@ import phongVertexShader from './phong-vertex-perspective-shader.glsl';
 import phongFragmentShader from './phong-fragment-shader.glsl';
 import textureVertexShader from './texture-vertex-perspective-shader.glsl';
 import textureFragmentShader from './texture-fragment-shader.glsl';
-import { Rotation, Translation } from './transformation';
+import {Rotation, Scaling, Translation} from './transformation';
 
 window.addEventListener('load', () => {
     const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
@@ -35,7 +35,7 @@ window.addEventListener('load', () => {
     //             |
     //              Box
 
-    const sg = new GroupNode(new Translation(new Vector(-2, 0, -4, 0)));
+    const sg = new GroupNode(new Translation(new Vector(0, 0, -5, 0)));
     /*const desktopBox = new AABoxNode(new Vector(1,1,0,0));
     sg.add(desktopBox);
     const groupNode1 = new GroupNode(new Translation(new Vector(0, 2, -5, 0)));
@@ -45,10 +45,12 @@ window.addEventListener('load', () => {
     const sphere = new SphereNode(new Vector(1,1,0,0));
     groupNode2.add(sphere);*/
 
-    const groupNode3 = new GroupNode(new Rotation(new Vector(0,0,1, 0), -Math.PI));//new Translation(new Vector(0,0, 0, 0)));
+    const groupNode3 = new GroupNode(new Scaling(new Vector(1,1,1,1)));//new Rotation(new Vector(1,0,0, 0), -Math.PI));//new Translation(new Vector(0,0, 0, 0)));
     sg.add(groupNode3);
+    const groupNode4 = new GroupNode(new Rotation(new Vector(0,0,1,0), Math.PI/4))
+    groupNode3.add(groupNode4);
     const pyramid = new PyramidNode(new Vector(1,1,1,0));
-    groupNode3.add(pyramid);
+    groupNode4.add(pyramid);
 
 
     /*const gn1 = new GroupNode(new Translation(new Vector(-0.75, -0.75, -3, 0)));
@@ -91,7 +93,7 @@ window.addEventListener('load', () => {
     const visitor = new RasterVisitor(gl, phongShader, textureShader, setupVisitor.objects);
 
     let animationNodes = [
-        new RotationNode(groupNode3, new Vector(0, 0, 1, 0))
+        new RotationNode(groupNode4, new Vector(1, 0, 0, 0))
 
     ];
 

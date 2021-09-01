@@ -54,25 +54,22 @@ export default class RasterPyramid {
         ];
         let indices = [
             // front
-            0, 1, 4,
+            4, 1, 0,
             // back
-            2, 3, 4,
+            4, 3, 2,
             // right
-            1, 2, 4,
+            4, 2, 1,
             // left
-            0, 3, 4,
+            4, 0, 3,
             // bottom
-            0, 1, 2, 2, 3, 0
+            0, 1, 2, 0, 2, 3
         ];
         let colors = [ //TODO?
             0, 0, 1, 1,
-            0, 1, 0, 1,
-            1, 0, 0, 1,
-            1, 1, 1, 1,
             0, 0, 1, 1,
-            0, 1, 0, 1,
-            1, 0, 0, 1,
-            1, 1, 1, 1
+            0, 0, 1, 1,
+            0, 0, 1, 1,
+            0, 0, 1, 1
         ];
 
         let normals = [];
@@ -137,10 +134,8 @@ export default class RasterPyramid {
     }
 
     peakFromHeight(min: Vector, max: Vector, height: number): Vector {
-        let x = (max.x - min.x) / 2 + min.x;
-        let y = height + min.y;
-        let z = (max.z - min.z) / 2 + min.z;
-        const peak = new Vector(x,y,z,1);
+        let peak = min.add(max).mul(0.5);
+        peak.y += height;
         return peak;
     }
 
