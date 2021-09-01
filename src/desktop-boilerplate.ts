@@ -39,8 +39,12 @@ window.addEventListener('load', () => {
     //             Sphere
 
     const sg = new GroupNode(new Translation(new Vector(0, 0, -4, 0)));
+
+    const gn0 = new GroupNode(new Translation(new Vector(.2, .2, -1, 0)))
+    sg.add(gn0);
     const desktopBox = new TextureBoxNode('wood_texture.jpg', 'wood_normal.jpg');
-    sg.add(desktopBox);
+    gn0.add(desktopBox);
+
     const groupNode1 = new GroupNode(new Translation(new Vector(0, 2, -5, 0)));
     sg.add(groupNode1);
     const groupNode2 = new GroupNode(new Rotation(new Vector(0, 0, 1, 0), 0));
