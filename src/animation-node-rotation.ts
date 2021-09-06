@@ -40,9 +40,9 @@ export class RotationNode extends AnimationNode {
             const dAngle = sign * rotationPerSec * (deltaT/1000);
             matrix = matrix.mul(new Rotation(this.axis, dAngle).getMatrix())
 
-            new MatrixHelper().copyRotationMatrix(matrix, this.groupNode.transform.getMatrix());
+            MatrixHelper.copyRotationMatrix(matrix, this.groupNode.transform.getMatrix());
             //todo: InverseMatrix: nötig, weil die normale Matrix überschrieben wird und keine neue Transformation stattfindet(wobei automatisch die Inverse berechnet wird.)
-            new MatrixHelper().copyRotationMatrix(inverseMatrix, this.groupNode.transform.getInverseMatrix());
+            MatrixHelper.copyRotationMatrix(inverseMatrix, this.groupNode.transform.getInverseMatrix());
         }
     }
 }

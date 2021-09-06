@@ -20,6 +20,7 @@ import { Rotation, Translation } from './transformation';
 import {RotationNode} from "./animation-node-rotation";
 import {DriverNode} from "./animation-node-driver";
 import {JumperNode} from "./animation-node-jumper";
+import {Camera, CameraFreeFlight} from "./camera";
 
 window.addEventListener('load', () => {
     const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
@@ -29,9 +30,9 @@ window.addEventListener('load', () => {
     //        SG
     //         |
     //    +----------+-----+-----------------------
-    //  T(gn0)     T(gn1)   T(gn3) = desktopNode
-    //    |           |        |
-    // desktopBox  R(gn2)   Pyramid
+    //  T(gn0)     T(gn1)   T(gn3) = desktopNode   T(gnWorldCenter)
+    //    |           |        |                        |
+    // desktopBox  R(gn2)   Pyramid                  Sphere
     //                |
     //             Sphere
 
@@ -54,12 +55,21 @@ window.addEventListener('load', () => {
     const pyramid = new PyramidNode(new Vector(0,1,1,0));
     groupNode3.add(pyramid);
 
+    const gnWorldCenter = new GroupNode(new Rotation(new Vector(0, 1, 0, 0), 0));
+    sg.add(gnWorldCenter);
+    gnWorldCenter.add(new SphereNode(new Vector(0, 1, 0, 0)));
+//todo?
+    const gnRandom = new GroupNode(new Rotation(new Vector(-2, -2, 0, 0), 0));
+    sg.add(gnRandom);
+    gnRandom.add(new SphereNode(new Vector(0, 1, 1, 0)));
+
     // setup for rendering
     const setupVisitor = new RasterSetupVisitor(gl);
     setupVisitor.setup(sg);
 
     let camera = {
-        eye: new Vector(0, 3, 4, 1),
+        //eye: new Vector(0, 3, 4, 1),
+        eye: new Vector(0, 0, 1, 1),
         center: new Vector(0, 0, 0, 1),
         up: new Vector(0, 1, 0, 0),
         fovy: 60,
@@ -67,6 +77,7 @@ window.addEventListener('load', () => {
         near: 0.1,
         far: 100
     };
+
 
     const phongShader = new Shader(gl,
         phongVertexShader,
@@ -81,11 +92,14 @@ window.addEventListener('load', () => {
     let animationRotationNode = new RotationNode(gn0, new Vector(0, 1, 0, 0));
     let animationDriverNode = new DriverNode(gn0);
     let animationJumperNode = new JumperNode(gn0);
+    //neu:
+    let cameraFreeFlight = new CameraFreeFlight(camera, gn0);
 
     function simulate(deltaT: number) {
         animationDriverNode.simulate(deltaT);
         animationRotationNode.simulate(deltaT)
         animationJumperNode.simulate(deltaT);
+        cameraFreeFlight.simulate(deltaT)
     }
 
     let lastTimestamp = performance.now();
@@ -112,6 +126,12 @@ window.addEventListener('load', () => {
 
     function assignKeyToAction(event: KeyboardEvent, ispressed: boolean) {
         switch (event.key) {
+            //todo: Temp testing for camera.
+            case "t":
+                cameraFreeFlight.pressed = ispressed;
+                break;
+
+
             case "q":
                 animationRotationNode.leftRotation = ispressed;
                 break;
