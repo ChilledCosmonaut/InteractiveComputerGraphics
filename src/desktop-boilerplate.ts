@@ -130,7 +130,12 @@ window.addEventListener('load', () => {
             case "t":
                 cameraFreeFlight.pressed = ispressed;
                 break;
-
+            case "j":
+                animationDriverNode.up = ispressed;
+                break;
+            case "m":
+                animationDriverNode.down = ispressed;
+                break;
 
             case "q":
                 animationRotationNode.leftRotation = ispressed;

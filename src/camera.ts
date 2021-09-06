@@ -37,6 +37,11 @@ export class CameraFreeFlight {
             const globalCenter = m.mulVec(localCenter);
             this.camera.center = eye.add(globalCenter)
 
+
+
+
+
+
             //Testen des Kamera Up Vectors: ist der Up-Vector in Welt oder lokalen Koords?: todo
             /*
             this.camera.eye = new Vector(0, this.y, 0, 1)
