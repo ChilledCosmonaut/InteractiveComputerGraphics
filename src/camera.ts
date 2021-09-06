@@ -43,7 +43,6 @@ export class CameraFreeFlight {
             this.y+=0.01
             if (this.y > 3){this.y = 0}
 
-
             const globalRechts = m.mulVec(new Vector(1, 0, 0, 0))
             const globalUpBezugAufKamera = globalRechts.cross(globalCenter);
             globalUpBezugAufKamera.normalize();
