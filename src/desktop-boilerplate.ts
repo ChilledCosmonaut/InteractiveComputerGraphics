@@ -21,6 +21,7 @@ import {RotationNode} from "./animation-node-rotation";
 import {DriverNode} from "./animation-node-driver";
 import {JumperNode} from "./animation-node-jumper";
 import {Camera, CameraFreeFlight} from "./camera";
+import {createEnvironment} from "./createEnvironment";
 
 window.addEventListener('load', () => {
     const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
@@ -55,13 +56,19 @@ window.addEventListener('load', () => {
     const pyramid = new PyramidNode(new Vector(0,1,1,0));
     groupNode3.add(pyramid);
 
-    const gnWorldCenter = new GroupNode(new Rotation(new Vector(0, 1, 0, 0), 0));
+    const gnWorldCenter = new GroupNode(new Rotation(new Vector(0, 0, 0, 0), 0));
     sg.add(gnWorldCenter);
     gnWorldCenter.add(new SphereNode(new Vector(0, 1, 0, 0)));
-//todo?
-    const gnRandom = new GroupNode(new Rotation(new Vector(-2, -2, 0, 0), 0));
+
+    const gn4 = new GroupNode(new Translation(new Vector(5, -2, 0, 0)));
+    sg.add(gn4);
+    gn4.add(new SphereNode(new Vector(1, 0, 1, 0)));
+
+    const gnRandom = new GroupNode(new Translation(new Vector(-5, -2, 0, 0)));
     sg.add(gnRandom);
-    gnRandom.add(new SphereNode(new Vector(0, 1, 1, 0)));
+    gnRandom.add(new SphereNode(new Vector(0.5, 0, 0, 0)));
+
+    createEnvironment(sg);
 
     // setup for rendering
     const setupVisitor = new RasterSetupVisitor(gl);
