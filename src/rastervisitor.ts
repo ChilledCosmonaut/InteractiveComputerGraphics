@@ -224,8 +224,8 @@ export class RasterVisitor implements Visitor {
    * @param  {TextureBoxNode} node - The node to visit
    */
   visitObjNode(node: ObjNode) {
-    this.textureshader.use();
-    let shader = this.textureshader;
+    this.shader.use();
+    let shader = this.shader;
 
     let toWorld = this.transformation[this.transformation.length - 1];
     // TODO calculate the model matrix for the box

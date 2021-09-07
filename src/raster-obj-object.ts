@@ -38,23 +38,10 @@ export default class RasterObjObject {
         private gl: WebGL2RenderingContext,
         private objString: string) {
         this.gl = gl;
-
-        let objValues = this.retrieveData(objString);
-
-        let vertices = objValues[0];
-        console.log(vertices)
-
-        let indices = objValues[1];
-        console.log(indices)
-
-        this.writeArraysToBuffer(vertices, indices);
-    }
-
-    retrieveData(text:string):Array<Array<number>>{
         let vertices: Array<number> = Array();
         let indices: Array<number> = Array();
 
-        const lines: Array<string> = text.split('\n');
+        const lines: Array<string> = objString.split('\n');
 
         for (let lineNo = 0; lineNo < lines.length; ++lineNo) {
             const line = lines[lineNo].trim();
@@ -89,21 +76,11 @@ export default class RasterObjObject {
                 }
             }
         }
-        return Array(vertices, indices);
-    }
 
-    writeArraysToBuffer(vertices: Array<number>,indices: Array<number>){
-
-        let gl: WebGL2RenderingContext = this.gl;
-
-        let colors= Array(vertices.length);
+        let colors = Array(vertices.length);
 
         for (let i: number = 0; i < colors.length; i++){
-            if (i%4 == 0 && i != 0){
-                colors[i] = 1;
-            }else{
-                colors[i] = 0.1;
-            }
+            colors[i] = 1;
         }
 
         const vertexBuffer = gl.createBuffer();
