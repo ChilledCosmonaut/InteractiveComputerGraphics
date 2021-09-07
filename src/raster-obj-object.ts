@@ -77,10 +77,13 @@ export default class RasterObjObject {
             }
         }
 
-        let colors = Array(vertices.length);
+        let colors = Array(Math.floor(vertices.length/3) * 4);
 
-        for (let i: number = 0; i < colors.length; i++){
-            colors[i] = 1;
+        for (let i: number = 0; i < colors.length; i = i + 4){
+            colors[i] = Math.random();
+            colors[i+1] = Math.random();
+            colors[i+2] = Math.random();
+            colors[i+3] = 1;
         }
 
         const vertexBuffer = gl.createBuffer();

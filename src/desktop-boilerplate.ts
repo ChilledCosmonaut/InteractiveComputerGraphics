@@ -27,7 +27,7 @@ window.addEventListener('load', async () => {
     const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
     const gl = canvas.getContext("webgl2");
 
-    const response = await fetch('../table.obj');
+    const response = await fetch('../SpaceShip.obj');
     const text = await response.text();
 
     // construct scene graph TODO :)
@@ -51,7 +51,7 @@ window.addEventListener('load', async () => {
     //groupNode2.add(sphere);
     const groupNode4 = new GroupNode(new Translation(new Vector(0, 2, -5, 0)));
     sg.add(groupNode4);
-    const groupNode5 = new GroupNode(new Rotation(new Vector(0, 0, 1, 0), 0));
+    const groupNode5 = new GroupNode(new Translation(new Vector(0, 0, 0, 0)));
     groupNode4.add(groupNode5);
     const obj = new ObjNode(text);
     groupNode5.add(obj);
