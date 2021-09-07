@@ -1,11 +1,12 @@
 import 'bootstrap';
+import './file-interactor';
 import 'bootstrap/scss/bootstrap.scss';
 import Vector from './vector';
 import {
     GroupNode,
     SphereNode,
     TextureBoxNode,
-    AABoxNode, PyramidNode
+    AABoxNode, PyramidNode, ObjNode
 } from './nodes';
 import {
     RasterVisitor,
@@ -20,10 +21,14 @@ import phongFragmentShader from './phong-fragment-shader.glsl';
 import textureVertexShader from './texture-vertex-perspective-shader.glsl';
 import textureFragmentShader from './texture-fragment-shader.glsl';
 import { Rotation, Translation } from './transformation';
+import {loadObjAsString, OBJ} from "./file-interactor";
 
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
     const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
     const gl = canvas.getContext("webgl2");
+
+    const response = await fetch('../cubee.obj');
+    const text = await response.text();
 
     // construct scene graph TODO :)
     //        SG
@@ -36,19 +41,25 @@ window.addEventListener('load', () => {
     //              Box
 
     const sg = new GroupNode(new Translation(new Vector(0, 0, -4, 0)));
-    const desktopBox = new TextureBoxNode('wood_texture.jpg', 'wood_normal.jpg');
-    sg.add(desktopBox);
-    const groupNode1 = new GroupNode(new Translation(new Vector(0, 2, -5, 0)));
-    sg.add(groupNode1);
-    const groupNode2 = new GroupNode(new Rotation(new Vector(0, 0, 1, 0), 0));
-    groupNode1.add(groupNode2);
-    const sphere = new SphereNode(new Vector(1,1,0,0));
-    groupNode2.add(sphere);
+    //const desktopBox = new TextureBoxNode('wood_texture.jpg', 'wood_normal.jpg');
+    //sg.add(desktopBox);
+    //const groupNode1 = new GroupNode(new Translation(new Vector(0, 2, -5, 0)));
+    //sg.add(groupNode1);
+    //const groupNode2 = new GroupNode(new Rotation(new Vector(0, 0, 1, 0), 0));
+    //groupNode1.add(groupNode2);
+    //const sphere = new SphereNode(new Vector(1,1,0,0));
+    //groupNode2.add(sphere);
+    const groupNode4 = new GroupNode(new Translation(new Vector(0, 2, -5, 0)));
+    sg.add(groupNode4);
+    const groupNode5 = new GroupNode(new Rotation(new Vector(0, 0, 1, 0), 0));
+    groupNode4.add(groupNode5);
+    const obj = new ObjNode(text);
+    groupNode5.add(obj);
 
-    const groupNode3 = new GroupNode(new Translation(new Vector(2,0, -3, 0)));
-    sg.add(groupNode3);
-    const pyramid = new PyramidNode(new Vector(0,1,1,0));
-    groupNode3.add(pyramid);
+    //const groupNode3 = new GroupNode(new Translation(new Vector(2,0, -3, 0)));
+    //sg.add(groupNode3);
+    //const pyramid = new PyramidNode(new Vector(0,1,1,0));
+    //groupNode3.add(pyramid);
 
 
     /*const gn1 = new GroupNode(new Translation(new Vector(-0.75, -0.75, -3, 0)));
@@ -90,16 +101,16 @@ window.addEventListener('load', () => {
     );
     const visitor = new RasterVisitor(gl, phongShader, textureShader, setupVisitor.objects);
 
-    /*let animationNodes = [
+    let animationNodes = [
         //new RotationNode(sg, new Vector(0, 0, 1, 0)),
-        //new RotationNode(gn3, new Vector(0, 1, 0, 0))
+        new RotationNode(groupNode5, new Vector(0, 1, 0, 0))
 
-    ];*/
+    ];
 
     function simulate(deltaT: number) {
-        /*for (let animationNode of animationNodes) {
+        for (let animationNode of animationNodes) {
             animationNode.simulate(deltaT);
-        }*/
+        }
     }
 
     let lastTimestamp = performance.now();
@@ -110,17 +121,18 @@ window.addEventListener('load', () => {
         lastTimestamp = timestamp;
         window.requestAnimationFrame(animate);
     }
+
     Promise.all(
         [phongShader.load(), textureShader.load()]
     ).then(x =>
         window.requestAnimationFrame(animate)
     );
 
-    /*window.addEventListener('keydown', function (event) {
+    window.addEventListener('keydown', function (event) {
         switch (event.key) {
             case "ArrowUp":
                 animationNodes[0].toggleActive();
                 break;
         }
-    });*/
+    });
 });

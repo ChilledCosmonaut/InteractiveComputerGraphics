@@ -36,8 +36,81 @@ export default class RasterObjObject {
      */
     constructor(
         private gl: WebGL2RenderingContext,
-        filePath: string) {
+        private objString: string) {
         this.gl = gl;
+
+        let objValues = this.retrieveData(objString);
+
+        let vertices = objValues[0];
+        console.log(vertices)
+
+        let indices = objValues[1];
+        console.log(indices)
+
+        this.writeArraysToBuffer(vertices, indices);
+    }
+
+    retrieveData(text:string):Array<Array<number>>{
+        let vertices: Array<number> = Array();
+        let indices: Array<number> = Array();
+
+        const lines: Array<string> = text.split('\n');
+
+        for (let lineNo = 0; lineNo < lines.length; ++lineNo) {
+            const line = lines[lineNo].trim();
+            if (line === '' || line.startsWith('#')) {
+                continue;
+            }
+            const parts = line.split(/\s+/);
+            if(parts[0] == 'v'){
+                for (let j: number = 1; j < parts.length; j++){
+                    vertices.push(parseFloat(parts[j]));
+                }
+            }else if(parts[0] == 'f'){
+                for (let j: number = 1; j < parts.length - 2; j++){
+                    for (let currentIndex: number = 0; currentIndex < 3; currentIndex++) {
+                        let index = parseFloat(parts[j + currentIndex].split('/')[0])
+                        if (index < 0) {
+                            let currentMaxVertex = Math.floor(vertices.length / 3);
+                            index = currentMaxVertex + index;
+                        }
+                        indices.push(index - 1);
+                    }
+                }
+            }
+        }
+        return Array(vertices, indices);
+    }
+
+    writeArraysToBuffer(vertices: Array<number>,indices: Array<number>){
+
+        let gl: WebGL2RenderingContext = this.gl;
+
+        let colors= Array(vertices.length);
+
+        for (let i: number = 0; i < colors.length; i++){
+            if (i%4 == 0 && i != 0){
+                colors[i] = 1;
+            }else{
+                colors[i] = 0.1;
+            }
+        }
+
+        const vertexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        this.vertexBuffer = vertexBuffer;
+        const indexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+        this.indexBuffer = indexBuffer;
+        this.elements = indices.length;
+
+        // TODO create and fill a buffer for colours *
+        const colorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+        this.colorBuffer = colorBuffer;
     }
 
     /**
@@ -62,84 +135,5 @@ export default class RasterObjObject {
         this.gl.disableVertexAttribArray(positionLocation);
         // TODO disable color vertex attrib array *
         this.gl.disableVertexAttribArray(colorLocation);
-    }
-
-    setObjectStructure(filePath: string){
-
-        let gl: WebGL2RenderingContext = this.gl;
-
-        let objFileText: string = this.retrieveObjFileAsText(filePath);
-        let parsedValues: Map<string, Array<number>> = this.parseObjPlainText(objFileText);
-
-        let vertices = this.assertVertices(parsedValues);
-
-        let indices = [
-            // front
-            0, 1, 2, 2, 3, 0,
-            // back
-            4, 5, 6, 6, 7, 4,
-            // right
-            1, 4, 7, 7, 2, 1,
-            // top
-            3, 2, 7, 7, 6, 3,
-            // left
-            5, 0, 3, 3, 6, 5,
-            // bottom
-            5, 4, 1, 1, 0, 5
-        ];
-        let colors = [
-            0, 0, 1, 1,
-            0, 1, 0, 1,
-            1, 0, 0, 1,
-            1, 1, 1, 1,
-            0, 0, 1, 1,
-            0, 1, 0, 1,
-            1, 0, 0, 1,
-            1, 1, 1, 1
-        ];
-        const vertexBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-        this.vertexBuffer = vertexBuffer;
-        const indexBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-        this.indexBuffer = indexBuffer;
-        this.elements = indices.length;
-
-        // TODO create and fill a buffer for colours *
-        const colorBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
-        this.colorBuffer = colorBuffer;
-    }
-
-    retrieveObjFileAsText(filepath: string): string{
-
-        return "";
-    }
-
-    parseObjPlainText(fileContent:string): Map<string, Array<number>>{
-        const keywords = {
-
-        };
-
-        const keywordRegex: RegExp = /(\w*)(?: )*(.*)/;
-        const lines: Array<string> = fileContent.split('\n');
-
-        for (let lineNo = 0; lineNo < lines.length; ++lineNo) {
-
-        }
-        return new Map<string, Array<number>>();
-    }
-
-    assertVertices(valueMap: Map<string, Array<number>>): Array<number>{
-
-        return new Array<number>();
-    }
-
-    assertNormals(valueMap: Map<string, Array<number>>): Array<number>{
-
-        return new Array<number>();
     }
 }

@@ -349,7 +349,7 @@ export class RasterSetupVisitor {
         node,
         new RasterObjObject(
             this.gl,
-            ""
+            node.objString
         )
     );
   }

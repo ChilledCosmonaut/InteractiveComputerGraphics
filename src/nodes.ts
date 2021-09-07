@@ -166,7 +166,7 @@ export class ObjNode extends Node {
    * @param objPath The colour of the pyramid
    */
   constructor(
-      public objPath: string
+      public objString: string
   ) {
     super();
   }
