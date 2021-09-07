@@ -67,15 +67,25 @@ export default class RasterObjObject {
                     vertices.push(parseFloat(parts[j]));
                 }
             }else if(parts[0] == 'f'){
-                for (let j: number = 1; j < parts.length - 2; j++){
-                    for (let currentIndex: number = 0; currentIndex < 3; currentIndex++) {
-                        let index = parseFloat(parts[j + currentIndex].split('/')[0])
-                        if (index < 0) {
-                            let currentMaxVertex = Math.floor(vertices.length / 3);
-                            index = currentMaxVertex + index;
-                        }
-                        indices.push(index - 1);
+                for (let j: number = 1; j < parts.length - 2; ++j){
+                    let index = parseFloat(parts[1].split('/')[0])
+                    if (index < 0) {
+                        let currentMaxVertex = Math.floor(vertices.length / 3);
+                        index = currentMaxVertex + index;
                     }
+                    indices.push(index - 1);
+                    index = parseFloat(parts[j + 1].split('/')[0])
+                    if (index < 0) {
+                        let currentMaxVertex = Math.floor(vertices.length / 3);
+                        index = currentMaxVertex + index;
+                    }
+                    indices.push(index - 1);
+                    index = parseFloat(parts[j + 2].split('/')[0])
+                    if (index < 0) {
+                        let currentMaxVertex = Math.floor(vertices.length / 3);
+                        index = currentMaxVertex + index;
+                    }
+                    indices.push(index - 1);
                 }
             }
         }

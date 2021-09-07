@@ -27,7 +27,7 @@ window.addEventListener('load', async () => {
     const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
     const gl = canvas.getContext("webgl2");
 
-    const response = await fetch('../cubee.obj');
+    const response = await fetch('../table.obj');
     const text = await response.text();
 
     // construct scene graph TODO :)
