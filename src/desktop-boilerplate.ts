@@ -47,12 +47,14 @@ window.addEventListener('load', () => {
     const groupNode2 = new GroupNode(new Rotation(new Vector(0, 0, 1, 0), 0));
     groupNode1.add(groupNode2);
     const sphere = new SphereNode(new Vector(1,1,0,0));
-    groupNode2.add(sphere);
+    groupNode2.add(sphere);*/
 
     const groupNode3 = new GroupNode(new Translation(new Vector(2,0, -3, 0)));
     sg.add(groupNode3);
-    const pyramid = new PyramidNode(new Vector(0,1,1,0));
-    groupNode3.add(pyramid);
+    const groupNode4 = new GroupNode(new Rotation(new Vector(0,0,1,0), Math.PI/4))
+    groupNode3.add(groupNode4);
+    const pyramid = new PyramidNode(new Vector(1,1,1,0));
+    groupNode4.add(pyramid);
 
     // setup for rendering
     const setupVisitor = new RasterSetupVisitor(gl);

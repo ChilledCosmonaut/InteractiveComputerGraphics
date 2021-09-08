@@ -286,8 +286,8 @@ export class RasterSetupVisitor {
       node,
       new RasterBox(
         this.gl,
-        new Vector(-0.5, -0.5, -0.5, 1),
-        new Vector(0.5, 0.5, 0.5, 1)
+        new Vector(-0.5, -0.5, 0, 1),
+        new Vector(0.5, 0.5, 0, 1)
       )
     );
   }
@@ -315,8 +315,8 @@ export class RasterSetupVisitor {
         node,
         new RasterPyramid(
             this.gl,
-            new Vector(-0.5, 0.5, -0.5, 1),
-            new Vector(0.5, 0.5, 0.5, 1),
+            new Vector(-0.5, -0.5, -0.5, 1),
+            new Vector(0.5, -0.5, 0.5, 1),
             1
         )
     );
