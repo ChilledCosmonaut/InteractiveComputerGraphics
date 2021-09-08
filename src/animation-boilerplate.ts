@@ -11,14 +11,12 @@ import {
     RasterSetupVisitor
 } from './rastervisitor';
 import Shader from './shader';
-import {
-    RotationNode
-} from './animation-nodes';
 import phongVertexShader from './phong-vertex-perspective-shader.glsl';
 import phongFragmentShader from './phong-fragment-shader.glsl';
 import textureVertexShader from './texture-vertex-perspective-shader.glsl';
 import textureFragmentShader from './texture-fragment-shader.glsl';
 import { Rotation, Translation } from './transformation';
+import {RotationNode} from "./animation-node-rotation";
 
 window.addEventListener('load', () => {
     const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
@@ -99,7 +97,7 @@ window.addEventListener('load', () => {
     window.addEventListener('keydown', function (event) {
         switch (event.key) {
             case "ArrowUp":
-                animationNodes[0].toggleActive();
+                //animationNodes[0].toggleActive();
                 break;
         }
     });

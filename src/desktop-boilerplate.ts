@@ -20,6 +20,7 @@ import { Rotation, Translation } from './transformation';
 import {RotationNode} from "./animation-node-rotation";
 import {DriverNode} from "./animation-node-driver";
 import {JumperNode} from "./animation-node-jumper";
+import Sphere from "./sphere";
 
 window.addEventListener('load', () => {
     const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
@@ -47,15 +48,17 @@ window.addEventListener('load', () => {
     const groupNode2 = new GroupNode(new Rotation(new Vector(0, 0, 1, 0), 0));
     groupNode1.add(groupNode2);
     const sphere = new SphereNode(new Vector(1,1,0,0));
-    groupNode2.add(sphere);*/
+    groupNode2.add(sphere);
+
+    const groupNode4 = new GroupNode(new Translation(new Vector(0, 2, 0, 0)));
+    gn0.add(groupNode4);
+    const sphere2 = new SphereNode(new Vector(1,0,1,0));
+    groupNode4.add(sphere2);
 
     const groupNode3 = new GroupNode(new Translation(new Vector(2,0, -3, 0)));
-    sg.add(groupNode3);
-    const groupNode4 = new GroupNode(new Rotation(new Vector(0,0,1,0), Math.PI/4))
-    groupNode3.add(groupNode4);
-    const pyramid = new PyramidNode(new Vector(1,1,1,0));
-    groupNode4.add(pyramid);
-
+    gn0.add(groupNode3);
+    const pyramid = new PyramidNode(new Vector(1,0,1,0));
+    groupNode3.add(pyramid);
     // setup for rendering
     const setupVisitor = new RasterSetupVisitor(gl);
     setupVisitor.setup(sg);
