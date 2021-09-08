@@ -14,6 +14,9 @@ export default class RasterObjObject {
      * The indices describing which vertices form a triangle
      */
     indexBuffer: WebGLBuffer;
+
+    normalBuffer: WebGLBuffer;
+
     colorBuffer: WebGLBuffer;
     /**
      * The amount of indices
@@ -39,6 +42,7 @@ export default class RasterObjObject {
         private objString: string) {
         this.gl = gl;
         let vertices: Array<number> = Array();
+        let normals: Array<number> = Array();
         let indices: Array<number> = Array();
 
         const lines: Array<string> = objString.split('\n');
@@ -52,6 +56,10 @@ export default class RasterObjObject {
             if(parts[0] == 'v'){
                 for (let j: number = 1; j < parts.length; j++){
                     vertices.push(parseFloat(parts[j]));
+                }
+            }else if(parts[0] == 'vn'){
+                for (let j: number = 1; j < parts.length; j++){
+                    normals.push(parseFloat(parts[j]));
                 }
             }else if(parts[0] == 'f'){
                 for (let j: number = 1; j < parts.length - 2; ++j){
@@ -101,6 +109,11 @@ export default class RasterObjObject {
         gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
         this.colorBuffer = colorBuffer;
+
+        const normalBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, normalBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(normals), this.gl.STATIC_DRAW);
+        this.normalBuffer = normalBuffer;
     }
 
     /**
@@ -118,6 +131,11 @@ export default class RasterObjObject {
         const colorLocation = shader.getAttributeLocation("a_color");
         this.gl.enableVertexAttribArray(colorLocation);
         this.gl.vertexAttribPointer(colorLocation, 4, this.gl.FLOAT, false , 0, 0);
+
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.normalBuffer);
+        const normalLocation = shader.getAttributeLocation("a_normal");
+        this.gl.enableVertexAttribArray(normalLocation);
+        this.gl.vertexAttribPointer(normalLocation, 3, this.gl.FLOAT, false , 0, 0);
 
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         this.gl.drawElements(this.gl.TRIANGLES, this.elements, this.gl.UNSIGNED_SHORT, 0);
