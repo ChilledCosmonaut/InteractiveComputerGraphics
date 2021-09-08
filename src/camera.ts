@@ -31,16 +31,27 @@ export class CameraFreeFlight {
 
     simulate(deltaT: number) {
         if (this.pressed) {
+            /* von Demian:
+            const m = this.groupNode.transform.getMatrix()
+            this.camera.eye = m.mulVec(new Vector(0, 0, 0, 1));
+            this.camera.center = m.mulVec(new Vector(0, 0, -1, 1));
+            this.camera.up = m.mulVec(new Vector(0, 1, 0, 1));
+
+             */
+
+
+
+
+
+
+
             const m = this.groupNode.transform.getMatrix()
             const eye = this.camera.eye = MatrixHelper.getPositionOfMatrix(m)
-            const localCenter = new Vector(0, 0, -1, 0);
-            const globalCenter = m.mulVec(localCenter);
-            this.camera.center = eye.add(globalCenter)
+            const localDir = new Vector(0, 0, -1, 0);
+            const globalDir = m.mulVec(localDir);
+            this.camera.center = eye.add(globalDir)
 
-
-
-
-
+            //console.log("Kameraposition: " + this.camera.eye)
 
             //Testen des Kamera Up Vectors: ist der Up-Vector in Welt oder lokalen Koords?: todo
             /*
@@ -48,13 +59,8 @@ export class CameraFreeFlight {
             this.y+=0.01
             if (this.y > 3){this.y = 0}
 
-            const globalRechts = m.mulVec(new Vector(1, 0, 0, 0))
-            const globalUpBezugAufKamera = globalRechts.cross(globalCenter);
-            globalUpBezugAufKamera.normalize();
 
-            this.camera.up = new Vector(0, 0.7, 0.7, 0);
-
-
+//todo: Rotation & up-Vector
  */
         }
         //this.camera.eye = new Vector(this.count, this.camera.eye.y,  this.camera.eye.z, this.camera.eye.w);
