@@ -79,7 +79,6 @@ window.addEventListener('load', async () => {
     boxTranslation.add(colourBox);
 
 
-
     // setup for rendering
     const setupVisitor = new RasterSetupVisitor(gl);
     setupVisitor.setup(sg);
