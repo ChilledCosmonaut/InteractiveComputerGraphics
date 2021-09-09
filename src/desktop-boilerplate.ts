@@ -45,10 +45,11 @@ window.addEventListener('load', async () => {
     const sg = new GroupNode(new Translation(new Vector(0, 0, 0, 0)));
 
     //Desktop base
-    const desktopNode = new GroupNode(new Translation(new Vector(0, 0, -10, 0)))
+    const desktopNode = new GroupNode(new Translation(new Vector(0, 0, 0, 0)))
     sg.add(desktopNode);
-    const desktopBox = new TextureBoxNode('wood_texture.jpg', 'wood_normal.jpg', 4);
-    desktopNode.add(desktopBox);
+
+    const dB = new TextureBoxNode('wood_texture.jpg', 'wood_normal.jpg', 4);
+    desktopNode.add(dB);
 
     //Obj Nodes
     const objTranslation = new GroupNode(new Translation(new Vector(0, 0, 5, 0)));
@@ -84,6 +85,7 @@ window.addEventListener('load', async () => {
     const gn4 = new GroupNode(new Translation(new Vector(5, -2, 0, 0)));
     sg.add(gn4);
     gn4.add(new SphereNode(new Vector(1, 0, 1, 0)));
+    //todo: moi: gnRandom.add(new SphereNode(new Vector(0.5, 0, 0, 0)));
 
     createEnvironment(sg);
 
@@ -101,7 +103,6 @@ window.addEventListener('load', async () => {
         far: 100
     };
 
-
     const phongShader = new Shader(gl,
         phongVertexShader,
         phongFragmentShader
@@ -117,23 +118,21 @@ window.addEventListener('load', async () => {
     let animationDriverNode = new DriverNode(desktopNode);
     let animationJumperNode = new JumperNode(desktopNode);
 
+    let cameraFreeFlight = new CameraFreeFlight(camera, desktopNode);
+
     function simulate(deltaT: number) {
         animationDriverNode.simulate(deltaT);
         animationRotationNode.simulate(deltaT);
         ObjRotation.simulate(deltaT);
         animationJumperNode.simulate(deltaT);
         cameraFreeFlight.simulate(deltaT)
-        //console.log(vectorToString("cam", camera.eye));
-        //console.log(vectorToString("gn0", MatrixHelper.getPositionOfMatrix(gn0.transform.getMatrix())));
 
+        /*console.log(vectorToString("cam", camera.eye));
+        console.log(vectorToString("gn0", MatrixHelper.getPositionOfMatrix(gn0.transform.getMatrix())));
         function vectorToString(text: string, v: Vector) {
             console.log(text + ": " + v.x + ", " + v.y + ", " + v.z + ", " + v.w)
-        }
-
-        //Testen der Kamera:
-        //camera.eye = new Vector(0, 0, 0, 1);
+        }*/
     }
-
 
 
     let lastTimestamp = performance.now();
@@ -164,6 +163,7 @@ window.addEventListener('load', async () => {
             //todo: Temp testing for camera.
             case "t":
                 cameraFreeFlight.pressed = ispressed;
+                console.log("t pressed")
                 break;
             case "j":
                 animationDriverNode.up = ispressed;
@@ -171,7 +171,6 @@ window.addEventListener('load', async () => {
             case "m":
                 animationDriverNode.down = ispressed;
                 break;
-
             case "q":
                 animationRotationNode.leftRotation = ispressed;
                 break;

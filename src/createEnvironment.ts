@@ -8,9 +8,9 @@ const red = new Vector(1, 0, 0, 0);
 
 export function createEnvironment(sg: GroupNode) {
 
-    const gnWorldCenter = new GroupNode(new Scaling(new Vector(0.2, 0.2, 0.2, 1)));
-    sg.add(gnWorldCenter);
-    gnWorldCenter.add(new SphereNode(new Vector(0, 1, 0, 0)));
+    //const gnWorldCenter = new GroupNode(new Scaling(new Vector(0.2, 0.2, 0.2, 1)));
+    //sg.add(gnWorldCenter);
+    //gnWorldCenter.add(new SphereNode(new Vector(0, 1, 0, 0)));
 
     createGrid(sg)
 }
