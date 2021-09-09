@@ -23,8 +23,10 @@ import {JumperNode} from "./animation-node-jumper";
 import Sphere from "./sphere";
 import RayVisitor from "./rayvisitor";
 
-const UseRasterizer = true
-const UseRaytracer = false
+//const UseRasterizer = true
+//const UseRaytracer = false
+const UseRasterizer = false;
+const UseRaytracer = true;
 
 window.addEventListener('load', () => {
     const canvasRaytracer = document.getElementById("raytracer") as HTMLCanvasElement;
@@ -32,7 +34,7 @@ window.addEventListener('load', () => {
     const contextWebGl = canvasRaster.getContext("webgl2");
     const context2D = canvasRaytracer.getContext("2d");
 
-    let useRenderer = UseRasterizer
+    let useRenderer = UseRaytracer
 
     // construct scene graph
     //        SG
@@ -72,9 +74,11 @@ window.addEventListener('load', () => {
     const setupVisitor = new RasterSetupVisitor(contextWebGl);
     setupVisitor.setup(sg);
 
+
     let camera = {
-        eye: new Vector(0, 3, 4, 1),
-        center: new Vector(0, 0, 0, 1),
+    //eye: new Vector(0, 3, 4, 1),
+        eye: new Vector(0, 0, 0, 1),
+        center: new Vector(0, 0, -1,1),
         up: new Vector(0, 1, 0, 0),
         fovy: 60,
         aspect: canvasRaster.width / canvasRaster.height,
@@ -107,10 +111,9 @@ window.addEventListener('load', () => {
 
     function animate(timestamp: number) {
         simulate(timestamp - lastTimestamp);
-        //visitor_renderer.render(sg, camera, []);
         if (useRenderer === UseRaytracer){
-            const camRt = { origin: new Vector(0, 2, 0, 1), width: 200, height:200, alpha: 0.5 }
-            visitor_raytracer.render(sg, camRt, []) //todo ???
+            const camRt = { origin: new Vector(0, 2, 0, 1), width: 200, height:200, alpha: Math.PI / 3 }
+            visitor_raytracer.render(sg, camRt, [])
         } else {
             visitor_raster.render(sg, camera, [])
         }
@@ -145,7 +148,6 @@ window.addEventListener('load', () => {
                     canvasRaster.style.opacity = '0'
                     canvasRaytracer.style.opacity = '1'
                 }
-                console.log("r gedrückt")
                 break;
             case "q":
                 animationRotationNode.leftRotation = ispressed;

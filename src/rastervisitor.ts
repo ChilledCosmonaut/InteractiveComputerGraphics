@@ -224,7 +224,7 @@ export class RasterVisitor implements Visitor {
  * Class representing a Visitor that sets up buffers 
  * for use by the RasterVisitor 
  * */
-export class RasterSetupVisitor {
+export class RasterSetupVisitor implements Visitor {
   /**
    * The created render objects
    */
