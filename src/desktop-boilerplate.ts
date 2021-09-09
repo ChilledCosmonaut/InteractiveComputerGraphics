@@ -17,11 +17,13 @@ import phongVertexShader from './phong-vertex-perspective-shader.glsl';
 import phongFragmentShader from './phong-fragment-shader.glsl';
 import textureVertexShader from './texture-vertex-perspective-shader.glsl';
 import textureFragmentShader from './texture-fragment-shader.glsl';
-import { Rotation, Translation } from './transformation';
+import {Rotation, Scaling, Translation} from './transformation';
 import {RotationNode} from "./animation-node-rotation";
 import {DriverNode} from "./animation-node-driver";
 import {JumperNode} from "./animation-node-jumper";
-import Sphere from "./sphere";
+import {Camera, CameraFreeFlight} from "./camera";
+import {createEnvironment} from "./createEnvironment";
+import MatrixHelper from "./matrix-helper";
 
 window.addEventListener('load', async () => {
     const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
@@ -33,12 +35,12 @@ window.addEventListener('load', async () => {
     // construct scene graph TODO :)
     //        SG
     //         |
-    //    +----------+-----+-----------------------
-    //  T(gn0)     T(gn1)   T(gn3) = desktopNode
-    //    |           |        |
-    // desktopBox  R(gn2)   Pyramid
-    //                |
-    //             Sphere
+    //    +-------------------+-----+-----------------------
+    //  T(gn0)               T(gn1)   T(gn3) = desktopNode   T(gnWorldCenter)
+    //    |                     |        |                        |
+    // desktopBox            R(gn2)   Pyramid                  Sphere
+    //                         |
+    //                        Sphere
 
     const sg = new GroupNode(new Translation(new Vector(0, 0, 0, 0)));
 
@@ -79,12 +81,18 @@ window.addEventListener('load', async () => {
     boxTranslation.add(colourBox);
 
 
+    const gn4 = new GroupNode(new Translation(new Vector(5, -2, 0, 0)));
+    sg.add(gn4);
+    gn4.add(new SphereNode(new Vector(1, 0, 1, 0)));
+
+    createEnvironment(sg);
+
     // setup for rendering
     const setupVisitor = new RasterSetupVisitor(gl);
     setupVisitor.setup(sg);
 
     let camera = {
-        eye: new Vector(0, 3, 4, 1),
+        eye: new Vector(0, 0, 1, 1),
         center: new Vector(0, 0, 0, 1),
         up: new Vector(0, 1, 0, 0),
         fovy: 60,
@@ -92,6 +100,7 @@ window.addEventListener('load', async () => {
         near: 0.1,
         far: 100
     };
+
 
     const phongShader = new Shader(gl,
         phongVertexShader,
@@ -113,7 +122,19 @@ window.addEventListener('load', async () => {
         animationRotationNode.simulate(deltaT);
         ObjRotation.simulate(deltaT);
         animationJumperNode.simulate(deltaT);
+        cameraFreeFlight.simulate(deltaT)
+        //console.log(vectorToString("cam", camera.eye));
+        //console.log(vectorToString("gn0", MatrixHelper.getPositionOfMatrix(gn0.transform.getMatrix())));
+
+        function vectorToString(text: string, v: Vector) {
+            console.log(text + ": " + v.x + ", " + v.y + ", " + v.z + ", " + v.w)
+        }
+
+        //Testen der Kamera:
+        //camera.eye = new Vector(0, 0, 0, 1);
     }
+
+
 
     let lastTimestamp = performance.now();
 
@@ -140,6 +161,17 @@ window.addEventListener('load', async () => {
 
     function assignKeyToAction(event: KeyboardEvent, ispressed: boolean) {
         switch (event.key) {
+            //todo: Temp testing for camera.
+            case "t":
+                cameraFreeFlight.pressed = ispressed;
+                break;
+            case "j":
+                animationDriverNode.up = ispressed;
+                break;
+            case "m":
+                animationDriverNode.down = ispressed;
+                break;
+
             case "q":
                 animationRotationNode.leftRotation = ispressed;
                 break;

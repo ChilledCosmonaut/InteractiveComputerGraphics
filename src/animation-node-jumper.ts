@@ -34,7 +34,8 @@ export class JumperNode extends AnimationNode {
      */
     simulate(deltaT: number) {
         const matrix = this.groupNode.transform.getMatrix();
-        let position = new MatrixHelper().getPositionOfMatrix(matrix);
+        const inverseMatrix = this.groupNode.transform.getInverseMatrix();
+        let position = MatrixHelper.getPositionOfMatrix(matrix);
         if(this.y0 === null) {
             this.y0 = position.y
         };
@@ -47,12 +48,13 @@ export class JumperNode extends AnimationNode {
             position.y = this.y0 + Math.sin(this.counter) * this.height;
             this.groupNode.transform = new Translation(position);
 
-            new MatrixHelper().copyRotationMatrix(matrix, this.groupNode.transform.getMatrix());
+            MatrixHelper.copyRotationMatrix(matrix, this.groupNode.transform.getMatrix());
+            MatrixHelper.copyRotationMatrix(inverseMatrix, this.groupNode.transform.getInverseMatrix());
 
-            for (let i = 0; i < 3; i++) { //tauscht die Vorzeichen der Translation aus
+            /*for (let i = 0; i < 3; i++) { //tauscht die Vorzeichen der Translation aus
                 //todo: muss die Rotation auch in die inverse TranslationsMatrix kopiert und inversiert werden?
                 this.groupNode.transform.getInverseMatrix().setVal(i, 3, -1 * matrix.getVal(i, 3))
-            }
+            }*/
         }
     }
 }

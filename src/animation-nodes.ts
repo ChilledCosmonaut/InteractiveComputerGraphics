@@ -1,9 +1,5 @@
-import Vector from './vector';
+
 import { GroupNode } from './nodes';
-import {Rotation, SQT, Translation} from './transformation';
-import Quaternion from './quaternion';
-import MatrixHelper from "./matrix-helper";
-import Matrix from "./matrix";
 
 /**
  * Class representing an Animation

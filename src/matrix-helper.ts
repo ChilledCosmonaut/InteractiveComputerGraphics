@@ -10,7 +10,7 @@ export default class MatrixHelper {
     }
 
     //our usage: get the position of the Matrix, describing the GroupNode
-    getPositionOfMatrix(matrix: Matrix): Vector {
+    static getPositionOfMatrix(matrix: Matrix): Vector {
         let position = new Vector(
             matrix.getVal(0, 3),
             matrix.getVal(1, 3),
@@ -25,9 +25,17 @@ export default class MatrixHelper {
 
     }
 
-    copyRotationMatrix(oldMatrix: Matrix, newMatrix: Matrix) {
+    static copyRotationMatrix(oldMatrix: Matrix, newMatrix: Matrix) {
         for (let i = 0; i < 3; i++) {
-            for (let j = 0; j < 3 ; j++) {
+            for (let j = 0; j < 3; j++) {
+                newMatrix.setVal(i, j, oldMatrix.getVal(i, j));
+            }
+        }
+    }
+
+    static copyMatrix(oldMatrix: Matrix, newMatrix: Matrix) {
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
                 newMatrix.setVal(i, j, oldMatrix.getVal(i, j));
             }
         }
