@@ -1,11 +1,12 @@
 import 'bootstrap';
+import './file-interactor';
 import 'bootstrap/scss/bootstrap.scss';
 import Vector from './vector';
 import {
     GroupNode,
     SphereNode,
     TextureBoxNode,
-    AABoxNode, PyramidNode
+    AABoxNode, PyramidNode, ObjNode
 } from './nodes';
 import {
     RasterVisitor,
@@ -22,11 +23,14 @@ import {DriverNode} from "./animation-node-driver";
 import {JumperNode} from "./animation-node-jumper";
 import Sphere from "./sphere";
 
-window.addEventListener('load', () => {
+window.addEventListener('load', async () => {
     const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
     const gl = canvas.getContext("webgl2");
 
-    // construct scene graph
+    const response = await fetch('../SpaceShip.obj');
+    const text = await response.text();
+
+    // construct scene graph TODO :)
     //        SG
     //         |
     //    +----------+-----+-----------------------
@@ -101,6 +105,7 @@ window.addEventListener('load', () => {
         lastTimestamp = timestamp;
         window.requestAnimationFrame(animate);
     }
+
     Promise.all(
         [phongShader.load(), textureShader.load()]
     ).then(x =>

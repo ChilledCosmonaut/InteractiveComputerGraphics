@@ -152,3 +152,31 @@ export class PyramidNode extends Node {
     visitor.visitPyramidNode(this);
   }
 }
+
+
+/**
+ * Class representing a Pyramid in the Scenegraph
+ * @extends Node
+ */
+export class ObjNode extends Node {
+
+  /**
+   * Creates a new Object from an OBJ file.
+   * The Object is defined around the origin.
+   * @param objPath The colour of the pyramid
+   */
+  constructor(
+      public objString: string
+  ) {
+    super();
+  }
+
+  /**
+   * Accepts a visitor according to the visitor pattern
+   * @param visitor The visitor
+   */
+  accept(visitor: Visitor) {
+    visitor.visitObjNode(this);
+  }
+}
+
