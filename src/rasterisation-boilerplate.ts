@@ -45,5 +45,5 @@ window.addEventListener('load', () => {
     // render
     const visitor = new RasterVisitor(gl, shader, null, setupVisitor.objects);
     shader.load();
-    visitor.render(sg, null, []);
+    visitor.render(sg, null, [], 0.3,0.6,0.7);
 });

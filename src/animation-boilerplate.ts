@@ -83,7 +83,7 @@ window.addEventListener('load', () => {
 
     function animate(timestamp: number) {
         simulate(timestamp - lastTimestamp);
-        visitor.render(sg, camera, []);
+        visitor.render(sg, camera, [], 0.3,0.6,0.7);
         lastTimestamp = timestamp;
         window.requestAnimationFrame(animate);
     }

@@ -66,10 +66,10 @@ export default class RasterPyramid {
         ];
         let colors = [ //TODO?
             0, 0, 0.5, 1,
-            0, 1, 0.1, 1,
-            0, 0, 0.25, 1,
-            1, 0, 1, 1,
-            0, 0, 1, 1
+            0, 0, 0.5, 1,
+            0, 0, 0.5, 1,
+            0, 0, 0.5, 1,
+            0, 0, 0.5, 1
         ];
 
         let normals = [];
@@ -90,10 +90,10 @@ export default class RasterPyramid {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
         this.indexBuffer = indexBuffer;
-        /*const normalBuffer = this.gl.createBuffer();
+        const normalBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, normalBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(normals), this.gl.STATIC_DRAW);
-        this.normalBuffer = normalBuffer;*/
+        this.normalBuffer = normalBuffer;
         this.elements = indices.length;
 
         // TODO create and fill a buffer for colours *
@@ -119,10 +119,10 @@ export default class RasterPyramid {
         this.gl.enableVertexAttribArray(colorLocation);
         this.gl.vertexAttribPointer(colorLocation, 4, this.gl.FLOAT, false , 0, 0);
 
-        /*this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.normalBuffer);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.normalBuffer);
         const normalLocation = shader.getAttributeLocation("a_normal");
         this.gl.enableVertexAttribArray(normalLocation);
-        this.gl.vertexAttribPointer(normalLocation, 3, this.gl.FLOAT, false , 0, 0);*/
+        this.gl.vertexAttribPointer(normalLocation, 3, this.gl.FLOAT, false , 0, 0);
 
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         this.gl.drawElements(this.gl.TRIANGLES, this.elements, this.gl.UNSIGNED_SHORT, 0);
@@ -130,7 +130,7 @@ export default class RasterPyramid {
         this.gl.disableVertexAttribArray(positionLocation);
         // TODO disable color vertex attrib array *
         this.gl.disableVertexAttribArray(colorLocation);
-        //this.gl.disableVertexAttribArray(normalLocation);
+        this.gl.disableVertexAttribArray(normalLocation);
     }
 
     peakFromHeight(min: Vector, max: Vector, height: number): Vector {

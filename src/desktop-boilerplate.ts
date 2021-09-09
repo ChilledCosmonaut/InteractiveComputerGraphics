@@ -30,6 +30,10 @@ window.addEventListener('load', async () => {
     const response = await fetch('../SpaceShip.obj');
     const text = await response.text();
 
+    let ambientFactor: number = 0;
+    let diffuseFactor: number = 0;
+    let specularFactor: number = 0;
+
     // construct scene graph TODO :)
     //        SG
     //         |
@@ -119,10 +123,29 @@ window.addEventListener('load', async () => {
 
     function animate(timestamp: number) {
         simulate(timestamp - lastTimestamp);
-        visitor.render(sg, camera, []);
+        visitor.render(sg, camera, [], ambientFactor, diffuseFactor, specularFactor);
         lastTimestamp = timestamp;
         window.requestAnimationFrame(animate);
     }
+
+    let ambientSlider = document.getElementById("ambientSlider") as HTMLInputElement;
+    ambientFactor = parseFloat(ambientSlider.value);
+    let diffuseSlider = document.getElementById("diffuseSlider") as HTMLInputElement;
+    diffuseFactor = parseFloat(diffuseSlider.value);
+    let specularSlider = document.getElementById("specularSlider") as HTMLInputElement;
+    specularFactor = parseFloat(specularSlider.value);
+
+    ambientSlider.oninput = function() {
+        ambientFactor = parseFloat(ambientSlider.value);
+    };
+
+    diffuseSlider.oninput = function() {
+        diffuseFactor = parseFloat(diffuseSlider.value);
+    };
+
+    specularSlider.oninput = function() {
+        specularFactor = parseFloat(specularSlider.value);
+    };
 
     Promise.all(
         [phongShader.load(), textureShader.load()]

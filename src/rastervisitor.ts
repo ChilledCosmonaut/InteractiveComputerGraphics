@@ -35,6 +35,10 @@ export class RasterVisitor implements Visitor {
   // TODO declare instance variables her
   transformation: Array<Matrix>;
   inverseTransformation: Array<Matrix>;
+
+  ambientFactor: number;
+  diffuseFactor: number;
+  specularFactor: number;
   /**
    * Creates a new RasterVisitor
    * @param gl The 3D context to render to
@@ -64,8 +68,14 @@ export class RasterVisitor implements Visitor {
   render(
     rootNode: Node,
     camera: Camera | null,
-    lightPositions: Array<Vector>
+    lightPositions: Array<Vector>,
+    ambientFactor: number,
+    diffuseFactor: number,
+    specularFactor: number
   ) {
+    this.ambientFactor = ambientFactor;
+    this.diffuseFactor = diffuseFactor;
+    this.specularFactor = specularFactor;
     // clear
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
@@ -136,6 +146,9 @@ export class RasterVisitor implements Visitor {
     let fromWorld = this.inverseTransformation[this.inverseTransformation.length - 1];
     // TODO Calculate the model matrix for the sphere*
     shader.getUniformMatrix("M").set(toWorld);
+    shader.getUniformFloat("ambientFactor").set(this.ambientFactor);
+    shader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
+    shader.getUniformFloat("specularFactor").set(this.specularFactor);
 
     const V = shader.getUniformMatrix("V");
     if (V && this.lookat) {
@@ -164,6 +177,9 @@ export class RasterVisitor implements Visitor {
     let toWorld = this.transformation[this.transformation.length - 1];
     // TODO Calculate the model matrix for the box
     shader.getUniformMatrix("M").set(toWorld);
+    shader.getUniformFloat("ambientFactor").set(this.ambientFactor);
+    shader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
+    shader.getUniformFloat("specularFactor").set(this.specularFactor);
     let V = shader.getUniformMatrix("V");
     if (V && this.lookat) {
       V.set(this.lookat);
@@ -187,6 +203,9 @@ export class RasterVisitor implements Visitor {
     let toWorld = this.transformation[this.transformation.length - 1];
     // TODO Calculate the model matrix for the box
     shader.getUniformMatrix("M").set(toWorld);
+    shader.getUniformFloat("ambientFactor").set(this.ambientFactor);
+    shader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
+    shader.getUniformFloat("specularFactor").set(this.specularFactor);
     let V = shader.getUniformMatrix("V");
     if (V && this.lookat) {
       V.set(this.lookat);
@@ -210,6 +229,9 @@ export class RasterVisitor implements Visitor {
     let toWorld = this.transformation[this.transformation.length - 1];
     // TODO calculate the model matrix for the box
     shader.getUniformMatrix("M").set(toWorld);
+    shader.getUniformFloat("ambientFactor").set(this.ambientFactor);
+    shader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
+    shader.getUniformFloat("specularFactor").set(this.specularFactor);
     let P = shader.getUniformMatrix("P");
     if (P && this.perspective) {
       P.set(this.perspective);
@@ -230,6 +252,9 @@ export class RasterVisitor implements Visitor {
     let toWorld = this.transformation[this.transformation.length - 1];
     // TODO calculate the model matrix for the box
     shader.getUniformMatrix("M").set(toWorld);
+    shader.getUniformFloat("ambientFactor").set(this.ambientFactor);
+    shader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
+    shader.getUniformFloat("specularFactor").set(this.specularFactor);
     let P = shader.getUniformMatrix("P");
     if (P && this.perspective) {
       P.set(this.perspective);

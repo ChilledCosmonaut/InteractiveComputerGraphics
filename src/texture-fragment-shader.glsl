@@ -7,6 +7,10 @@ varying vec2 v_texCoord;
 varying vec2 v_normalCoord;
 varying vec3 vertexPosition;
 
+uniform float ambientFactor;
+uniform float diffuseFactor;
+uniform float specularFactor;
+
 const vec3 lightPos = vec3(1.0, 1.0, 1.0);
 const float shininess = 16.0;
 const float kA = 0.3;
@@ -21,15 +25,15 @@ void main(void) {
   // Read fragment color from texture
   // TODO
 
-  vec3 ambientColor = color * kA;
+  vec3 ambientColor = color * ambientFactor;
 
   vec3 toLightVector = normalize(lightPos - vertexPosition);
-  vec3 diffuseColor = color * kD * max ( 0.0, dot ( normal ,toLightVector ));
+  vec3 diffuseColor = color * diffuseFactor * max ( 0.0, dot ( normal ,toLightVector ));
 
   vec3 toEyeVector = normalize(vertexPosition - vec3 (0,0,0));
   vec3 reflectionDirection = normalize(reflect (toLightVector.xyz, normal));
   float factor2 = pow( max ( 0.0, dot (reflectionDirection, toEyeVector)), shininess);
-  vec3 specular = color * (factor2 * kS);
+  vec3 specular = color * (factor2 * specularFactor);
 
   vec3 accumulatedColor = ambientColor + diffuseColor + specular;
   gl_FragColor = vec4(accumulatedColor, 1.0);
