@@ -40,29 +40,46 @@ window.addEventListener('load', async () => {
     //                |
     //             Sphere
 
-    const sg = new GroupNode(new Translation(new Vector(0, 0, -4, 0)));
+    const sg = new GroupNode(new Translation(new Vector(0, 0, 0, 0)));
 
-    const gn0 = new GroupNode(new Translation(new Vector(.2, .2, -1, 0)))
-    sg.add(gn0);
-    const desktopBox = new TextureBoxNode('wood_texture.jpg', 'wood_normal.jpg');
-    gn0.add(desktopBox);
+    //Desktop base
+    const desktopNode = new GroupNode(new Translation(new Vector(0, 0, -10, 0)))
+    sg.add(desktopNode);
+    const desktopBox = new TextureBoxNode('wood_texture.jpg', 'wood_normal.jpg', 4);
+    desktopNode.add(desktopBox);
 
-    const groupNode1 = new GroupNode(new Translation(new Vector(0, 2, -5, 0)));
-    sg.add(groupNode1);
-    const groupNode2 = new GroupNode(new Rotation(new Vector(0, 0, 1, 0), 0));
-    groupNode1.add(groupNode2);
-    const sphere = new SphereNode(new Vector(1,1,0,0));
-    groupNode2.add(sphere);
+    //Obj Nodes
+    const objTranslation = new GroupNode(new Translation(new Vector(0, 0, 5, 0)));
+    desktopNode.add(objTranslation);
+    const obj = new ObjNode(text, 0.5);
+    objTranslation.add(obj);
 
-    const groupNode4 = new GroupNode(new Translation(new Vector(0, 2, 0, 0)));
-    gn0.add(groupNode4);
-    const sphere2 = new SphereNode(new Vector(1,0,1,0));
-    groupNode4.add(sphere2);
+    //Sphere Node
+    const sphere1Translation = new GroupNode(new Translation(new Vector(0, 4, 0, 0)));
+    desktopNode.add(sphere1Translation);
+    const sphere1 = new SphereNode(new Vector(1,0,1,0));
+    sphere1Translation.add(sphere1);
+    const sphereOrbit = new GroupNode(new Rotation(new Vector(0,0,0,0),0));
+    sphere1Translation.add(sphereOrbit);
+    const sphere2Translation = new GroupNode(new Translation(new Vector(3, 0, 0, 0)));
+    sphereOrbit.add(sphere2Translation);
+    const sphere2 = new SphereNode(new Vector(0,0,1,0));
+    sphere2Translation.add(sphere2);
 
-    const groupNode3 = new GroupNode(new Translation(new Vector(2,0, -3, 0)));
-    gn0.add(groupNode3);
+    //Pyramid Node
+    const pyramidTranslation = new GroupNode(new Translation(new Vector(3,0, 0, 0)));
+    desktopNode.add(pyramidTranslation);
     const pyramid = new PyramidNode(new Vector(1,0,1,0));
-    groupNode3.add(pyramid);
+    pyramidTranslation.add(pyramid);
+
+    //Coloured Box Node
+    const boxTranslation = new GroupNode(new Translation(new Vector(-3,0,0,0)));
+    desktopNode.add(boxTranslation);
+    const colourBox = new AABoxNode(new Vector(1,1,1,1));
+    boxTranslation.add(colourBox);
+
+
+
     // setup for rendering
     const setupVisitor = new RasterSetupVisitor(gl);
     setupVisitor.setup(sg);
@@ -87,13 +104,15 @@ window.addEventListener('load', async () => {
     );
     const visitor = new RasterVisitor(gl, phongShader, textureShader, setupVisitor.objects);
 
-    let animationRotationNode = new RotationNode(gn0, new Vector(0, 1, 0, 0));
-    let animationDriverNode = new DriverNode(gn0);
-    let animationJumperNode = new JumperNode(gn0);
+    let animationRotationNode = new RotationNode(desktopNode, new Vector(0, 1, 0, 0));
+    let ObjRotation = new RotationNode(objTranslation, new Vector(0,1,0,0))
+    let animationDriverNode = new DriverNode(desktopNode);
+    let animationJumperNode = new JumperNode(desktopNode);
 
     function simulate(deltaT: number) {
         animationDriverNode.simulate(deltaT);
-        animationRotationNode.simulate(deltaT)
+        animationRotationNode.simulate(deltaT);
+        ObjRotation.simulate(deltaT);
         animationJumperNode.simulate(deltaT);
     }
 
