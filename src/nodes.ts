@@ -113,7 +113,7 @@ export class TextureBoxNode extends Node {
    * @param texture The image filename for the texture
    * @param normal The image filename for the normalMap
    */
-  constructor(public texture: string, public normal: string) {
+  constructor(public texture: string, public normal: string, public scale: number) {
     super();
   }
 
@@ -166,7 +166,7 @@ export class ObjNode extends Node {
    * @param objPath The colour of the pyramid
    */
   constructor(
-      public objString: string
+      public objString: string, public scale: number
   ) {
     super();
   }

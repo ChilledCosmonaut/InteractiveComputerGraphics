@@ -327,7 +327,8 @@ export class RasterSetupVisitor {
         new Vector(-0.5, -0.5, -0.5, 1),
         new Vector(0.5, 0.5, 0.5, 1),
         node.texture,
-        node.normal
+        node.normal,
+        node.scale
       )
     );
   }
@@ -349,7 +350,8 @@ export class RasterSetupVisitor {
         node,
         new RasterObjObject(
             this.gl,
-            node.objString
+            node.objString,
+            node.scale
         )
     );
   }

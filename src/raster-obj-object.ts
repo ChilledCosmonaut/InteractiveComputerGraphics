@@ -39,7 +39,8 @@ export default class RasterObjObject {
      */
     constructor(
         private gl: WebGL2RenderingContext,
-        private objString: string) {
+        private objString: string,
+        private scale: number) {
         this.gl = gl;
         let vertices: Array<number> = Array();
         let normals: Array<number> = Array();
@@ -55,7 +56,7 @@ export default class RasterObjObject {
             const parts = line.split(/\s+/);
             if(parts[0] == 'v'){
                 for (let j: number = 1; j < parts.length; j++){
-                    vertices.push(parseFloat(parts[j]));
+                    vertices.push(parseFloat(parts[j]) * scale);
                 }
             }else if(parts[0] == 'vn'){
                 for (let j: number = 1; j < parts.length; j++){
