@@ -2,13 +2,14 @@ import RasterSphere from './raster-sphere';
 import RasterBox from './raster-box';
 import RasterTextureBox from './raster-texture-box';
 import RasterPyramid from "./raster-pyramid";
+import RasterObjObject from "./raster-obj-object";
 import Vector from './vector';
 import Matrix from './matrix';
 import Visitor from './visitor';
 import {
   Node, GroupNode,
   SphereNode, AABoxNode,
-  TextureBoxNode, PyramidNode
+  TextureBoxNode, PyramidNode, ObjNode
 } from './nodes';
 import Shader from './shader';
 import {Camera} from "./camera";
@@ -220,7 +221,28 @@ export class RasterVisitor implements Visitor {
 
     this.renderables.get(node).render(shader);
   }
+
+  /**
+   * Visits a textured box node
+   * @param  {TextureBoxNode} node - The node to visit
+   */
+  visitObjNode(node: ObjNode) {
+    this.shader.use();
+    let shader = this.shader;
+
+    let toWorld = this.transformation[this.transformation.length - 1];
+    // TODO calculate the model matrix for the box
+    shader.getUniformMatrix("M").set(toWorld);
+    let P = shader.getUniformMatrix("P");
+    if (P && this.perspective) {
+      P.set(this.perspective);
+    }
+    shader.getUniformMatrix("V").set(this.lookat);
+
+    this.renderables.get(node).render(shader);
+  }
 }
+
 
 /** 
  * Class representing a Visitor that sets up buffers 
@@ -289,8 +311,8 @@ export class RasterSetupVisitor {
       node,
       new RasterBox(
         this.gl,
-        new Vector(-0.5, -0.5, -0.5, 1),
-        new Vector(0.5, 0.5, 0.5, 1)
+        new Vector(-0.5, -0.5, 0, 1),
+        new Vector(0.5, 0.5, 0, 1)
       )
     );
   }
@@ -308,7 +330,8 @@ export class RasterSetupVisitor {
         new Vector(-0.5, -0.5, -0.5, 1),
         new Vector(0.5, 0.5, 0.5, 1),
         node.texture,
-        node.normal
+        node.normal,
+        node.scale
       )
     );
   }
@@ -318,9 +341,20 @@ export class RasterSetupVisitor {
         node,
         new RasterPyramid(
             this.gl,
-            new Vector(-0.5, 0.5, -0.5, 1),
-            new Vector(0.5, 0.5, 0.5, 1),
+            new Vector(-0.5, -0.5, -0.5, 1),
+            new Vector(0.5, -0.5, 0.5, 1),
             1
+        )
+    );
+  }
+
+  visitObjNode(node: ObjNode) {
+    this.objects.set(
+        node,
+        new RasterObjObject(
+            this.gl,
+            node.objString,
+            node.scale
         )
     );
   }

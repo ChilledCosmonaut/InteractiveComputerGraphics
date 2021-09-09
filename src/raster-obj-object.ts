@@ -5,7 +5,7 @@ import Matrix from "./matrix";
 /**
  * A class creating buffers for an axis aligned box to render it with WebGL
  */
-export default class RasterPyramid {
+export default class RasterObjObject {
     /**
      * The buffer containing the box's vertices
      */
@@ -14,7 +14,9 @@ export default class RasterPyramid {
      * The indices describing which vertices form a triangle
      */
     indexBuffer: WebGLBuffer;
+
     normalBuffer: WebGLBuffer;
+
     colorBuffer: WebGLBuffer;
     /**
      * The amount of indices
@@ -24,10 +26,10 @@ export default class RasterPyramid {
     /**
      * Creates all WebGL buffers for the box
      *     6 ------- 7
-     *    / |  s=4  / |
+     *    / |       / |
      *   3 ------- 2  |
      *   |  |      |  |
-     *   |  3 -----|- 2
+     *   |  5 -----|- 4
      *   | /       | /
      *   0 ------- 1
      *  looking in negative z axis direction
@@ -37,49 +39,60 @@ export default class RasterPyramid {
      */
     constructor(
         private gl: WebGL2RenderingContext,
-        minPoint: Vector,
-        maxPoint: Vector,
-        height: number) {
+        private objString: string,
+        private scale: number) {
         this.gl = gl;
-        const mi = minPoint;
-        const ma = maxPoint;
-        const peak = this.peakFromHeight(mi, ma, height);
+        let vertices: Array<number> = Array();
+        let normals: Array<number> = Array();
+        let indices: Array<number> = Array();
 
-        let vertices = [
-            mi.x, mi.y, mi.z,
-            ma.x, mi.y, mi.z,
-            ma.x, ma.y, ma.z,
-            mi.x, ma.y, ma.z,
-            peak.x,peak.y,peak.z
-        ];
-        let indices = [
-            // front
-            4, 1, 0,
-            // back
-            4, 3, 2,
-            // right
-            4, 2, 1,
-            // left
-            4, 0, 3,
-            // bottom
-            0, 1, 2, 0, 2, 3
-        ];
-        let colors = [ //TODO?
-            0, 0, 0.5, 1,
-            0, 1, 0.1, 1,
-            0, 0, 0.25, 1,
-            1, 0, 1, 1,
-            0, 0, 1, 1
-        ];
+        const lines: Array<string> = objString.split('\n');
 
-        let normals = [];
+        for (let lineNo = 0; lineNo < lines.length; ++lineNo) {
+            const line = lines[lineNo].trim();
+            if (line === '' || line.startsWith('#')) {
+                continue;
+            }
+            const parts = line.split(/\s+/);
+            if(parts[0] == 'v'){
+                for (let j: number = 1; j < parts.length; j++){
+                    vertices.push(parseFloat(parts[j]) * scale);
+                }
+            }else if(parts[0] == 'vn'){
+                for (let j: number = 1; j < parts.length; j++){
+                    normals.push(parseFloat(parts[j]));
+                }
+            }else if(parts[0] == 'f'){
+                for (let j: number = 1; j < parts.length - 2; ++j){
+                    let index = parseFloat(parts[1].split('/')[0])
+                    if (index < 0) {
+                        let currentMaxVertex = Math.floor(vertices.length / 3);
+                        index = currentMaxVertex + index;
+                    }
+                    indices.push(index - 1);
+                    index = parseFloat(parts[j + 1].split('/')[0])
+                    if (index < 0) {
+                        let currentMaxVertex = Math.floor(vertices.length / 3);
+                        index = currentMaxVertex + index;
+                    }
+                    indices.push(index - 1);
+                    index = parseFloat(parts[j + 2].split('/')[0])
+                    if (index < 0) {
+                        let currentMaxVertex = Math.floor(vertices.length / 3);
+                        index = currentMaxVertex + index;
+                    }
+                    indices.push(index - 1);
+                }
+            }
+        }
 
-        for (let i = 0; i < vertices.length; i = i + 3){
-            let normal: Vector = this.CalculateNormalsForTriangle(indices[i], indices[i+1], indices[i+2], vertices).normalize();
-            console.log(normal)
-            normals.push(normal.x);
-            normals.push(normal.y);
-            normals.push(normal.z);
+        let colors = Array(Math.floor(vertices.length/3) * 4);
+
+        for (let i: number = 0; i < colors.length; i = i + 4){
+            colors[i] = Math.random();
+            colors[i+1] = Math.random();
+            colors[i+2] = Math.random();
+            colors[i+3] = 1;
         }
 
         const vertexBuffer = gl.createBuffer();
@@ -90,10 +103,6 @@ export default class RasterPyramid {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
         this.indexBuffer = indexBuffer;
-        /*const normalBuffer = this.gl.createBuffer();
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, normalBuffer);
-        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(normals), this.gl.STATIC_DRAW);
-        this.normalBuffer = normalBuffer;*/
         this.elements = indices.length;
 
         // TODO create and fill a buffer for colours *
@@ -101,6 +110,11 @@ export default class RasterPyramid {
         gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
         this.colorBuffer = colorBuffer;
+
+        const normalBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, normalBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(normals), this.gl.STATIC_DRAW);
+        this.normalBuffer = normalBuffer;
     }
 
     /**
@@ -119,10 +133,10 @@ export default class RasterPyramid {
         this.gl.enableVertexAttribArray(colorLocation);
         this.gl.vertexAttribPointer(colorLocation, 4, this.gl.FLOAT, false , 0, 0);
 
-        /*this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.normalBuffer);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.normalBuffer);
         const normalLocation = shader.getAttributeLocation("a_normal");
         this.gl.enableVertexAttribArray(normalLocation);
-        this.gl.vertexAttribPointer(normalLocation, 3, this.gl.FLOAT, false , 0, 0);*/
+        this.gl.vertexAttribPointer(normalLocation, 3, this.gl.FLOAT, false , 0, 0);
 
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         this.gl.drawElements(this.gl.TRIANGLES, this.elements, this.gl.UNSIGNED_SHORT, 0);
@@ -130,21 +144,5 @@ export default class RasterPyramid {
         this.gl.disableVertexAttribArray(positionLocation);
         // TODO disable color vertex attrib array *
         this.gl.disableVertexAttribArray(colorLocation);
-        //this.gl.disableVertexAttribArray(normalLocation);
-    }
-
-    peakFromHeight(min: Vector, max: Vector, height: number): Vector {
-        let peak = min.add(max).mul(0.5);
-        peak.y += height;
-        return peak;
-    }
-
-    CalculateNormalsForTriangle(index1: number, index2: number, index3: number, vertices: Array<number>): Vector {
-        let vertex1: Vector = new Vector(vertices[index1*3],vertices[index1*3 + 1],vertices[index1*3 + 2], 0);
-        let vertex2: Vector = new Vector(vertices[index2*3],vertices[index2*3 + 1],vertices[index2*3 + 2], 0);
-        let vertex3: Vector = new Vector(vertices[index3*3],vertices[index3*3 + 1],vertices[index3*3 + 2], 0);
-        let u : Vector = vertex2.sub(vertex1);
-        let v: Vector = vertex3.sub(vertex1);
-        return u.cross(v);
     }
 }

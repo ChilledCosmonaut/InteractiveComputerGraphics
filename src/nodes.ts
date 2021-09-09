@@ -113,7 +113,7 @@ export class TextureBoxNode extends Node {
    * @param texture The image filename for the texture
    * @param normal The image filename for the normalMap
    */
-  constructor(public texture: string, public normal: string) {
+  constructor(public texture: string, public normal: string, public scale: number) {
     super();
   }
 
@@ -152,3 +152,31 @@ export class PyramidNode extends Node {
     visitor.visitPyramidNode(this);
   }
 }
+
+
+/**
+ * Class representing a Pyramid in the Scenegraph
+ * @extends Node
+ */
+export class ObjNode extends Node {
+
+  /**
+   * Creates a new Object from an OBJ file.
+   * The Object is defined around the origin.
+   * @param objPath The colour of the pyramid
+   */
+  constructor(
+      public objString: string, public scale: number
+  ) {
+    super();
+  }
+
+  /**
+   * Accepts a visitor according to the visitor pattern
+   * @param visitor The visitor
+   */
+  accept(visitor: Visitor) {
+    visitor.visitObjNode(this);
+  }
+}
+

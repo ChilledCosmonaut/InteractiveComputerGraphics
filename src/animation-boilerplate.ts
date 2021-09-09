@@ -40,7 +40,7 @@ window.addEventListener('load', () => {
     sg.add(gn2);
     const gn3 = new GroupNode(new Translation(new Vector(0, 0, 0, 0)));
     gn2.add(gn3);
-    const cube = new TextureBoxNode('hci-logo.png', 'test_normal.jpg');
+    const cube = new TextureBoxNode('hci-logo.png', 'test_normal.jpg', 1);
     gn3.add(cube);
 
 
@@ -97,7 +97,7 @@ window.addEventListener('load', () => {
     window.addEventListener('keydown', function (event) {
         switch (event.key) {
             case "ArrowUp":
-                animationNodes[0].toggleActive();
+                //animationNodes[0].toggleActive();
                 break;
         }
     });

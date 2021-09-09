@@ -28,4 +28,3 @@ export class AnimationNode { //ACHTUNG: Das export Statement war nicht so vorgeg
 
 
 
-
