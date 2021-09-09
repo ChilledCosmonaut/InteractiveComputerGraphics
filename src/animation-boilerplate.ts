@@ -11,14 +11,12 @@ import {
     RasterSetupVisitor
 } from './rastervisitor';
 import Shader from './shader';
-import {
-    RotationNode
-} from './animation-nodes';
 import phongVertexShader from './phong-vertex-perspective-shader.glsl';
 import phongFragmentShader from './phong-fragment-shader.glsl';
 import textureVertexShader from './texture-vertex-perspective-shader.glsl';
 import textureFragmentShader from './texture-fragment-shader.glsl';
 import { Rotation, Translation } from './transformation';
+import {RotationNode} from "./animation-node-rotation";
 
 window.addEventListener('load', () => {
     const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
@@ -44,8 +42,6 @@ window.addEventListener('load', () => {
     gn2.add(gn3);
     const cube = new TextureBoxNode('hci-logo.png', 'test_normal.jpg');
     gn3.add(cube);
-    //const baseBox = new TextureBoxNode('hci-logo.png', 'test_normal.jpg');
-    //sg.add(baseBox);
 
 
     // setup for rendering
@@ -97,10 +93,11 @@ window.addEventListener('load', () => {
         window.requestAnimationFrame(animate)
     );
 
+    //todo: Dienstag
     window.addEventListener('keydown', function (event) {
         switch (event.key) {
             case "ArrowUp":
-                animationNodes[0].toggleActive();
+                //animationNodes[0].toggleActive();
                 break;
         }
     });
