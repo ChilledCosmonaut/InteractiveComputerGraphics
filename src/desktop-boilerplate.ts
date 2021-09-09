@@ -21,10 +21,18 @@ import {RotationNode} from "./animation-node-rotation";
 import {DriverNode} from "./animation-node-driver";
 import {JumperNode} from "./animation-node-jumper";
 import Sphere from "./sphere";
+import RayVisitor from "./rayvisitor";
+
+const UseRasterizer = true
+const UseRaytracer = false
 
 window.addEventListener('load', () => {
-    const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
-    const gl = canvas.getContext("webgl2");
+    const canvasRaytracer = document.getElementById("raytracer") as HTMLCanvasElement;
+    const canvasRaster = document.getElementById("rasteriser") as HTMLCanvasElement;
+    const contextWebGl = canvasRaster.getContext("webgl2");
+    const context2D = canvasRaytracer.getContext("2d");
+
+    let useRenderer = UseRasterizer
 
     // construct scene graph
     //        SG
@@ -59,8 +67,9 @@ window.addEventListener('load', () => {
     gn0.add(groupNode3);
     const pyramid = new PyramidNode(new Vector(1,0,1,0));
     groupNode3.add(pyramid);
+
     // setup for rendering
-    const setupVisitor = new RasterSetupVisitor(gl);
+    const setupVisitor = new RasterSetupVisitor(contextWebGl);
     setupVisitor.setup(sg);
 
     let camera = {
@@ -68,20 +77,21 @@ window.addEventListener('load', () => {
         center: new Vector(0, 0, 0, 1),
         up: new Vector(0, 1, 0, 0),
         fovy: 60,
-        aspect: canvas.width / canvas.height,
+        aspect: canvasRaster.width / canvasRaster.height,
         near: 0.1,
         far: 100
     };
 
-    const phongShader = new Shader(gl,
+    const phongShader = new Shader(contextWebGl,
         phongVertexShader,
         phongFragmentShader
     );
-    const textureShader = new Shader(gl,
+    const textureShader = new Shader(contextWebGl,
         textureVertexShader,
         textureFragmentShader
     );
-    const visitor = new RasterVisitor(gl, phongShader, textureShader, setupVisitor.objects);
+    const visitor_raster = new RasterVisitor(contextWebGl, phongShader, textureShader, setupVisitor.objects);
+    const visitor_raytracer = new RayVisitor(context2D, 500, 500); //todo
 
     let animationRotationNode = new RotationNode(gn0, new Vector(0, 1, 0, 0));
     let animationDriverNode = new DriverNode(gn0);
@@ -97,7 +107,13 @@ window.addEventListener('load', () => {
 
     function animate(timestamp: number) {
         simulate(timestamp - lastTimestamp);
-        visitor.render(sg, camera, []);
+        //visitor_renderer.render(sg, camera, []);
+        if (useRenderer === UseRaytracer){
+            const camRt = { origin: new Vector(0, 2, 0, 1), width: 200, height:200, alpha: 0.5 }
+            visitor_raytracer.render(sg, camRt, []) //todo ???
+        } else {
+            visitor_raster.render(sg, camera, [])
+        }
         lastTimestamp = timestamp;
         window.requestAnimationFrame(animate);
     }
@@ -117,6 +133,20 @@ window.addEventListener('load', () => {
 
     function assignKeyToAction(event: KeyboardEvent, ispressed: boolean) {
         switch (event.key) {
+            case "r": //zwischen zwei Renderern wechseln
+                if(!ispressed) {
+                    break
+                }
+                useRenderer = !useRenderer;
+                if(useRenderer === UseRasterizer) {
+                    canvasRaytracer.style.opacity = '0'
+                    canvasRaster.style.opacity = '1'
+                } else {
+                    canvasRaster.style.opacity = '0'
+                    canvasRaytracer.style.opacity = '1'
+                }
+                console.log("r gedrückt")
+                break;
             case "q":
                 animationRotationNode.leftRotation = ispressed;
                 break;

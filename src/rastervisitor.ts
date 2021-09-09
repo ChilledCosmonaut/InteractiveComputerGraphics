@@ -34,6 +34,7 @@ export class RasterVisitor implements Visitor {
   // TODO declare instance variables her
   transformation: Array<Matrix>;
   inverseTransformation: Array<Matrix>;
+
   /**
    * Creates a new RasterVisitor
    * @param gl The 3D context to render to
