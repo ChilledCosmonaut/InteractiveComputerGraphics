@@ -32,15 +32,21 @@ window.addEventListener('load', async () => {
     const response = await fetch('../SpaceShip.obj');
     const text = await response.text();
 
-    // construct scene graph TODO :)
-    //        SG
+    // construct scene graph
+    //       T(SG)
     //         |
-    //    +-------------------+-----+-----------------------
-    //  T(gn0)               T(gn1)   T(gn3) = desktopNode   T(gnWorldCenter)
-    //    |                     |        |                        |
-    // desktopBox            R(gn2)   Pyramid                  Sphere
-    //                         |
-    //                        Sphere
+    //         +-------------------------------------------+ ... eine Szene zum Testen: siehe createEnvironment.ts
+    //    T(desktopNode)                                              T(gn4)(wo eine Kugel dran hängt...)
+    //          |
+    //   +----------+----------------+---------------------+----------------+
+    //   |          |                |                     |                |
+    //TextureBox  T(objTransl)      T(sphere1Tranl)    T(pyramidTransl)  T(boxTransl)
+    //              |                |       |                |                |
+    //            ObjNode         Sphere  R(sphereOrbit)     Pyramid          AABox
+    //                                       |
+    //                                   T(sphere2Translation)
+    //                                       |
+    //                                    Sphere
 
     const sg = new GroupNode(new Translation(new Vector(0, 0, 0, 0)));
 
@@ -81,11 +87,9 @@ window.addEventListener('load', async () => {
     const colourBox = new AABoxNode(new Vector(1,1,1,1));
     boxTranslation.add(colourBox);
 
-
     const gn4 = new GroupNode(new Translation(new Vector(5, -2, 0, 0)));
     sg.add(gn4);
     gn4.add(new SphereNode(new Vector(1, 0, 1, 0)));
-    //todo: moi: gnRandom.add(new SphereNode(new Vector(0.5, 0, 0, 0)));
 
     createEnvironment(sg);
 
@@ -114,6 +118,7 @@ window.addEventListener('load', async () => {
     const visitor = new RasterVisitor(gl, phongShader, textureShader, setupVisitor.objects);
 
     let animationRotationNode = new RotationNode(desktopNode, new Vector(0, 1, 0, 0));
+    let animationRotationNodeUp = new RotationNode(desktopNode, new Vector(1, 0, 0, 0,));//todo
     let ObjRotation = new RotationNode(objTranslation, new Vector(0,1,0,0))
     let animationDriverNode = new DriverNode(desktopNode);
     let animationJumperNode = new JumperNode(desktopNode);
@@ -163,20 +168,33 @@ window.addEventListener('load', async () => {
             //todo: Temp testing for camera.
             case "t":
                 cameraFreeFlight.pressed = ispressed;
-                console.log("t pressed")
                 break;
+
             case "j":
                 animationDriverNode.up = ispressed;
                 break;
             case "m":
                 animationDriverNode.down = ispressed;
                 break;
+        //gieren
             case "q":
                 animationRotationNode.leftRotation = ispressed;
+                animationRotationNode.axisToRotateAround = new Vector(0, 1, 0, 1)
                 break;
             case "e":
                 animationRotationNode.rightRotation = ispressed;
+                animationRotationNode.axisToRotateAround = new Vector(0, 1, 0, 1)
                 break;
+        //nicken
+            case "r":
+                animationRotationNode.upRotation = ispressed;
+                animationRotationNode.axisToRotateAround = new Vector(1, 0, 0, 0)
+                break;
+            case "f":
+                animationRotationNode.downRotation = ispressed;
+                animationRotationNode.axisToRotateAround = new Vector(1, 0, 0, 1)
+                break;
+
             case ' ':
                 animationJumperNode.isJumping = true;
                 break;

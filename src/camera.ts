@@ -35,7 +35,7 @@ export class CameraFreeFlight {
             this.camera.center = eye.add(globalDir)
 
             //console.log("Kameraposition: " + this.camera.eye)
-            //Testen des Kamera Up Vectors: ist der Up-Vector in Welt oder lokalen Koords?: todo
+            //Testen des Kamera Up Vectors: ist der Up-Vector in Welt oder lokalen Koords?:
             /*
             this.camera.eye = new Vector(0, this.y, 0, 1)
             this.y+=0.01
