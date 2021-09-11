@@ -12,90 +12,62 @@ import {
     RasterSetupVisitor
 } from './rastervisitor';
 import Shader from './shader';
-import {
-    RotationNode
-} from './animation-nodes';
 import phongVertexShader from './phong-vertex-perspective-shader.glsl';
 import phongFragmentShader from './phong-fragment-shader.glsl';
 import textureVertexShader from './texture-vertex-perspective-shader.glsl';
 import textureFragmentShader from './texture-fragment-shader.glsl';
 import { Rotation, Translation } from './transformation';
+import {RotationNode} from "./animation-node-rotation";
+import {DriverNode} from "./animation-node-driver";
+import {JumperNode} from "./animation-node-jumper";
 
 window.addEventListener('load', () => {
     const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
     const gl = canvas.getContext("webgl2");
 
-    // construct scene graph TODO :)
+    // construct scene graph
     //        SG
     //         |
-    //    +----------+-----+--------+
-    //  desktopBox     T(gn1)   T(dn1) = desktopNode
-    //              |
-    //       R(gn3)
-    //             |
-    //              Box
-    ///The array in which all the values are preserved, so they can be saved at any point in time.
-    let SAVE = Array.from(Array(16), () => new Array(4));
+    //    +----------+-----+-----------------------
+    //  T(gn0)     T(gn1)   T(gn3) = desktopNode
+    //    |           |        |
+    // desktopBox  R(gn2)   Pyramid
+    //                |
+    //             Sphere
 
-    SAVE [0] = [0, 0, -4, 0];
-    const sg = new GroupNode(new Translation(new Vector(SAVE [0] [0], SAVE [0] [1], SAVE [0] [2], SAVE [0] [3])));
-    SAVE [1] = [1, 1, 0, 0];
-    const desktopBox = new AABoxNode(new Vector(SAVE [1] [0],SAVE [1] [1],SAVE [1] [2],SAVE [1] [3]));
-    sg.add(desktopBox);
-    SAVE [2] = [0, 2, -5, 0];
-    const groupNode1 = new GroupNode(new Translation(new Vector(SAVE [2] [0], SAVE [2] [1], SAVE [2] [2], SAVE [2] [3])));
+    const sg = new GroupNode(new Translation(new Vector(0, 0, -4, 0)));
+
+    const gn0 = new GroupNode(new Translation(new Vector(.2, .2, -1, 0)))
+    sg.add(gn0);
+    const desktopBox = new TextureBoxNode('wood_texture.jpg', 'wood_normal.jpg');
+    gn0.add(desktopBox);
+
+    const groupNode1 = new GroupNode(new Translation(new Vector(0, 2, -5, 0)));
     sg.add(groupNode1);
-    SAVE [3] = [0, 0, 1, 0];
-    const groupNode2 = new GroupNode(new Rotation(new Vector(SAVE [3] [0], SAVE [3] [1], SAVE [3] [2], SAVE [3] [3]), 0));
+    const groupNode2 = new GroupNode(new Rotation(new Vector(0, 0, 1, 0), 0));
     groupNode1.add(groupNode2);
-    SAVE [4] = [1, 1, 0, 0];
-    const sphere = new SphereNode(new Vector(SAVE [4] [0],SAVE [4] [1],SAVE [4] [2],SAVE [4] [3]));
+    const sphere = new SphereNode(new Vector(1,1,0,0));
     groupNode2.add(sphere);
-    SAVE [14] = [6, 4, 2, 0];
-    const sphere2 = new SphereNode(new Vector(SAVE [4] [0],SAVE [4] [1],SAVE [4] [2],SAVE [4] [3]));
-    groupNode2.add(sphere2);
 
-    SAVE [5] = [0, -2, -5, 0];
-    const groupNode3 = new GroupNode(new Translation(new Vector(SAVE [5] [0],SAVE [5] [1], SAVE [5] [2], SAVE [5] [3])));
+    const groupNode3 = new GroupNode(new Translation(new Vector(2,0, -3, 0)));
     sg.add(groupNode3);
-    SAVE [6] = [0, 1, 1, 0];
-    const pyramid = new PyramidNode(new Vector(SAVE [6] [0],SAVE [6] [1],SAVE [6] [2],SAVE [6] [3]));
-    groupNode3.add(pyramid);
-
-
-    /*const gn1 = new GroupNode(new Translation(new Vector(-0.75, -0.75, -3, 0)));
-    sg.add(gn1);
-    const sphere = new SphereNode(new Vector(.8, .4, .1, 1))
-    gn1.add(sphere);
-    const gn2 = new GroupNode(new Translation(new Vector(.2, .2, -1, 0)));
-    sg.add(gn2);
-    const gn3 = new GroupNode(new Translation(new Vector(0, 0, 0, 0))); //TODO: Warum mit Translation statt Rotation?!
-    gn2.add(gn3);
-    //const cube = new TextureBoxNode('hci-logo.png');
-    //gn3.add(cube)
-    const dn1 = new GroupNode(new Translation(new Vector(.2,.2,-0.9,0)));
-    sg.add(dn1);
-    const baseBox = new AABoxNode(new Vector(1,1,1,0));
-    dn1.add(baseBox); */
+    const groupNode4 = new GroupNode(new Rotation(new Vector(0,0,1,0), Math.PI/4))
+    groupNode3.add(groupNode4);
+    const pyramid = new PyramidNode(new Vector(1,1,1,0));
+    groupNode4.add(pyramid);
 
     // setup for rendering
     const setupVisitor = new RasterSetupVisitor(gl);
     setupVisitor.setup(sg);
 
-    SAVE [7] = [0, 0, 1, 1];
-    SAVE [8] = [0, 0, 0, 1];
-    SAVE [9] = [0, 1, 0, 0];
-    SAVE [10] = [60, 0, 0, 0];
-    SAVE [11] = [0.1, 0, 0, 0];
-    SAVE [12] = [100, 0, 0, 0];
     let camera = {
-        eye: new Vector(SAVE [7] [0], SAVE [7] [1], SAVE [7] [2], SAVE [7] [3]),
-        center: new Vector(SAVE [8] [0], SAVE [8] [1], SAVE [8] [2], SAVE [8] [3]),
-        up: new Vector(SAVE [9] [0], SAVE [9] [1], SAVE [9] [2], SAVE [9] [3]),
-        fovy: SAVE [10] [0],
+        eye: new Vector(0, 3, 4, 1),
+        center: new Vector(0, 0, 0, 1),
+        up: new Vector(0, 1, 0, 0),
+        fovy: 60,
         aspect: canvas.width / canvas.height,
-        near: SAVE [11] [0],
-        far: SAVE [12] [0]
+        near: 0.1,
+        far: 100
     };
 
     const phongShader = new Shader(gl,
@@ -108,20 +80,17 @@ window.addEventListener('load', () => {
     );
     const visitor = new RasterVisitor(gl, phongShader, textureShader, setupVisitor.objects);
 
-    /*let animationNodes = [
-        //new RotationNode(sg, new Vector(0, 0, 1, 0)),
-        //new RotationNode(gn3, new Vector(0, 1, 0, 0))
-
-    ];*/
+    let animationRotationNode = new RotationNode(gn0, new Vector(0, 1, 0, 0));
+    let animationDriverNode = new DriverNode(gn0);
+    let animationJumperNode = new JumperNode(gn0);
 
     function simulate(deltaT: number) {
-        /*for (let animationNode of animationNodes) {
-            animationNode.simulate(deltaT);
-        }*/
+        animationDriverNode.simulate(deltaT);
+        animationRotationNode.simulate(deltaT)
+        animationJumperNode.simulate(deltaT);
     }
 
-    SAVE [13] = [performance.now(), 0, 0, 0];
-    let lastTimestamp = SAVE [13] [0];
+    let lastTimestamp = performance.now();
 
     function animate(timestamp: number) {
         simulate(timestamp - lastTimestamp);
@@ -135,13 +104,39 @@ window.addEventListener('load', () => {
         window.requestAnimationFrame(animate)
     );
 
-    /*window.addEventListener('keydown', function (event) {
+    window.addEventListener('keydown', function (event) {
+        assignKeyToAction(event, true);
+    });
+
+    window.addEventListener('keyup', function (event) {
+        assignKeyToAction(event, false);
+    });
+
+    function assignKeyToAction(event: KeyboardEvent, ispressed: boolean) {
         switch (event.key) {
-            case "ArrowUp":
-                animationNodes[0].toggleActive();
+            case "q":
+                animationRotationNode.leftRotation = ispressed;
+                break;
+            case "e":
+                animationRotationNode.rightRotation = ispressed;
+                break;
+            case ' ':
+                animationJumperNode.isJumping = true;
+                break;
+            case "w":
+                animationDriverNode.forward = ispressed;
+                break;
+            case "a":
+                animationDriverNode.left = ispressed
+                break;
+            case "s":
+                animationDriverNode.backward = ispressed;
+                break;
+            case "d":
+                animationDriverNode.right = ispressed;
                 break;
         }
-    });*/
+    });
 
     let jsonContent: any;
     jsonContent = JSON.stringify(SAVE);
