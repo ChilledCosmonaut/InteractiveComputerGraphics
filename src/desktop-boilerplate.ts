@@ -17,11 +17,13 @@ import phongVertexShader from './phong-vertex-perspective-shader.glsl';
 import phongFragmentShader from './phong-fragment-shader.glsl';
 import textureVertexShader from './texture-vertex-perspective-shader.glsl';
 import textureFragmentShader from './texture-fragment-shader.glsl';
-import { Rotation, Translation } from './transformation';
+import {Rotation, Scaling, Translation} from './transformation';
 import {RotationNode} from "./animation-node-rotation";
 import {DriverNode} from "./animation-node-driver";
 import {JumperNode} from "./animation-node-jumper";
-import Sphere from "./sphere";
+import {Camera, CameraFreeFlight} from "./camera";
+import {createEnvironment} from "./createEnvironment";
+import MatrixHelper from "./matrix-helper";
 
 window.addEventListener('load', async () => {
     const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
@@ -30,6 +32,8 @@ window.addEventListener('load', async () => {
     const response = await fetch('../SpaceShip.obj');
     const text = await response.text();
 
+    // construct scene graph
+    //       T(SG)
     let ambientFactor: number = 0;
     let diffuseFactor: number = 0;
     let specularFactor: number = 0;
@@ -37,20 +41,27 @@ window.addEventListener('load', async () => {
     // construct scene graph TODO :)
     //        SG
     //         |
-    //    +----------+-----+-----------------------
-    //  T(gn0)     T(gn1)   T(gn3) = desktopNode
-    //    |           |        |
-    // desktopBox  R(gn2)   Pyramid
-    //                |
-    //             Sphere
+    //         +-------------------------------------------+ ... eine Szene zum Testen: siehe createEnvironment.ts
+    //    T(desktopNode)                                              T(gn4)(wo eine Kugel dran hängt...)
+    //          |
+    //   +----------+----------------+---------------------+----------------+
+    //   |          |                |                     |                |
+    //TextureBox  T(objTransl)      T(sphere1Tranl)    T(pyramidTransl)  T(boxTransl)
+    //              |                |       |                |                |
+    //            ObjNode         Sphere  R(sphereOrbit)     Pyramid          AABox
+    //                                       |
+    //                                   T(sphere2Translation)
+    //                                       |
+    //                                    Sphere
 
     const sg = new GroupNode(new Translation(new Vector(0, 0, 0, 0)));
 
     //Desktop base
-    const desktopNode = new GroupNode(new Translation(new Vector(0, 0, -10, 0)))
+    const desktopNode = new GroupNode(new Translation(new Vector(0, 0, 0, 0)))
     sg.add(desktopNode);
-    const desktopBox = new TextureBoxNode('wood_texture.jpg', 'wood_normal.jpg', 4);
-    desktopNode.add(desktopBox);
+
+    const dB = new TextureBoxNode('wood_texture.jpg', 'wood_normal.jpg', 4);
+    desktopNode.add(dB);
 
     //Obj Nodes
     const objTranslation = new GroupNode(new Translation(new Vector(0, 0, 5, 0)));
@@ -82,13 +93,18 @@ window.addEventListener('load', async () => {
     const colourBox = new AABoxNode(new Vector(1,1,1,1));
     boxTranslation.add(colourBox);
 
+    const gn4 = new GroupNode(new Translation(new Vector(5, -2, 0, 0)));
+    sg.add(gn4);
+    gn4.add(new SphereNode(new Vector(1, 0, 1, 0)));
+
+    createEnvironment(sg);
 
     // setup for rendering
     const setupVisitor = new RasterSetupVisitor(gl);
     setupVisitor.setup(sg);
 
     let camera = {
-        eye: new Vector(0, 3, 4, 1),
+        eye: new Vector(0, 0, 1, 1),
         center: new Vector(0, 0, 0, 1),
         up: new Vector(0, 1, 0, 0),
         fovy: 60,
@@ -113,11 +129,20 @@ window.addEventListener('load', async () => {
     let animationDriverNode = new DriverNode(desktopNode);
     let animationJumperNode = new JumperNode(desktopNode);
 
+    let cameraFreeFlight = new CameraFreeFlight(camera, desktopNode);
+
     function simulate(deltaT: number) {
         animationDriverNode.simulate(deltaT);
         animationRotationNode.simulate(deltaT);
         SphereOrbit.simulate(deltaT);
         animationJumperNode.simulate(deltaT);
+        cameraFreeFlight.simulate(deltaT)
+
+        /*console.log(vectorToString("cam", camera.eye));
+        console.log(vectorToString("gn0", MatrixHelper.getPositionOfMatrix(gn0.transform.getMatrix())));
+        function vectorToString(text: string, v: Vector) {
+            console.log(text + ": " + v.x + ", " + v.y + ", " + v.z + ", " + v.w)
+        }*/
     }
 
     let lastTimestamp = performance.now();
@@ -164,12 +189,36 @@ window.addEventListener('load', async () => {
 
     function assignKeyToAction(event: KeyboardEvent, ispressed: boolean) {
         switch (event.key) {
+            //todo: Temp testing for camera.
+            case "t":
+                cameraFreeFlight.pressed = ispressed;
+                break;
+
+            case "j":
+                animationDriverNode.up = ispressed;
+                break;
+            case "m":
+                animationDriverNode.down = ispressed;
+                break;
+        //gieren
             case "q":
                 animationRotationNode.leftRotation = ispressed;
+                animationRotationNode.axisToRotateAround = new Vector(0, 1, 0, 1)
                 break;
             case "e":
                 animationRotationNode.rightRotation = ispressed;
+                animationRotationNode.axisToRotateAround = new Vector(0, 1, 0, 1)
                 break;
+        //nicken
+            case "r":
+                animationRotationNode.upRotation = ispressed;
+                animationRotationNode.axisToRotateAround = new Vector(1, 0, 0, 0)
+                break;
+            case "f":
+                animationRotationNode.downRotation = ispressed;
+                animationRotationNode.axisToRotateAround = new Vector(1, 0, 0, 1)
+                break;
+
             case ' ':
                 animationJumperNode.isJumping = true;
                 break;

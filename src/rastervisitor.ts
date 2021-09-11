@@ -12,8 +12,10 @@ import {
   TextureBoxNode, PyramidNode, ObjNode
 } from './nodes';
 import Shader from './shader';
+import {Camera} from "./camera";
 
-interface Camera {
+/*
+* interface Camera {
   eye: Vector,
   center: Vector,
   up: Vector,
@@ -22,6 +24,7 @@ interface Camera {
   near: number,
   far: number
 }
+* */
 
 interface Renderable {
   render(shader: Shader): void;
@@ -278,7 +281,7 @@ export class RasterSetupVisitor {
 
   /**
    * Creates a new RasterSetupVisitor
-   * @param context The 3D context in which to create buffers
+   * @param context The 3D context in which to create buffers //todo?
    */
   constructor(private gl: WebGL2RenderingContext) {
     this.objects = new WeakMap();
