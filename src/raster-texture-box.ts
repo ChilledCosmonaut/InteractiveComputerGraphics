@@ -55,8 +55,6 @@ export default class RasterTextureBox {
     ) {
         const mi = minPoint.mul(scale);
         const ma = maxPoint.mul(scale);
-        console.log(mi);
-        console.log(ma);
         let vertices = [
             // front
             mi.x, mi.y, ma.z, ma.x, mi.y, ma.z, ma.x, ma.y, ma.z,

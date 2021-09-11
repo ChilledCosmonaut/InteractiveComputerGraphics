@@ -1,6 +1,7 @@
 import Vector from './vector';
 import Shader from './shader';
 import Matrix from "./matrix";
+import {createIndexedColours, createIndexedVectors} from "./indexer";
 
 /**
  * A class creating buffers for an axis aligned box to render it with WebGL
@@ -42,9 +43,10 @@ export default class RasterObjObject {
         private objString: string,
         private scale: number) {
         this.gl = gl;
-        let vertices: Array<number> = Array();
-        let normals: Array<number> = Array();
+        let vertexStorage: Array<number> = Array();
         let indices: Array<number> = Array();
+        let normalStorage: Array<number> = Array();
+        let normalIndices: Array<number> = Array();
 
         const lines: Array<string> = objString.split('\n');
 
@@ -56,54 +58,83 @@ export default class RasterObjObject {
             const parts = line.split(/\s+/);
             if(parts[0] == 'v'){
                 for (let j: number = 1; j < parts.length; j++){
-                    vertices.push(parseFloat(parts[j]) * scale);
+                    vertexStorage.push(parseFloat(parts[j]) * scale);
                 }
             }else if(parts[0] == 'vn'){
                 for (let j: number = 1; j < parts.length; j++){
-                    normals.push(parseFloat(parts[j]));
+                    normalStorage.push(parseFloat(parts[j]));
                 }
             }else if(parts[0] == 'f'){
                 for (let j: number = 1; j < parts.length - 2; ++j){
+
+                    //vertex index
                     let index = parseFloat(parts[1].split('/')[0])
                     if (index < 0) {
-                        let currentMaxVertex = Math.floor(vertices.length / 3);
+                        console.log("Index negative")
+                        let currentMaxVertex = Math.floor(vertexStorage.length / 3);
                         index = currentMaxVertex + index;
                     }
                     indices.push(index - 1);
-                    index = parseFloat(parts[j + 1].split('/')[0])
-                    if (index < 0) {
-                        let currentMaxVertex = Math.floor(vertices.length / 3);
-                        index = currentMaxVertex + index;
+                    for(let vectorIndex = 1; vectorIndex < 3; vectorIndex++){
+                        index = parseFloat(parts[j + vectorIndex].split('/')[0])
+                        if (index < 0) {
+                            console.log("Index negative")
+                            let currentMaxVertex = Math.floor(vertexStorage.length / 3);
+                            index = currentMaxVertex + index;
+                        }
+                        indices.push(index - 1);
                     }
-                    indices.push(index - 1);
-                    index = parseFloat(parts[j + 2].split('/')[0])
-                    if (index < 0) {
-                        let currentMaxVertex = Math.floor(vertices.length / 3);
-                        index = currentMaxVertex + index;
+
+                    //normal index
+                    let normalIndex = parseFloat(parts[1].split('/')[2])
+                    if (normalIndex < 0) {
+                        console.log("Normal negative")
+                        let currentMaxNormal = Math.floor(normalStorage.length / 3);
+                        normalIndex = currentMaxNormal + normalIndex;
                     }
-                    indices.push(index - 1);
+                    normalIndices.push(normalIndex - 1);
+                    for(let normalCounter = 1; normalCounter < 3; normalCounter++){
+                        normalIndex = parseFloat(parts[j + normalCounter].split('/')[2])
+                        if (normalIndex < 0) {
+                            console.log("Normal negative")
+                            let currentMaxNormal = Math.floor(normalStorage.length / 3);
+                            normalIndex = currentMaxNormal + normalIndex;
+                        }
+                        normalIndices.push(normalIndex - 1);
+                    }
                 }
             }
         }
 
-        let colors = Array(Math.floor(vertices.length/3) * 4);
+        let colors = Array();
 
-        for (let i: number = 0; i < colors.length; i = i + 4){
-            colors[i] = Math.random();
-            colors[i+1] = Math.random();
-            colors[i+2] = Math.random();
-            colors[i+3] = 1;
+        for (let i: number = 0; i < indices.length; i += 3){
+            let r = Math.random();
+            let g = Math.random();
+            let b = Math.random();
+            for (let j = 0; j < 3; j++) {
+                colors.push(r);
+                colors.push(g);
+                colors.push(b);
+                colors.push(1);
+            }
         }
+
+        let vertices = createIndexedVectors(vertexStorage, indices);
+        console.log(vertices.length / 3);
+        console.log(indices.length)
+        //let colours = createIndexedColours(colorStorage, colorIndices);
+        let normals = createIndexedVectors(normalStorage, normalIndices);
 
         const vertexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         this.vertexBuffer = vertexBuffer;
-        const indexBuffer = gl.createBuffer();
+        /*const indexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-        this.indexBuffer = indexBuffer;
-        this.elements = indices.length;
+        this.indexBuffer = indexBuffer;*/
+        this.elements = vertices.length / 3;
 
         // TODO create and fill a buffer for colours *
         const colorBuffer = gl.createBuffer();
@@ -138,11 +169,13 @@ export default class RasterObjObject {
         this.gl.enableVertexAttribArray(normalLocation);
         this.gl.vertexAttribPointer(normalLocation, 3, this.gl.FLOAT, false , 0, 0);
 
-        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-        this.gl.drawElements(this.gl.TRIANGLES, this.elements, this.gl.UNSIGNED_SHORT, 0);
+        //this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+        //this.gl.drawElements(this.gl.TRIANGLES, this.elements, this.gl.UNSIGNED_SHORT, 0);
+        this.gl.drawArrays(this.gl.TRIANGLES, 0, this.elements);
 
         this.gl.disableVertexAttribArray(positionLocation);
         // TODO disable color vertex attrib array *
-        this.gl.disableVertexAttribArray(colorLocation);
+        //this.gl.disableVertexAttribArray(colorLocation);
+        this.gl.disableVertexAttribArray(normalLocation);
     }
 }

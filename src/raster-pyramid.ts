@@ -1,6 +1,7 @@
 import Vector from './vector';
 import Shader from './shader';
 import Matrix from "./matrix";
+import {createIndexedVectors} from "./indexer";
 
 /**
  * A class creating buffers for an axis aligned box to render it with WebGL
@@ -45,7 +46,7 @@ export default class RasterPyramid {
         const ma = maxPoint;
         const peak = this.peakFromHeight(mi, ma, height);
 
-        let vertices = [
+        let vertexStorage = [
             mi.x, mi.y, mi.z,
             ma.x, mi.y, mi.z,
             ma.x, ma.y, ma.z,
@@ -64,37 +65,54 @@ export default class RasterPyramid {
             // bottom
             0, 1, 2, 0, 2, 3
         ];
-        let colors = [ //TODO?
+        /*let colors = [ //TODO?
             0, 0, 0.5, 1,
             0, 0, 0.5, 1,
             0, 0, 0.5, 1,
             0, 0, 0.5, 1,
             0, 0, 0.5, 1
-        ];
+        ];*/
+        let colors = Array();
+
+        for (let i: number = 0; i < indices.length; i += 3){
+            let r = Math.random();
+            let g = Math.random();
+            let b = Math.random();
+            for (let j = 0; j < 3; j++) {
+                colors.push(r);
+                colors.push(g);
+                colors.push(b);
+                colors.push(1);
+            }
+        }
+
+        let vertices = createIndexedVectors(vertexStorage, indices);
 
         let normals = [];
 
-        for (let i = 0; i < vertices.length; i = i + 3){
-            let normal: Vector = this.CalculateNormalsForTriangle(indices[i], indices[i+1], indices[i+2], vertices).normalize();
-            console.log(normal)
-            normals.push(normal.x);
-            normals.push(normal.y);
-            normals.push(normal.z);
+        for (let i = 0; i < vertices.length; i += 9){
+            let normal: Vector = this.CalculateNormalsForTriangle(i, i+3, i+6, vertices).normalize();
+            console.log(normal);
+            for (let j = 0; j < 3; j++) {
+                normals.push(normal.x);
+                normals.push(normal.y);
+                normals.push(normal.z);
+            }
         }
 
         const vertexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
         this.vertexBuffer = vertexBuffer;
-        const indexBuffer = gl.createBuffer();
+        /*const indexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
-        this.indexBuffer = indexBuffer;
+        this.indexBuffer = indexBuffer;*/
         const normalBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, normalBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(normals), this.gl.STATIC_DRAW);
         this.normalBuffer = normalBuffer;
-        this.elements = indices.length;
+        this.elements = vertices.length / 3;
 
         // TODO create and fill a buffer for colours *
         const colorBuffer = gl.createBuffer();
@@ -124,8 +142,9 @@ export default class RasterPyramid {
         this.gl.enableVertexAttribArray(normalLocation);
         this.gl.vertexAttribPointer(normalLocation, 3, this.gl.FLOAT, false , 0, 0);
 
-        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
-        this.gl.drawElements(this.gl.TRIANGLES, this.elements, this.gl.UNSIGNED_SHORT, 0);
+        //this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+        //this.gl.drawElements(this.gl.TRIANGLES, this.elements, this.gl.UNSIGNED_SHORT, 0);
+        this.gl.drawArrays(this.gl.TRIANGLES, 0, this.elements);
 
         this.gl.disableVertexAttribArray(positionLocation);
         // TODO disable color vertex attrib array *
@@ -140,9 +159,9 @@ export default class RasterPyramid {
     }
 
     CalculateNormalsForTriangle(index1: number, index2: number, index3: number, vertices: Array<number>): Vector {
-        let vertex1: Vector = new Vector(vertices[index1*3],vertices[index1*3 + 1],vertices[index1*3 + 2], 0);
-        let vertex2: Vector = new Vector(vertices[index2*3],vertices[index2*3 + 1],vertices[index2*3 + 2], 0);
-        let vertex3: Vector = new Vector(vertices[index3*3],vertices[index3*3 + 1],vertices[index3*3 + 2], 0);
+        let vertex1: Vector = new Vector(vertices[index1],vertices[index1 + 1],vertices[index1 + 2], 0);
+        let vertex2: Vector = new Vector(vertices[index2],vertices[index2 + 1],vertices[index2 + 2], 0);
+        let vertex3: Vector = new Vector(vertices[index3],vertices[index3 + 1],vertices[index3 + 2], 0);
         let u : Vector = vertex2.sub(vertex1);
         let v: Vector = vertex3.sub(vertex1);
         return u.cross(v);

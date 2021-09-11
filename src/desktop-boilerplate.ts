@@ -108,14 +108,15 @@ window.addEventListener('load', async () => {
     const visitor = new RasterVisitor(gl, phongShader, textureShader, setupVisitor.objects);
 
     let animationRotationNode = new RotationNode(desktopNode, new Vector(0, 1, 0, 0));
-    let ObjRotation = new RotationNode(objTranslation, new Vector(0,1,0,0))
+    let SphereOrbit = new RotationNode(sphereOrbit, new Vector(0,1,0,0))
+    SphereOrbit.rightRotation = true;
     let animationDriverNode = new DriverNode(desktopNode);
     let animationJumperNode = new JumperNode(desktopNode);
 
     function simulate(deltaT: number) {
         animationDriverNode.simulate(deltaT);
         animationRotationNode.simulate(deltaT);
-        ObjRotation.simulate(deltaT);
+        SphereOrbit.simulate(deltaT);
         animationJumperNode.simulate(deltaT);
     }
 
