@@ -31,24 +31,8 @@
                 <img class="figure-img mx-auto d-block rounded" src="animation-finished.png">
                 <figcaption class="figure-caption text-center">Reference image</figcaption>
             </figure>
-            <button onclick="saveFile()">Save</button>
-            <script>
-
-            </script>
+            <button id ="saveButton">Save</button>
             <input onchange="readFile(this)" type="file">
-            <script>
-                function readFile(input) {
-                    let file = input.files[0];
-                    let fileReader = new FileReader();
-                    fileReader.readAsText(file);
-                    fileReader.onload = function() {
-                        alert(fileReader.result);
-                    };
-                    fileReader.onerror = function() {
-                        alert(fileReader.error);
-                    };
-                }
-            </script>
         </div>
     </div>
 </body>
