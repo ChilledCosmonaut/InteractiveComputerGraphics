@@ -46,7 +46,7 @@ window.addEventListener('load', async () => {
     //          |
     //   +----------+----------------+---------------------+----------------+
     //   |          |                |                     |                |
-    //TextureBox  T(objTransl)      T(sphere1Tranl)    T(pyramidTransl)  T(boxTransl)
+    //TextureBox  T(objTransl)      T(sphere1Transl)    T(pyramidTransl)  T(boxTransl)
     //              |                |       |                |                |
     //            ObjNode         Sphere  R(sphereOrbit)     Pyramid          AABox
     //                                       |
