@@ -9,10 +9,11 @@ import Visitor from './visitor';
 import {
   Node, GroupNode,
   SphereNode, AABoxNode,
-  TextureBoxNode, PyramidNode, ObjNode
+  TextureBoxNode, PyramidNode, ObjNode, LightNode
 } from './nodes';
 import Shader from './shader';
 import {Camera} from "./camera";
+import LightSource from "./lightSource";
 
 /*
 * interface Camera {
@@ -38,6 +39,7 @@ export class RasterVisitor implements Visitor {
   // TODO declare instance variables her
   transformation: Array<Matrix>;
   inverseTransformation: Array<Matrix>;
+  lightPositions: Array<Vector>;
 
   ambientFactor: number;
   diffuseFactor: number;
@@ -67,6 +69,9 @@ export class RasterVisitor implements Visitor {
    * @param rootNode The root node of the Scenegraph
    * @param camera The camera used
    * @param lightPositions The light light positions
+   * @param ambientFactor
+   * @param diffuseFactor
+   * @param specularFactor
    */
   render(
     rootNode: Node,
@@ -79,6 +84,16 @@ export class RasterVisitor implements Visitor {
     this.ambientFactor = ambientFactor;
     this.diffuseFactor = diffuseFactor;
     this.specularFactor = specularFactor;
+
+    this.shader.getUniformFloat("ambientFactor").set(this.ambientFactor);
+    this.shader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
+    this.shader.getUniformFloat("specularFactor").set(this.specularFactor);
+    this.textureshader.getUniformFloat("ambientFactor").set(this.ambientFactor);
+    this.textureshader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
+    this.textureshader.getUniformFloat("specularFactor").set(this.specularFactor);
+
+    this.lightPositions = new Array<Vector>();
+
     // clear
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
@@ -149,9 +164,6 @@ export class RasterVisitor implements Visitor {
     let fromWorld = this.inverseTransformation[this.inverseTransformation.length - 1];
     // TODO Calculate the model matrix for the sphere*
     shader.getUniformMatrix("M").set(toWorld);
-    shader.getUniformFloat("ambientFactor").set(this.ambientFactor);
-    shader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
-    shader.getUniformFloat("specularFactor").set(this.specularFactor);
 
     const V = shader.getUniformMatrix("V");
     if (V && this.lookat) {
@@ -180,9 +192,6 @@ export class RasterVisitor implements Visitor {
     let toWorld = this.transformation[this.transformation.length - 1];
     // TODO Calculate the model matrix for the box
     shader.getUniformMatrix("M").set(toWorld);
-    shader.getUniformFloat("ambientFactor").set(this.ambientFactor);
-    shader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
-    shader.getUniformFloat("specularFactor").set(this.specularFactor);
     let V = shader.getUniformMatrix("V");
     if (V && this.lookat) {
       V.set(this.lookat);
@@ -206,9 +215,6 @@ export class RasterVisitor implements Visitor {
     let toWorld = this.transformation[this.transformation.length - 1];
     // TODO Calculate the model matrix for the box
     shader.getUniformMatrix("M").set(toWorld);
-    shader.getUniformFloat("ambientFactor").set(this.ambientFactor);
-    shader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
-    shader.getUniformFloat("specularFactor").set(this.specularFactor);
     let V = shader.getUniformMatrix("V");
     if (V && this.lookat) {
       V.set(this.lookat);
@@ -232,9 +238,6 @@ export class RasterVisitor implements Visitor {
     let toWorld = this.transformation[this.transformation.length - 1];
     // TODO calculate the model matrix for the box
     shader.getUniformMatrix("M").set(toWorld);
-    shader.getUniformFloat("ambientFactor").set(this.ambientFactor);
-    shader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
-    shader.getUniformFloat("specularFactor").set(this.specularFactor);
     let P = shader.getUniformMatrix("P");
     if (P && this.perspective) {
       P.set(this.perspective);
@@ -255,9 +258,6 @@ export class RasterVisitor implements Visitor {
     let toWorld = this.transformation[this.transformation.length - 1];
     // TODO calculate the model matrix for the box
     shader.getUniformMatrix("M").set(toWorld);
-    shader.getUniformFloat("ambientFactor").set(this.ambientFactor);
-    shader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
-    shader.getUniformFloat("specularFactor").set(this.specularFactor);
     let P = shader.getUniformMatrix("P");
     if (P && this.perspective) {
       P.set(this.perspective);
@@ -265,6 +265,34 @@ export class RasterVisitor implements Visitor {
     shader.getUniformMatrix("V").set(this.lookat);
 
     this.renderables.get(node).render(shader);
+  }
+
+  visitLightNode(node: LightNode) {
+    let position = new Vector(0,0,0,1);
+    let toWorld = this.transformation[this.transformation.length - 1];
+    // TODO calculate the model matrix for the box
+    position = toWorld.mulVec(position);
+    if (this.perspective) {
+      position = this.perspective.mulVec(position);
+    }
+    position = this.lookat.mulVec(position);
+    //console.log(position);
+    this.lightPositions.push(position);
+    this.updateLightArray();
+  }
+
+  updateLightArray(){
+    let lightPositions = new Array<number>();
+    for (let lightCounter = 0; lightCounter < this.lightPositions.length; lightCounter++){
+      lightPositions.push(this.lightPositions[lightCounter].x);
+      lightPositions.push(this.lightPositions[lightCounter].y);
+      lightPositions.push(this.lightPositions[lightCounter].z);
+      lightPositions.push(1);
+    }
+    let colorLightPositions = this.gl.getUniformLocation(this.shader.shaderProgram,'lightingLocation');
+    this.gl.uniform4fv(colorLightPositions, lightPositions);
+    let textureLightPositions = this.gl.getUniformLocation(this.textureshader.shaderProgram,'lightingLocation');
+    this.gl.uniform4fv(textureLightPositions, lightPositions);
   }
 }
 
@@ -380,6 +408,17 @@ export class RasterSetupVisitor {
             this.gl,
             node.objString,
             node.scale
+        )
+    );
+  }
+
+  visitLightNode(node: LightNode) {
+    this.objects.set(
+        node,
+        new LightSource(
+            this.gl,
+            new Vector(0,0,0,1),
+            node.Colour
         )
     );
   }
