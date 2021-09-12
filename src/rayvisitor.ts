@@ -98,7 +98,7 @@ export default class RayVisitor implements Visitor {
             }
 
             color = colorFromDistance(this.intersection.t);
-            // -> ein Balken/Teil der Sphere wird schwarz... dh. intersection.t gibt 0 zurück
+            // -> ein Balken/Teil der Sphere wird rot... dh. intersection.t gibt 0 zurück
             data[4 * (width * y + x) + 0] = color.r * 255;
             data[4 * (width * y + x) + 1] = color.g * 255;
             data[4 * (width * y + x) + 2] = color.b * 255;
