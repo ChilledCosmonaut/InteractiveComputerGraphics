@@ -112,7 +112,7 @@ window.addEventListener('load', () => {
         simulate(timestamp - lastTimestamp);
         if (useRenderer === UseRaytracer){
             //todo!!!!!!!
-            const camRt = { origin: new Vector(0, 2, 0, 1), width: 500, height:500, alpha: Math.PI / 3 }
+            const camRt = { origin: new Vector(0, 0, 0, 1), width: 500, height:500, alpha: Math.PI / 3 }
             visitor_raytracer.render(sg, camRt, [new Vector(2, 1, 2, 1)])
         } else {
             visitor_raster.render(sg, camera, [])
