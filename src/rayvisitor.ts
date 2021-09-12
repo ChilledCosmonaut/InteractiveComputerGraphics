@@ -78,13 +78,27 @@ export default class RayVisitor implements Visitor {
         rootNode.accept(this);
 
         if (this.intersection) {
-          if (!this.intersectionColor) {
+          if (!this.intersectionColor) { //todo: steht für notNull?
             data[4 * (width * y + x) + 0] = 0;
             data[4 * (width * y + x) + 1] = 0;
             data[4 * (width * y + x) + 2] = 0;
             data[4 * (width * y + x) + 3] = 255;
           } else {
-            let color = phong(this.intersectionColor, this.intersection, lightPositions, 10, camera.origin);
+            let color;
+            //color = phong(this.intersectionColor, this.intersection, lightPositions, 10, camera.origin);
+            //todo: Testen
+
+            const colorFromDistance = (t: number) => {
+              if(isNaN(t)) {return new Vector(255,0,255,255)}
+              if(typeof t !== 'number') {return new Vector(0,255,255,255)}
+              t*=0.02
+              if(t<0) {return new Vector(255,0,0,255)}
+              if(t>255) {return new Vector(255, 255, 0, 255)}
+              return new Vector(t, t, t, 255)
+            }
+
+            color = colorFromDistance(this.intersection.t);
+            // -> ein Balken/Teil der Sphere wird schwarz... dh. intersection.t gibt 0 zurück
             data[4 * (width * y + x) + 0] = color.r * 255;
             data[4 * (width * y + x) + 1] = color.g * 255;
             data[4 * (width * y + x) + 2] = color.b * 255;

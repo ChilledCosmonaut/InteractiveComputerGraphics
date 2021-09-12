@@ -24,7 +24,7 @@ export default class Ray {
     camera: { origin: Vector, width: number, height: number, alpha: number }
   ): Ray {
     let origin = camera.origin
-    let direction: Vector = new Vector( //todo
+    let direction: Vector = new Vector( //todo !!!!!!!!!!!!!!!!!!!!
         x - (camera.width-1)/2,
         (camera.height-1)/2 - y,
         -((camera.width/2)/Math.tan(camera.alpha/2)),

@@ -60,9 +60,9 @@ window.addEventListener('load', () => {
     const sphere = new SphereNode(new Vector(1,1,0,0));
     groupNode2.add(sphere);
 
-    const groupNode4 = new GroupNode(new Translation(new Vector(0, 2, 0, 0)));
+    const groupNode4 = new GroupNode(new Translation(new Vector(0, 3, -2, 0)));
     gn0.add(groupNode4);
-    const sphere2 = new SphereNode(new Vector(1,0,1,0));
+    const sphere2 = new SphereNode(new Vector(1,0,1,0));//lila
     groupNode4.add(sphere2);
 
     const groupNode3 = new GroupNode(new Translation(new Vector(2,0, -3, 0)));
@@ -76,7 +76,6 @@ window.addEventListener('load', () => {
 
 
     let camera = {
-    //eye: new Vector(0, 3, 4, 1),
         eye: new Vector(0, 0, 0, 1),
         center: new Vector(0, 0, -1,1),
         up: new Vector(0, 1, 0, 0),
@@ -119,7 +118,7 @@ window.addEventListener('load', () => {
             visitor_raster.render(sg, camera, [])
         }
         lastTimestamp = timestamp;
-        window.requestAnimationFrame(animate);!1
+        window.requestAnimationFrame(animate);
     }
     Promise.all(
         [phongShader.load(), textureShader.load()]
