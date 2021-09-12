@@ -33,6 +33,8 @@ export default class RayVisitor implements Visitor {
   ray: Ray;
   transformation: Array<Matrix>;
   inverseTransformation: Array<Matrix>;
+  lightPositions: Array<Vector>;
+  lightSourceCounter: number;
 
   /**
    * Creates a new RayVisitor
@@ -62,12 +64,14 @@ export default class RayVisitor implements Visitor {
     // clear
     let data = this.imageData.data;
     data.fill(0);
+    this.lightPositions = new Array<Vector>(8);
 
     // raytrace
     const width = this.imageData.width;
     const height = this.imageData.height;
     for (let x = 0; x < width; x++) {
       for (let y = 0; y < height; y++) {
+        this.lightSourceCounter = 0;
         this.ray = Ray.makeRay(x, y, camera);
         this.inverseTransformation = new Array<Matrix>();
         this.inverseTransformation.push(Matrix.identity());
@@ -76,7 +80,7 @@ export default class RayVisitor implements Visitor {
 
         this.intersection = null;
         rootNode.accept(this);
-
+        //console.log(this.lightPositions.size)
         if (this.intersection) {
           if (!this.intersectionColor) {
             data[4 * (width * y + x) + 0] = 0;
@@ -84,7 +88,7 @@ export default class RayVisitor implements Visitor {
             data[4 * (width * y + x) + 2] = 0;
             data[4 * (width * y + x) + 3] = 255;
           } else {
-            let color = phong(this.intersectionColor, this.intersection, lightPositions, 10, camera.origin);
+            let color = phong(this.intersectionColor, this.intersection, this.lightPositions, 10, camera.origin);
             data[4 * (width * y + x) + 0] = color.r * 255;
             data[4 * (width * y + x) + 1] = color.g * 255;
             data[4 * (width * y + x) + 2] = color.b * 255;
@@ -155,7 +159,7 @@ export default class RayVisitor implements Visitor {
       const intersectionPointWorld = toWorld.mulVec(intersection.point);
       const intersectionNormalWorld = toWorld.mulVec(intersection.normal).normalize();
       intersection = new Intersection(
-        (intersectionPointWorld.x - ray.origin.x) / ray.direction.x,
+        (intersectionPointWorld.z - ray.origin.z) / ray.direction.z,
         intersectionPointWorld,
         intersectionNormalWorld
       );
@@ -187,5 +191,9 @@ export default class RayVisitor implements Visitor {
   visitObjNode(node: ObjNode) { }
 
   visitLightNode(node: LightNode): void {
+    let position = new Vector(0,0,0,1);
+    let toWorld = this.transformation[this.transformation.length - 1];
+    position = toWorld.mulVec(position);
+    this.lightPositions[8] = (position);
   }
 }
