@@ -78,7 +78,7 @@ export default class RayVisitor implements Visitor {
         rootNode.accept(this);
 
         if (this.intersection) {
-          if (!this.intersectionColor) { //todo: steht für notNull?
+          if (!this.intersectionColor) {
             data[4 * (width * y + x) + 0] = 0;
             data[4 * (width * y + x) + 1] = 0;
             data[4 * (width * y + x) + 2] = 0;
@@ -86,8 +86,9 @@ export default class RayVisitor implements Visitor {
           } else {
             let color;
             color = phong(this.intersectionColor, this.intersection, lightPositions, 10, camera.origin);
-            //todo: Testen
 
+            /*
+            //Test, der den Abstand zw. Schnittpunkt und Kamera als Farbe anzeigt.
             const colorFromDistance = (t: number) => {
               if(isNaN(t)) {return new Vector(255,0,255,255)}
               if(typeof t !== 'number') {return new Vector(0,255,255,255)}
@@ -96,9 +97,8 @@ export default class RayVisitor implements Visitor {
               if(t>255) {return new Vector(255, 255, 0, 255)}
               return new Vector(t, t, t, 255)
             }
+            color = colorFromDistance(this.intersection.t);*/
 
-            //color = colorFromDistance(this.intersection.t);
-            // -> ein Balken/Teil der Sphere wird schwarz... dh. intersection.t gibt 0 zurück
             data[4 * (width * y + x) + 0] = color.r * 255;
             data[4 * (width * y + x) + 1] = color.g * 255;
             data[4 * (width * y + x) + 2] = color.b * 255;
@@ -157,28 +157,8 @@ export default class RayVisitor implements Visitor {
    * Visits an axis aligned box node
    * @param node The node to visit
    */
-  visitAABoxNode(node: AABoxNode) {
-    let toWorld = this.transformation[this.transformation.length - 1];
-    let fromWorld = this.inverseTransformation[this.inverseTransformation.length - 1];
-    // TODO assign the model matrix and its inverse
+  visitAABoxNode(node: AABoxNode) {}
 
-    const ray = new Ray(fromWorld.mulVec(this.ray.origin), fromWorld.mulVec(this.ray.direction).normalize());
-    let intersection = UNIT_AABOX.intersect(ray);
-
-    if (intersection) {
-      const intersectionPointWorld = toWorld.mulVec(intersection.point);
-      const intersectionNormalWorld = toWorld.mulVec(intersection.normal).normalize();
-      intersection = new Intersection(
-        (intersectionPointWorld.x - ray.origin.x) / ray.direction.x,
-        intersectionPointWorld,
-        intersectionNormalWorld
-      );
-      if (this.intersection === null || intersection.closerThan(this.intersection)) {
-        this.intersection = intersection;
-        this.intersectionColor = node.color;
-      }
-    }
-  }
 
   /**
    * Visits a textured box node

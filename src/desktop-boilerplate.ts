@@ -20,11 +20,8 @@ import { Rotation, Translation } from './transformation';
 import {RotationNode} from "./animation-node-rotation";
 import {DriverNode} from "./animation-node-driver";
 import {JumperNode} from "./animation-node-jumper";
-import Sphere from "./sphere";
 import RayVisitor from "./rayvisitor";
 
-//const UseRasterizer = true
-//const UseRaytracer = false
 const UseRasterizer = false;
 const UseRaytracer = true;
 
