@@ -23,7 +23,7 @@ export default class Sphere {
    * @param ray The ray to intersect with
    * @return The intersection if there is one, null if there is none
    */
-  /*
+
   intersect(ray: Ray): Intersection | null {
     let x0new: Vector = ray.origin.sub(this.center);
     //x0new = x0new.normalize();
@@ -48,8 +48,8 @@ export default class Sphere {
 
     return new Intersection(th, intersectionPoint, normal)
   }
-*/
-  intersect(ray: Ray): Intersection | null {
+
+  /*intersect(ray: Ray): Intersection | null {
     let x0new = ray.origin.sub(this.center);
 
     const p = x0new.dot(ray.direction)
@@ -73,5 +73,5 @@ export default class Sphere {
     normal = normal.normalize()
 
     return new Intersection(th, intersectionPoint, normal)
-  }
+  }*/
 }

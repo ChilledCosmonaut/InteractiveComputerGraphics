@@ -85,7 +85,7 @@ export default class RayVisitor implements Visitor {
             data[4 * (width * y + x) + 3] = 255;
           } else {
             let color;
-            //color = phong(this.intersectionColor, this.intersection, lightPositions, 10, camera.origin);
+            color = phong(this.intersectionColor, this.intersection, lightPositions, 10, camera.origin);
             //todo: Testen
 
             const colorFromDistance = (t: number) => {
@@ -97,7 +97,7 @@ export default class RayVisitor implements Visitor {
               return new Vector(t, t, t, 255)
             }
 
-            color = colorFromDistance(this.intersection.t);
+            //color = colorFromDistance(this.intersection.t);
             // -> ein Balken/Teil der Sphere wird schwarz... dh. intersection.t gibt 0 zurück
             data[4 * (width * y + x) + 0] = color.r * 255;
             data[4 * (width * y + x) + 1] = color.g * 255;
@@ -142,7 +142,7 @@ export default class RayVisitor implements Visitor {
       const intersectionPointWorld = toWorld.mulVec(intersection.point);
       const intersectionNormalWorld = toWorld.mulVec(intersection.normal).normalize();
       intersection = new Intersection(
-        (intersectionPointWorld.x - ray.origin.x) / ray.direction.x,
+        (intersectionPointWorld.z - ray.origin.z) / ray.direction.z,
         intersectionPointWorld,
         intersectionNormalWorld
       );
