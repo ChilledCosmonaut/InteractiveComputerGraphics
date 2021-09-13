@@ -13,15 +13,15 @@ import Intersection from './intersection';
 export default function phong(
   color: Vector, intersection: Intersection,
   lightPositions: Array<Vector>, shininess: number,
-  cameraPosition: Vector
+  cameraPosition: Vector,
+  ambientFactor: number,
+  diffuseFactor: number,
+  specularFactor: number
 ): Vector {
-  const lightColor = new Vector(0.8, 0.8, 0.8, 0);
-  const kA = 0.8;
-  const kD = 0.5;
-  const kS = 0.5;
+  const lightColor = new Vector(0.8, 0.8, 0.8, 0);3
   
-  color = ambientLight(kA, color).add(diffuseLight(kD, lightPositions, intersection, lightColor).add(
-    specularLight(kS, shininess, lightPositions, intersection, lightColor, cameraPosition)
+  color = ambientLight(ambientFactor, color).add(diffuseLight(diffuseFactor, lightPositions, intersection, lightColor).add(
+    specularLight(specularFactor, shininess, lightPositions, intersection, lightColor, cameraPosition)
   ))
 
     color.w = 255
