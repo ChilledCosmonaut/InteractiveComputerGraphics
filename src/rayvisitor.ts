@@ -194,6 +194,7 @@ export default class RayVisitor implements Visitor {
     let position = new Vector(0,0,0,1);
     let toWorld = this.transformation[this.transformation.length - 1];
     position = toWorld.mulVec(position);
-    this.lightPositions[8] = (position);
+    this.lightPositions[this.lightSourceCounter] = (position);
+    this.lightSourceCounter++;
   }
 }
