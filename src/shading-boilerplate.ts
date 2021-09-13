@@ -65,7 +65,7 @@ window.addEventListener('load', () => {
     function animate(timestamp: number) {
         gn0.transform = new Rotation(new Vector(0, 0, 1, 0), timestamp / 1000);
         gn3.transform = new Rotation(new Vector(0, 1, 0, 0), timestamp / 1000);
-        visitor.render(sg, camera, []);
+        visitor.render(sg, camera, [], 0.3,0.6,0.7);
         window.requestAnimationFrame(animate);
     }
 

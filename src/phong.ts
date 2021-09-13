@@ -37,8 +37,10 @@ function diffuseLight(kD: number, lightPositions: Array<Vector>, intersection: I
   let diffuse: Vector = new Vector(0,0,0,0);
 
   lightPositions.forEach(element => {
-    let lightDirection: Vector = element.sub(intersection.point).normalize()
-    diffuse = diffuse.add(lJ.mul(Math.max(0, intersection.normal.dot(lightDirection))))
+    if(element != null) {
+      let lightDirection: Vector = element.sub(intersection.point).normalize()
+      diffuse = diffuse.add(lJ.mul(Math.max(0, intersection.normal.dot(lightDirection))))
+    }
   });
   return diffuse.mul(kD)
 }
@@ -48,10 +50,12 @@ function specularLight(kS: number, kE: number, lightPositions: Array<Vector>, in
   let diffuse: Vector = new Vector(0,0,0,0);
 
   lightPositions.forEach(element => {
-    let lightDirection: Vector = element.sub(intersection.point).normalize()
-    let viewDirection: Vector = cameraPosition.sub(intersection.point).normalize()
-    let rJ: Vector = intersection.normal.mul(2 * intersection.normal.dot(lightDirection)).sub(lightDirection)
-    diffuse = diffuse.add(lJ.mul(Math.pow(Math.max(0, rJ.dot(viewDirection)), kE)))
+    if(element != null) {
+      let lightDirection: Vector = element.sub(intersection.point).normalize()
+      let viewDirection: Vector = cameraPosition.sub(intersection.point).normalize()
+      let rJ: Vector = intersection.normal.mul(2 * intersection.normal.dot(lightDirection)).sub(lightDirection)
+      diffuse = diffuse.add(lJ.mul(Math.pow(Math.max(0, rJ.dot(viewDirection)), kE)))
+    }
   });
   return diffuse.mul(kS)
 }

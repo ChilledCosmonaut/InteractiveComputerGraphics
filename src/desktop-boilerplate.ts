@@ -6,7 +6,7 @@ import {
     GroupNode,
     SphereNode,
     TextureBoxNode,
-    AABoxNode, PyramidNode, ObjNode
+    AABoxNode, PyramidNode, ObjNode, LightNode
 } from './nodes';
 import {
     RasterVisitor,
@@ -23,7 +23,7 @@ import {DriverNode} from "./animation-node-driver";
 import {JumperNode} from "./animation-node-jumper";
 import {Camera, CameraFreeFlight} from "./camera";
 import {createEnvironment} from "./createEnvironment";
-import MatrixHelper from "./matrix-helper";
+
 
 window.addEventListener('load', async () => {
     const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
@@ -34,13 +34,19 @@ window.addEventListener('load', async () => {
 
     // construct scene graph
     //       T(SG)
+    let ambientFactor: number = 0;
+    let diffuseFactor: number = 0;
+    let specularFactor: number = 0;
+
+    // construct scene graph TODO :)
+    //        SG
     //         |
     //         +-------------------------------------------+ ... eine Szene zum Testen: siehe createEnvironment.ts
     //    T(desktopNode)                                              T(gn4)(wo eine Kugel dran hängt...)
     //          |
     //   +----------+----------------+---------------------+----------------+
     //   |          |                |                     |                |
-    //TextureBox  T(objTransl)      T(sphere1Tranl)    T(pyramidTransl)  T(boxTransl)
+    //TextureBox  T(objTransl)      T(sphere1Transl)    T(pyramidTransl)  T(boxTransl)
     //              |                |       |                |                |
     //            ObjNode         Sphere  R(sphereOrbit)     Pyramid          AABox
     //                                       |
@@ -49,6 +55,25 @@ window.addEventListener('load', async () => {
     //                                    Sphere
 
     const sg = new GroupNode(new Translation(new Vector(0, 0, 0, 0)));
+
+    //Camera Node
+    const cameraNode = new GroupNode(new Translation(new Vector(0,0,0,0)));
+    sg.add(cameraNode);
+
+    //Light Nodes
+    const lightNode = new GroupNode(new Translation(new Vector(0,0,0,0)));
+    sg.add(lightNode);
+    const lightRotation = new GroupNode(new Rotation(new Vector(0,0,0,0),0));
+    lightNode.add(lightRotation);
+    const lightTranslation1 = new GroupNode(new Translation(new Vector(1,1,1,1)));
+    lightRotation.add(lightTranslation1);
+    const light1 = new LightNode(new Vector(0,0,0,0));
+    lightTranslation1.add(light1);
+    const lightTranslation2 = new GroupNode(new Translation(new Vector(-1,-1,-1,1)));
+    lightRotation.add(lightTranslation2);
+    const light2 = new LightNode(new Vector(0,0,0,0));
+    lightTranslation2.add(light2);
+
 
     //Desktop base
     const desktopNode = new GroupNode(new Translation(new Vector(0, 0, 0, 0)))
@@ -118,8 +143,10 @@ window.addEventListener('load', async () => {
     const visitor = new RasterVisitor(gl, phongShader, textureShader, setupVisitor.objects);
 
     let animationRotationNode = new RotationNode(desktopNode, new Vector(0, 1, 0, 0));
-    let animationRotationNodeUp = new RotationNode(desktopNode, new Vector(1, 0, 0, 0,));//todo
-    let ObjRotation = new RotationNode(objTranslation, new Vector(0,1,0,0))
+    let SphereOrbit = new RotationNode(sphereOrbit, new Vector(0,1,0,0))
+    SphereOrbit.rightRotation = true;
+    let lightOrbit = new RotationNode(lightRotation, new Vector(0,1,0,0));
+    lightOrbit.rightRotation = true;
     let animationDriverNode = new DriverNode(desktopNode);
     let animationJumperNode = new JumperNode(desktopNode);
 
@@ -128,7 +155,8 @@ window.addEventListener('load', async () => {
     function simulate(deltaT: number) {
         animationDriverNode.simulate(deltaT);
         animationRotationNode.simulate(deltaT);
-        ObjRotation.simulate(deltaT);
+        SphereOrbit.simulate(deltaT);
+        lightOrbit.simulate(deltaT);
         animationJumperNode.simulate(deltaT);
         cameraFreeFlight.simulate(deltaT)
 
@@ -139,15 +167,33 @@ window.addEventListener('load', async () => {
         }*/
     }
 
-
     let lastTimestamp = performance.now();
 
     function animate(timestamp: number) {
         simulate(timestamp - lastTimestamp);
-        visitor.render(sg, camera, []);
+        visitor.render(sg, camera, [new Vector(1,1,1,1)], ambientFactor, diffuseFactor, specularFactor);
         lastTimestamp = timestamp;
         window.requestAnimationFrame(animate);
     }
+
+    let ambientSlider = document.getElementById("ambientSlider") as HTMLInputElement;
+    ambientFactor = parseFloat(ambientSlider.value);
+    let diffuseSlider = document.getElementById("diffuseSlider") as HTMLInputElement;
+    diffuseFactor = parseFloat(diffuseSlider.value);
+    let specularSlider = document.getElementById("specularSlider") as HTMLInputElement;
+    specularFactor = parseFloat(specularSlider.value);
+
+    ambientSlider.oninput = function() {
+        ambientFactor = parseFloat(ambientSlider.value);
+    };
+
+    diffuseSlider.oninput = function() {
+        diffuseFactor = parseFloat(diffuseSlider.value);
+    };
+
+    specularSlider.oninput = function() {
+        specularFactor = parseFloat(specularSlider.value);
+    };
 
     Promise.all(
         [phongShader.load(), textureShader.load()]
