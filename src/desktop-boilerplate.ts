@@ -21,6 +21,11 @@ import {RotationNode} from "./animation-node-rotation";
 import {DriverNode} from "./animation-node-driver";
 import {JumperNode} from "./animation-node-jumper";
 
+let size = 2;
+let SAVE = new Array(size).fill(new Array(4));
+export default SAVE;
+
+
 window.addEventListener('load', () => {
     const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
     const gl = canvas.getContext("webgl2");
@@ -135,7 +140,7 @@ window.addEventListener('load', () => {
             case "d":
                 animationDriverNode.right = ispressed;
                 break;
-        }
+        }}
     });
 
     let jsonContent: any;
@@ -144,7 +149,8 @@ window.addEventListener('load', () => {
     function writeFromJson() {
         JSON.parse(jsonContent);
     }
-    document.getElementById("saveButton").onclick = function(){save("saveFile", jsonContent)}
+    document.getElementById("saveButton").onclick = function(){//save("saveFile.json", jsonContent)
+    console.log("Save Click")}
 
     function save(filename:any, text:any) {
         let element = document.createElement('a');
@@ -163,15 +169,14 @@ window.addEventListener('load', () => {
     loadButton.addEventListener( "change", function () {
         let file = this.files[0];
         let fileReader = new FileReader();
-        let savedFile:string;
+        let savedFile: string;
         fileReader.readAsText(file);
-        fileReader.onload = function() {
-             savedFile = fileReader.result.toString();
+        fileReader.onload = function () {
+            savedFile = fileReader.result.toString();
         };
-        fileReader.onerror = function() {
+        fileReader.onerror = function () {
             alert(fileReader.error);
         };
-        SAVE = JSON.parse(savedFile)
+         SAVE = JSON.parse(savedFile)
     })
 
-});
