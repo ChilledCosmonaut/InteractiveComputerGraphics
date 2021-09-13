@@ -50,12 +50,11 @@ export default class RasterTextureBox {
         minPoint: Vector,
         maxPoint: Vector,
         texture: string,
-        normalTex: string
+        normalTex: string,
+        scale: number
     ) {
-        const mi = minPoint;
-        const ma = maxPoint;
-        console.log(mi);
-        console.log(ma);
+        const mi = minPoint.mul(scale);
+        const ma = maxPoint.mul(scale);
         let vertices = [
             // front
             mi.x, mi.y, ma.z, ma.x, mi.y, ma.z, ma.x, ma.y, ma.z,

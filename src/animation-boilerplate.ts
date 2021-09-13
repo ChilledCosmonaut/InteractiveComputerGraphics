@@ -40,7 +40,7 @@ window.addEventListener('load', () => {
     sg.add(gn2);
     const gn3 = new GroupNode(new Translation(new Vector(0, 0, 0, 0)));
     gn2.add(gn3);
-    const cube = new TextureBoxNode('hci-logo.png', 'test_normal.jpg');
+    const cube = new TextureBoxNode('hci-logo.png', 'test_normal.jpg', 1);
     gn3.add(cube);
 
 
@@ -75,7 +75,7 @@ window.addEventListener('load', () => {
 
     function simulate(deltaT: number) {
         for (let animationNode of animationNodes) {
-            animationNode.simulate(deltaT);
+            //animationNode.simulate(deltaT);
         }
     }
 
@@ -83,7 +83,7 @@ window.addEventListener('load', () => {
 
     function animate(timestamp: number) {
         simulate(timestamp - lastTimestamp);
-        visitor.render(sg, camera, []);
+        visitor.render(sg, camera, [], 0.3,0.6,0.7);
         lastTimestamp = timestamp;
         window.requestAnimationFrame(animate);
     }

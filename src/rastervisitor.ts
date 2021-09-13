@@ -2,17 +2,21 @@ import RasterSphere from './raster-sphere';
 import RasterBox from './raster-box';
 import RasterTextureBox from './raster-texture-box';
 import RasterPyramid from "./raster-pyramid";
+import RasterObjObject from "./raster-obj-object";
 import Vector from './vector';
 import Matrix from './matrix';
 import Visitor from './visitor';
 import {
   Node, GroupNode,
   SphereNode, AABoxNode,
-  TextureBoxNode, PyramidNode
+  TextureBoxNode, PyramidNode, ObjNode, LightNode
 } from './nodes';
 import Shader from './shader';
+import {Camera} from "./camera";
+import LightSource from "./lightSource";
 
-interface Camera {
+/*
+* interface Camera {
   eye: Vector,
   center: Vector,
   up: Vector,
@@ -21,6 +25,7 @@ interface Camera {
   near: number,
   far: number
 }
+* */
 
 interface Renderable {
   render(shader: Shader): void;
@@ -34,7 +39,11 @@ export class RasterVisitor implements Visitor {
   // TODO declare instance variables her
   transformation: Array<Matrix>;
   inverseTransformation: Array<Matrix>;
+  lightPositions: Array<Vector>;
 
+  ambientFactor: number;
+  diffuseFactor: number;
+  specularFactor: number;
   /**
    * Creates a new RasterVisitor
    * @param gl The 3D context to render to
@@ -60,12 +69,31 @@ export class RasterVisitor implements Visitor {
    * @param rootNode The root node of the Scenegraph
    * @param camera The camera used
    * @param lightPositions The light light positions
+   * @param ambientFactor
+   * @param diffuseFactor
+   * @param specularFactor
    */
   render(
     rootNode: Node,
     camera: Camera | null,
-    lightPositions: Array<Vector>
+    lightPositions: Array<Vector>,
+    ambientFactor: number,
+    diffuseFactor: number,
+    specularFactor: number
   ) {
+    this.ambientFactor = ambientFactor;
+    this.diffuseFactor = diffuseFactor;
+    this.specularFactor = specularFactor;
+
+    this.shader.getUniformFloat("ambientFactor").set(this.ambientFactor);
+    this.shader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
+    this.shader.getUniformFloat("specularFactor").set(this.specularFactor);
+    this.textureshader.getUniformFloat("ambientFactor").set(this.ambientFactor);
+    this.textureshader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
+    this.textureshader.getUniformFloat("specularFactor").set(this.specularFactor);
+
+    this.lightPositions = new Array<Vector>();
+
     // clear
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
@@ -232,7 +260,7 @@ export class RasterSetupVisitor implements Visitor {
 
   /**
    * Creates a new RasterSetupVisitor
-   * @param context The 3D context in which to create buffers
+   * @param context The 3D context in which to create buffers //todo?
    */
   constructor(private gl: WebGL2RenderingContext) {
     this.objects = new WeakMap();
@@ -287,8 +315,8 @@ export class RasterSetupVisitor implements Visitor {
       node,
       new RasterBox(
         this.gl,
-        new Vector(-0.5, -0.5, 0, 1),
-        new Vector(0.5, 0.5, 0, 1)
+        new Vector(-0.5, -0.5, -0.5, 1),
+        new Vector(0.5, 0.5, 0.5, 1)
       )
     );
   }
@@ -306,7 +334,8 @@ export class RasterSetupVisitor implements Visitor {
         new Vector(-0.5, -0.5, -0.5, 1),
         new Vector(0.5, 0.5, 0.5, 1),
         node.texture,
-        node.normal
+        node.normal,
+        node.scale
       )
     );
   }
@@ -319,6 +348,28 @@ export class RasterSetupVisitor implements Visitor {
             new Vector(-0.5, -0.5, -0.5, 1),
             new Vector(0.5, -0.5, 0.5, 1),
             1
+        )
+    );
+  }
+
+  visitObjNode(node: ObjNode) {
+    this.objects.set(
+        node,
+        new RasterObjObject(
+            this.gl,
+            node.objString,
+            node.scale
+        )
+    );
+  }
+
+  visitLightNode(node: LightNode) {
+    this.objects.set(
+        node,
+        new LightSource(
+            this.gl,
+            new Vector(0,0,0,1),
+            node.Colour
         )
     );
   }

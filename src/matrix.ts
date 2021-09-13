@@ -122,8 +122,7 @@ export default class Matrix {
                                     0, 1, 0, -eye.y,
                                     0, 0, 1, -eye.z,
                                     0, 0, 0, 1])
-
-    let lookatMatrix = lookatFactor1.mul(lookatFactor2)
+    let lookatMatrix = lookatFactor1.mul(lookatFactor2) //war vorher falsch herum!
     return lookatMatrix
   }
 
