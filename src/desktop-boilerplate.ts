@@ -34,7 +34,7 @@ window.addEventListener('load', async () => {
     const contextWebGl = canvasRaster.getContext("webgl2");
     const context2D = canvasRaytracer.getContext("2d");
 
-    let useRenderer = UseRaytracer
+    let useRenderer = UseRasterizer
 
     const response = await fetch('../SpaceShip.obj');
     const text = await response.text();
@@ -81,6 +81,10 @@ window.addEventListener('load', async () => {
     const light2 = new LightNode(new Vector(0,0,0,0));
     lightTranslation2.add(light2);
 
+    const sphereGroupNode = new GroupNode(new Translation(new Vector(0, 0, -3, 1)));
+    sg.add(sphereGroupNode);
+    const sphere = new SphereNode(new Vector(0, 1, 0, 1));
+    sphereGroupNode.add(sphere)
 
     //Desktop base
     const desktopNode = new GroupNode(new Translation(new Vector(0, 0, 0, 0)))
@@ -95,6 +99,7 @@ window.addEventListener('load', async () => {
     const obj = new ObjNode(text, 0.5);
     objTranslation.add(obj);
 
+    /*
     //Sphere Node
     const sphere1Translation = new GroupNode(new Translation(new Vector(0, 4, 0, 0)));
     desktopNode.add(sphere1Translation);
@@ -123,8 +128,9 @@ window.addEventListener('load', async () => {
     sg.add(gn4);
     gn4.add(new SphereNode(new Vector(1, 0, 1, 0)));
 
-    createEnvironment(sg);
+    //createEnvironment(sg);
 
+    * */
     // setup for rendering
     const setupVisitor = new RasterSetupVisitor(contextWebGl);
     setupVisitor.setup(sg);
@@ -152,8 +158,8 @@ window.addEventListener('load', async () => {
     const visitor_raytracer = new RayVisitor(context2D, 500, 500); //todo
 
     let animationRotationNode = new RotationNode(desktopNode, new Vector(0, 1, 0, 0));
-    let SphereOrbit = new RotationNode(sphereOrbit, new Vector(0,1,0,0))
-    SphereOrbit.rightRotation = true;
+    //let SphereOrbit = new RotationNode(sphereOrbit, new Vector(0,1,0,0))
+    //SphereOrbit.rightRotation = true;
     let lightOrbit = new RotationNode(lightRotation, new Vector(0,1,0,0));
     lightOrbit.rightRotation = true;
     let animationDriverNode = new DriverNode(desktopNode);
@@ -164,7 +170,7 @@ window.addEventListener('load', async () => {
     function simulate(deltaT: number) {
         animationDriverNode.simulate(deltaT);
         animationRotationNode.simulate(deltaT);
-        SphereOrbit.simulate(deltaT);
+        //SphereOrbit.simulate(deltaT);
         lightOrbit.simulate(deltaT);
         animationJumperNode.simulate(deltaT);
         cameraFreeFlight.simulate(deltaT)

@@ -64,6 +64,16 @@ export class RasterVisitor implements Visitor {
     this.transformation.push(Matrix.identity());
   }
 
+  /* TODODODODODODOD
+  visitObjNode(node: ObjNode): void {
+        throw new Error("Method not implemented.");
+    }
+    visitLightNode(node: LightNode): void {
+        throw new Error("Method not implemented.");
+    }
+
+   */
+
   /**
    * Renders the Scenegraph
    * @param rootNode The root node of the Scenegraph
@@ -246,7 +256,60 @@ export class RasterVisitor implements Visitor {
 
     this.renderables.get(node).render(shader);
   }
+
+  /**
+   * Visits a textured box node
+   * @param  {TextureBoxNode} node - The node to visit
+   */
+  visitObjNode(node: ObjNode) {
+    this.shader.use();
+    let shader = this.shader;
+
+    let toWorld = this.transformation[this.transformation.length - 1];
+    // TODO calculate the model matrix for the box
+    shader.getUniformMatrix("M").set(toWorld);
+    let P = shader.getUniformMatrix("P");
+    if (P && this.perspective) {
+      P.set(this.perspective);
+    }
+    shader.getUniformMatrix("V").set(this.lookat);
+
+    this.renderables.get(node).render(shader);
+  }
+
+  visitLightNode(node: LightNode) {
+    let position = new Vector(0,0,0,1);
+    let toWorld = this.transformation[this.transformation.length - 1];
+    // TODO calculate the model matrix for the box
+    position = toWorld.mulVec(position);
+    if (this.perspective) {
+      position = this.perspective.mulVec(position);
+    }
+    position = this.lookat.mulVec(position);
+    //console.log(position);
+    this.lightPositions.push(position);
+    this.updateLightArray();
+  }
+
+  updateLightArray(){
+    let lightPositions = new Array<number>();
+    for (let lightCounter = 0; lightCounter < this.lightPositions.length; lightCounter++){
+      lightPositions.push(this.lightPositions[lightCounter].x);
+      lightPositions.push(this.lightPositions[lightCounter].y);
+      lightPositions.push(this.lightPositions[lightCounter].z);
+      lightPositions.push(1);
+    }
+    let colorLightPositions = this.gl.getUniformLocation(this.shader.shaderProgram,'lightingLocation');
+    this.gl.uniform4fv(colorLightPositions, lightPositions);
+    let textureLightPositions = this.gl.getUniformLocation(this.textureshader.shaderProgram,'lightingLocation');
+    this.gl.uniform4fv(textureLightPositions, lightPositions);
+  }
 }
+
+
+
+
+
 
 /** 
  * Class representing a Visitor that sets up buffers 

@@ -161,7 +161,7 @@ export default class RayVisitor implements Visitor {
    * Visits an axis aligned box node
    * @param node The node to visit
    */
-  visitAABoxNode(node: AABoxNode) {
+  visitAABoxNode(node: AABoxNode) {}/*
     let toWorld = this.transformation[this.transformation.length - 1];
     let fromWorld = this.inverseTransformation[this.inverseTransformation.length - 1];
     // TODO assign the model matrix and its inverse
@@ -183,6 +183,7 @@ export default class RayVisitor implements Visitor {
       }
     }
   }
+  */
 
   /**
    * Visits a textured box node
