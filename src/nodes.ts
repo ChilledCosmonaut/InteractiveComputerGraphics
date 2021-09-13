@@ -1,6 +1,7 @@
 import Visitor from './visitor';
 import Vector from './vector';
 import { Transformation } from './transformation';
+import SAVE from "./desktop-boilerplate";
 
 /**
  * Class representing a Node in a Scenegraph
@@ -38,6 +39,7 @@ export class GroupNode extends Node {
    */
   accept(visitor: Visitor) {
     visitor.visitGroupNode(this);
+    SAVE.push(this);
   }
 
   /**

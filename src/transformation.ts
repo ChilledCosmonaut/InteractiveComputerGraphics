@@ -20,8 +20,16 @@ class MatrixTransformation implements Transformation {
         return this.matrix;
     }
 
+    setMatrix(matrix:Matrix) {
+        this.matrix = matrix;
+    }
+
     getInverseMatrix(): Matrix {
         return this.inverse;
+    }
+
+    setInverseMatrix(matrix:Matrix) {
+        this.matrix=matrix;
     }
 }
 

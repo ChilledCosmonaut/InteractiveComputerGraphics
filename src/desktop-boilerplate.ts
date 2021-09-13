@@ -20,11 +20,13 @@ import { Rotation, Translation } from './transformation';
 import {RotationNode} from "./animation-node-rotation";
 import {DriverNode} from "./animation-node-driver";
 import {JumperNode} from "./animation-node-jumper";
+//import Matrix from "./matrix";
 
-let size = 2;
-let SAVE = new Array(size).fill(new Array(4));
+let size = 1;
+let nodePosition = 0;
+let SAVE = new Array(size).fill(new Array(4).fill(new Array(4)));
+//let SAVE:Matrix [];
 export default SAVE;
-
 
 window.addEventListener('load', () => {
     const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
@@ -42,10 +44,10 @@ window.addEventListener('load', () => {
 
     const sg = new GroupNode(new Translation(new Vector(0, 0, -4, 0)));
 
-    const gn0 = new GroupNode(new Translation(new Vector(.2, .2, -1, 0)))
-    sg.add(gn0);
+    const groupNode0 = new GroupNode(new Translation(new Vector(.2, .2, -1, 0)))
+    sg.add(groupNode0);
     const desktopBox = new TextureBoxNode('wood_texture.jpg', 'wood_normal.jpg');
-    gn0.add(desktopBox);
+    groupNode0.add(desktopBox);
 
     const groupNode1 = new GroupNode(new Translation(new Vector(0, 2, -5, 0)));
     sg.add(groupNode1);
@@ -85,9 +87,9 @@ window.addEventListener('load', () => {
     );
     const visitor = new RasterVisitor(gl, phongShader, textureShader, setupVisitor.objects);
 
-    let animationRotationNode = new RotationNode(gn0, new Vector(0, 1, 0, 0));
-    let animationDriverNode = new DriverNode(gn0);
-    let animationJumperNode = new JumperNode(gn0);
+    let animationRotationNode = new RotationNode(groupNode0, new Vector(0, 1, 0, 0));
+    let animationDriverNode = new DriverNode(groupNode0);
+    let animationJumperNode = new JumperNode(groupNode0);
 
     function simulate(deltaT: number) {
         animationDriverNode.simulate(deltaT);
@@ -141,16 +143,13 @@ window.addEventListener('load', () => {
                 animationDriverNode.right = ispressed;
                 break;
         }}
-    });
 
     let jsonContent: any;
     jsonContent = JSON.stringify(SAVE);
 
-    function writeFromJson() {
-        JSON.parse(jsonContent);
+    document.getElementById("saveButton").onclick = function () {
+        save("saveFile.json", jsonContent)
     }
-    document.getElementById("saveButton").onclick = function(){//save("saveFile.json", jsonContent)
-    console.log("Save Click")}
 
     function save(filename:any, text:any) {
         let element = document.createElement('a');
@@ -177,6 +176,9 @@ window.addEventListener('load', () => {
         fileReader.onerror = function () {
             alert(fileReader.error);
         };
-         SAVE = JSON.parse(savedFile)
-    })
+         SAVE = JSON.parse(savedFile);
+
+    });
+})
+
 

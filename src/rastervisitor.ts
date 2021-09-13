@@ -12,6 +12,7 @@ import {
 } from './nodes';
 import Shader from './shader';
 
+
 interface Camera {
   eye: Vector,
   center: Vector,
@@ -89,6 +90,7 @@ export class RasterVisitor implements Visitor {
    * normalized device coordinate system
    */
   private perspective: Matrix;
+  private nodePosition: any;
 
   /**
    * Helper function to setup camera matrices
@@ -123,7 +125,6 @@ export class RasterVisitor implements Visitor {
     this.transformation.pop();
     this.inverseTransformation.pop();
   }
-
   /**
    * Visits a sphere node
    * @param node The node to visit
