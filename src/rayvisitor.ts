@@ -59,7 +59,10 @@ export default class RayVisitor implements Visitor {
   render(
     rootNode: Node,
     camera: { origin: Vector, width: number, height: number, alpha: number },
-    lightPositions: Array<Vector>
+    lightPositions: Array<Vector>,
+    ambientFactor: number,
+    diffuseFactor: number,
+    specularFactor: number
   ) {
     // clear
     let data = this.imageData.data;
