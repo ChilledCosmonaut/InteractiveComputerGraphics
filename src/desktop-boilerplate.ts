@@ -189,9 +189,9 @@ window.addEventListener('load', async () => {
         if (useRenderer === UseRaytracer){
             //todo!!!!!!!
             const camRt = { origin: new Vector(0, 0, 0, 1), width: 500, height:500, alpha: Math.PI / 3 }
-            visitor_raytracer.render(sg, camRt, [new Vector(2, 1, 2, 1)])
+            visitor_raytracer.render(sg, camRt, [new Vector(2, 1, 2, 1)], ambientFactor, diffuseFactor, specularFactor);
         } else {
-            visitor_raster.render(sg, camera,  [new Vector(1,1,1,1)], ambientFactor, diffuseFactor, specularFactor)
+            visitor_raster.render(sg, camera,  [new Vector(1,1,1,1)], ambientFactor, diffuseFactor, specularFactor);
         }
         lastTimestamp = timestamp;
         window.requestAnimationFrame(animate);
