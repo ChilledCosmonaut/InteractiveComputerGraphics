@@ -88,7 +88,21 @@ export default class RayVisitor implements Visitor {
             data[4 * (width * y + x) + 2] = 0;
             data[4 * (width * y + x) + 3] = 255;
           } else {
-            let color = phong(this.intersectionColor, this.intersection, this.lightPositions, 10, camera.origin);
+            let color;
+            color = phong(this.intersectionColor, this.intersection, this.lightPositions, 10, camera.origin);
+
+            /*
+            //Test, der den Abstand zw. Schnittpunkt und Kamera als Farbe anzeigt.
+            const colorFromDistance = (t: number) => {
+              if(isNaN(t)) {return new Vector(255,0,255,255)}
+              if(typeof t !== 'number') {return new Vector(0,255,255,255)}
+              t*=0.02
+              if(t<0) {return new Vector(255,0,0,255)}
+              if(t>255) {return new Vector(255, 255, 0, 255)}
+              return new Vector(t, t, t, 255)
+            }
+            color = colorFromDistance(this.intersection.t);*/
+
             data[4 * (width * y + x) + 0] = color.r * 255;
             data[4 * (width * y + x) + 1] = color.g * 255;
             data[4 * (width * y + x) + 2] = color.b * 255;
@@ -132,7 +146,7 @@ export default class RayVisitor implements Visitor {
       const intersectionPointWorld = toWorld.mulVec(intersection.point);
       const intersectionNormalWorld = toWorld.mulVec(intersection.normal).normalize();
       intersection = new Intersection(
-        (intersectionPointWorld.x - ray.origin.x) / ray.direction.x,
+        (intersectionPointWorld.z - ray.origin.z) / ray.direction.z,
         intersectionPointWorld,
         intersectionNormalWorld
       );
@@ -147,7 +161,7 @@ export default class RayVisitor implements Visitor {
    * Visits an axis aligned box node
    * @param node The node to visit
    */
-  visitAABoxNode(node: AABoxNode) {
+  visitAABoxNode(node: AABoxNode) {}/*
     let toWorld = this.transformation[this.transformation.length - 1];
     let fromWorld = this.inverseTransformation[this.inverseTransformation.length - 1];
     // TODO assign the model matrix and its inverse
@@ -169,6 +183,7 @@ export default class RayVisitor implements Visitor {
       }
     }
   }
+  */
 
   /**
    * Visits a textured box node

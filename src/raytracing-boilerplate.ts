@@ -16,10 +16,19 @@ window.addEventListener('load', evt => {
     );
 
     const camera = {
+        origin: new Vector(0, 0, 0, 1),
         width: canvas.width,
         height: canvas.height,
         alpha: Math.PI * 2 / 3
     }
+    // const camera = {
+    //         eye: new Vector(0, 0, 0, 1),
+    //         center: new Vector(0,0,-1,1),
+    //         up: new Vector(0, 1, 0, 0),
+    //         width: canvas.width,
+    //         height: canvas.height,
+    //         alpha: Math.PI * 2 / 3
+    //     }
     for (let x = 0; x < canvas.width; x++) {
         for (let y = 0; y < canvas.height; y++) {
             const ray = Ray.makeRay(x, y, camera);

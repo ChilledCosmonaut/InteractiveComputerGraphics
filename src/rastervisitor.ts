@@ -64,6 +64,16 @@ export class RasterVisitor implements Visitor {
     this.transformation.push(Matrix.identity());
   }
 
+  /* TODODODODODODOD
+  visitObjNode(node: ObjNode): void {
+        throw new Error("Method not implemented.");
+    }
+    visitLightNode(node: LightNode): void {
+        throw new Error("Method not implemented.");
+    }
+
+   */
+
   /**
    * Renders the Scenegraph
    * @param rootNode The root node of the Scenegraph
@@ -297,11 +307,15 @@ export class RasterVisitor implements Visitor {
 }
 
 
+
+
+
+
 /** 
  * Class representing a Visitor that sets up buffers 
  * for use by the RasterVisitor 
  * */
-export class RasterSetupVisitor {
+export class RasterSetupVisitor implements Visitor {
   /**
    * The created render objects
    */

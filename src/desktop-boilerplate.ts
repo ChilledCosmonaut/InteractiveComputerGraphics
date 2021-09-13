@@ -1,5 +1,4 @@
 import 'bootstrap';
-import './file-interactor';
 import 'bootstrap/scss/bootstrap.scss';
 import Vector from './vector';
 import {
@@ -17,17 +16,25 @@ import phongVertexShader from './phong-vertex-perspective-shader.glsl';
 import phongFragmentShader from './phong-fragment-shader.glsl';
 import textureVertexShader from './texture-vertex-perspective-shader.glsl';
 import textureFragmentShader from './texture-fragment-shader.glsl';
-import {Rotation, Scaling, Translation} from './transformation';
+import { Rotation, Translation } from './transformation';
 import {RotationNode} from "./animation-node-rotation";
 import {DriverNode} from "./animation-node-driver";
 import {JumperNode} from "./animation-node-jumper";
 import {Camera, CameraFreeFlight} from "./camera";
 import {createEnvironment} from "./createEnvironment";
+import RayVisitor from "./rayvisitor";
+
+const UseRasterizer = false;
+const UseRaytracer = true;
 
 
 window.addEventListener('load', async () => {
-    const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
-    const gl = canvas.getContext("webgl2");
+    const canvasRaytracer = document.getElementById("raytracer") as HTMLCanvasElement;
+    const canvasRaster = document.getElementById("rasteriser") as HTMLCanvasElement;
+    const contextWebGl = canvasRaster.getContext("webgl2");
+    const context2D = canvasRaytracer.getContext("2d");
+
+    let useRenderer = UseRasterizer
 
     const response = await fetch('../SpaceShip.obj');
     const text = await response.text();
@@ -74,6 +81,10 @@ window.addEventListener('load', async () => {
     const light2 = new LightNode(new Vector(0,0,0,0));
     lightTranslation2.add(light2);
 
+    const sphereGroupNode = new GroupNode(new Translation(new Vector(0, 0, -3, 1)));
+    sg.add(sphereGroupNode);
+    const sphere = new SphereNode(new Vector(0, 1, 0, 1));
+    sphereGroupNode.add(sphere)
 
     //Desktop base
     const desktopNode = new GroupNode(new Translation(new Vector(0, 0, 0, 0)))
@@ -88,6 +99,7 @@ window.addEventListener('load', async () => {
     const obj = new ObjNode(text, 0.5);
     objTranslation.add(obj);
 
+    /*
     //Sphere Node
     const sphere1Translation = new GroupNode(new Translation(new Vector(0, 4, 0, 0)));
     desktopNode.add(sphere1Translation);
@@ -116,35 +128,38 @@ window.addEventListener('load', async () => {
     sg.add(gn4);
     gn4.add(new SphereNode(new Vector(1, 0, 1, 0)));
 
-    createEnvironment(sg);
+    //createEnvironment(sg);
 
+    * */
     // setup for rendering
-    const setupVisitor = new RasterSetupVisitor(gl);
+    const setupVisitor = new RasterSetupVisitor(contextWebGl);
     setupVisitor.setup(sg);
 
+
     let camera = {
-        eye: new Vector(0, 0, 1, 1),
-        center: new Vector(0, 0, 0, 1),
+        eye: new Vector(0, 0, 0, 1),
+        center: new Vector(0, 0, -1,1),
         up: new Vector(0, 1, 0, 0),
         fovy: 60,
-        aspect: canvas.width / canvas.height,
+        aspect: canvasRaster.width / canvasRaster.height,
         near: 0.1,
         far: 100
     };
 
-    const phongShader = new Shader(gl,
+    const phongShader = new Shader(contextWebGl,
         phongVertexShader,
         phongFragmentShader
     );
-    const textureShader = new Shader(gl,
+    const textureShader = new Shader(contextWebGl,
         textureVertexShader,
         textureFragmentShader
     );
-    const visitor = new RasterVisitor(gl, phongShader, textureShader, setupVisitor.objects);
+    const visitor_raster = new RasterVisitor(contextWebGl, phongShader, textureShader, setupVisitor.objects);
+    const visitor_raytracer = new RayVisitor(context2D, 500, 500); //todo
 
     let animationRotationNode = new RotationNode(desktopNode, new Vector(0, 1, 0, 0));
-    let SphereOrbit = new RotationNode(sphereOrbit, new Vector(0,1,0,0))
-    SphereOrbit.rightRotation = true;
+    //let SphereOrbit = new RotationNode(sphereOrbit, new Vector(0,1,0,0))
+    //SphereOrbit.rightRotation = true;
     let lightOrbit = new RotationNode(lightRotation, new Vector(0,1,0,0));
     lightOrbit.rightRotation = true;
     let animationDriverNode = new DriverNode(desktopNode);
@@ -155,7 +170,7 @@ window.addEventListener('load', async () => {
     function simulate(deltaT: number) {
         animationDriverNode.simulate(deltaT);
         animationRotationNode.simulate(deltaT);
-        SphereOrbit.simulate(deltaT);
+        //SphereOrbit.simulate(deltaT);
         lightOrbit.simulate(deltaT);
         animationJumperNode.simulate(deltaT);
         cameraFreeFlight.simulate(deltaT)
@@ -171,7 +186,13 @@ window.addEventListener('load', async () => {
 
     function animate(timestamp: number) {
         simulate(timestamp - lastTimestamp);
-        visitor.render(sg, camera, [new Vector(1,1,1,1)], ambientFactor, diffuseFactor, specularFactor);
+        if (useRenderer === UseRaytracer){
+            //todo!!!!!!!
+            const camRt = { origin: new Vector(0, 0, 0, 1), width: 500, height:500, alpha: Math.PI / 3 }
+            visitor_raytracer.render(sg, camRt, [new Vector(2, 1, 2, 1)])
+        } else {
+            visitor_raster.render(sg, camera,  [new Vector(1,1,1,1)], ambientFactor, diffuseFactor, specularFactor)
+        }
         lastTimestamp = timestamp;
         window.requestAnimationFrame(animate);
     }
@@ -211,6 +232,19 @@ window.addEventListener('load', async () => {
 
     function assignKeyToAction(event: KeyboardEvent, ispressed: boolean) {
         switch (event.key) {
+            case "r": //zwischen zwei Renderern wechseln
+                if(!ispressed) {
+                    break
+                }
+                useRenderer = !useRenderer;
+                if(useRenderer === UseRasterizer) {
+                    canvasRaytracer.style.opacity = '0'
+                    canvasRaster.style.opacity = '1'
+                } else {
+                    canvasRaster.style.opacity = '0'
+                    canvasRaytracer.style.opacity = '1'
+                }
+                break;
             //todo: Temp testing for camera.
             case "t":
                 cameraFreeFlight.pressed = ispressed;
