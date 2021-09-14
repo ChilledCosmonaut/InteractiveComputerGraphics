@@ -169,8 +169,9 @@ window.addEventListener('load', () => {
             savedFile = fileReader.result.toString();
             save = JSON.parse(savedFile);
             traverse(sg, save);
-            console.log(sg.child);
-            console.log(save.child);
+            console.log("savedFile:",savedFile);
+            console.log("rootNode:",sg);
+            console.log("save:",save);
         };
         fileReader.onerror = function () {
             alert(fileReader.error);
@@ -183,7 +184,9 @@ window.addEventListener('load', () => {
 
     function traverse(sgNode:GroupNode, savedNode:any) {
         let transformation: Matrix = new Matrix(savedNode.transform.matrix.data);
+        transformation.copyArray(savedNode.transform.matrix.data);
         let inverseTransformation: Matrix = new Matrix(savedNode.transform.inverse.data);
+        inverseTransformation.copyArray(savedNode.transform.inverse.data);
         sgNode.transform.setMatrix(transformation);
         sgNode.transform.setInverseMatrix(inverseTransformation);
         for(let childCounter = 0; childCounter < sgNode.child.length; childCounter++) {
@@ -192,7 +195,6 @@ window.addEventListener('load', () => {
                 currentChild = sgNode.child[childCounter] as GroupNode;
                 traverse(currentChild, savedNode.child[childCounter]);
             }
-
         }
         /*for (let i in sgNode) {
             func.apply(this, [i,o[i]]);

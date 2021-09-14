@@ -31,7 +31,7 @@ class MatrixTransformation implements Transformation {
     }
 
     setInverseMatrix(matrix:Matrix) {
-        this.matrix=matrix;
+        this.inverse = matrix;
     }
 }
 
