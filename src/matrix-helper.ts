@@ -1,6 +1,5 @@
 import Vector from "./vector";
 import Matrix from "./matrix";
-import SAVE from "./desktop-boilerplate";
 
 /**
  * Class containing helper Methods, in relation to Matrix Class.

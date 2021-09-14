@@ -20,13 +20,7 @@ import { Rotation, Translation } from './transformation';
 import {RotationNode} from "./animation-node-rotation";
 import {DriverNode} from "./animation-node-driver";
 import {JumperNode} from "./animation-node-jumper";
-//import Matrix from "./matrix";
-
-let size = 1;
-let nodePosition = 0;
-let SAVE = new Array(size).fill(new Array(4).fill(new Array(4)));
-//let SAVE:Matrix [];
-export default SAVE;
+import Matrix from "./matrix";
 
 window.addEventListener('load', () => {
     const canvas = document.getElementById("rasteriser") as HTMLCanvasElement;
@@ -42,25 +36,25 @@ window.addEventListener('load', () => {
     //                |
     //             Sphere
 
-    const sg = new GroupNode(new Translation(new Vector(0, 0, -4, 0)));
+    let sg = new GroupNode(new Translation(new Vector(0, 0, -4, 0)));
 
-    const groupNode0 = new GroupNode(new Translation(new Vector(.2, .2, -1, 0)))
+    let groupNode0 = new GroupNode(new Translation(new Vector(.2, .2, -1, 0)))
     sg.add(groupNode0);
-    const desktopBox = new TextureBoxNode('wood_texture.jpg', 'wood_normal.jpg');
+    let desktopBox = new TextureBoxNode('wood_texture.jpg', 'wood_normal.jpg');
     groupNode0.add(desktopBox);
 
-    const groupNode1 = new GroupNode(new Translation(new Vector(0, 2, -5, 0)));
+    let groupNode1 = new GroupNode(new Translation(new Vector(0, 2, -5, 0)));
     sg.add(groupNode1);
-    const groupNode2 = new GroupNode(new Rotation(new Vector(0, 0, 1, 0), 0));
+    let groupNode2 = new GroupNode(new Rotation(new Vector(0, 0, 1, 0), 0));
     groupNode1.add(groupNode2);
-    const sphere = new SphereNode(new Vector(1,1,0,0));
+    let sphere = new SphereNode(new Vector(1,1,0,0));
     groupNode2.add(sphere);
 
-    const groupNode3 = new GroupNode(new Translation(new Vector(2,0, -3, 0)));
+    let groupNode3 = new GroupNode(new Translation(new Vector(2,0, -3, 0)));
     sg.add(groupNode3);
-    const groupNode4 = new GroupNode(new Rotation(new Vector(0,0,1,0), Math.PI/4))
+    let groupNode4 = new GroupNode(new Rotation(new Vector(0,0,1,0), Math.PI/4))
     groupNode3.add(groupNode4);
-    const pyramid = new PyramidNode(new Vector(1,1,1,0));
+    let pyramid = new PyramidNode(new Vector(1,1,1,0));
     groupNode4.add(pyramid);
 
     // setup for rendering
@@ -145,15 +139,15 @@ window.addEventListener('load', () => {
         }}
 
     let jsonContent: any;
-    jsonContent = JSON.stringify(SAVE);
 
     document.getElementById("saveButton").onclick = function () {
-        save("saveFile.json", jsonContent)
+        save("saveFile.json")
     }
 
-    function save(filename:any, text:any) {
+    function save(filename:any) {
+        jsonContent = JSON.stringify(sg,null, "\t" );
         let element = document.createElement('a');
-        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonContent));
         element.setAttribute('download', filename);
 
         element.style.display = 'none';
@@ -169,16 +163,45 @@ window.addEventListener('load', () => {
         let file = this.files[0];
         let fileReader = new FileReader();
         let savedFile: string;
+        let save;
         fileReader.readAsText(file);
         fileReader.onload = function () {
             savedFile = fileReader.result.toString();
+            save = JSON.parse(savedFile);
+            traverse(sg, save);
+            console.log(sg.child);
+            console.log(save.child);
         };
         fileReader.onerror = function () {
             alert(fileReader.error);
         };
-         SAVE = JSON.parse(savedFile);
-
     });
+
+    function process(key:any, value:any) {
+        console.log(key + " : " + value);
+    }
+
+    function traverse(sgNode:GroupNode, savedNode:any) {
+        let transformation: Matrix = new Matrix(savedNode.transform.matrix.data);
+        let inverseTransformation: Matrix = new Matrix(savedNode.transform.inverse.data);
+        sgNode.transform.setMatrix(transformation);
+        sgNode.transform.setInverseMatrix(inverseTransformation);
+        for(let childCounter = 0; childCounter < sgNode.child.length; childCounter++) {
+            let currentChild:GroupNode;
+            if(sgNode.child[childCounter] instanceof GroupNode) {
+                currentChild = sgNode.child[childCounter] as GroupNode;
+                traverse(currentChild, savedNode.child[childCounter]);
+            }
+
+        }
+        /*for (let i in sgNode) {
+            func.apply(this, [i,o[i]]);
+            if(o[i] !== null && typeof(o[i]) == "object") {
+                traverse(o[i], func);
+            }
+        }*/
+    }
+
 })
 
 
