@@ -23,6 +23,7 @@ import {JumperNode} from "./animation-node-jumper";
 import {Camera, CameraFreeFlight} from "./camera";
 import {createEnvironment} from "./createEnvironment";
 import RayVisitor from "./rayvisitor";
+import Sphere from "./sphere";
 
 const UseRasterizer = false;
 const UseRaytracer = true;
@@ -64,8 +65,10 @@ window.addEventListener('load', async () => {
     const sg = new GroupNode(new Translation(new Vector(0, 0, 0, 0)));
 
     //Camera Node
+    const cameraTilt = new GroupNode(new Translation(new Vector(0,0,0,0)));
+    sg.add(cameraTilt);
     const cameraNode = new GroupNode(new Translation(new Vector(0,0,0,0)));
-    sg.add(cameraNode);
+    cameraTilt.add(cameraNode);
     const cameraAsNode = new CameraNode(
         new Vector(0, 0, 0, 1),
         new Vector(0, 0, -1,1),
@@ -78,7 +81,7 @@ window.addEventListener('load', async () => {
 
     //Light Nodes
     const lightNode = new GroupNode(new Translation(new Vector(0,0,0,0)));
-    sg.add(lightNode);
+    cameraNode.add(lightNode);
     const lightRotation = new GroupNode(new Rotation(new Vector(0,0,0,0),0));
     lightNode.add(lightRotation);
     const lightTranslation1 = new GroupNode(new Translation(new Vector(1,1,1,1)));
@@ -89,6 +92,18 @@ window.addEventListener('load', async () => {
     lightRotation.add(lightTranslation2);
     const light2 = new LightNode(new Vector(0,0,0,0));
     lightTranslation2.add(light2);
+
+    //Light Visualisation
+    const lightVis = new GroupNode(new Rotation(new Vector(0,0,0,0),0));
+    lightNode.add(lightVis);
+    const lightVis1 = new GroupNode(new Translation(new Vector(1,1,1,1)));
+    lightVis.add(lightVis1);
+    const lightVis11 = new SphereNode(new Vector(0,0,0,0));
+    lightVis1.add(lightVis11);
+    const lightVis2 = new GroupNode(new Translation(new Vector(-1,-1,-1,1)));
+    lightVis.add(lightVis2);
+    const lightVis22 = new SphereNode(new Vector(0,0,0,0));
+    lightVis2.add(lightVis22);
 
     const sphereGroupNode = new GroupNode(new Translation(new Vector(0, 0, -3, 1)));
     sg.add(sphereGroupNode);
@@ -137,9 +152,10 @@ window.addEventListener('load', async () => {
     sg.add(gn4);
     gn4.add(new SphereNode(new Vector(1, 0, 1, 0)));
 
-    //createEnvironment(sg);
+    //
 
     * */
+    createEnvironment(sg);
     // setup for rendering
     const setupVisitor = new RasterSetupVisitor(contextWebGl);
     setupVisitor.setup(sg);
@@ -172,6 +188,9 @@ window.addEventListener('load', async () => {
     //SphereOrbit.rightRotation = true;
     let lightOrbit = new RotationNode(lightRotation, new Vector(0,1,0,0));
     lightOrbit.rightRotation = true;
+    let lightVisOrbit = new RotationNode(lightVis, new Vector(0,1,0,0));
+    lightVisOrbit.rightRotation = true;
+    let cameraTiltRotation = new RotationNode(cameraTilt, new Vector(1,0,0,0));
     let animationDriverNode = new DriverNode(desktopNode);
     let animationJumperNode = new JumperNode(desktopNode);
 
@@ -182,7 +201,9 @@ window.addEventListener('load', async () => {
         animationRotationNode.simulate(deltaT);
         cameraDriverNode.simulate(deltaT);
         //SphereOrbit.simulate(deltaT);
+        cameraTiltRotation.simulate(deltaT);
         lightOrbit.simulate(deltaT);
+        lightVisOrbit.simulate(deltaT);
         animationJumperNode.simulate(deltaT);
         //cameraFreeFlight.simulate(deltaT)
 
@@ -263,9 +284,11 @@ window.addEventListener('load', async () => {
 
             case "j":
                 animationDriverNode.up = ispressed;
+                cameraDriverNode.up = ispressed;
                 break;
             case "m":
                 animationDriverNode.down = ispressed;
+                cameraDriverNode.down = ispressed;
                 break;
         //gieren
             case "q":
@@ -277,12 +300,14 @@ window.addEventListener('load', async () => {
                 animationRotationNode.axisToRotateAround = new Vector(0, 1, 0, 1)
                 break;
         //nicken
-            case "r":
+            case "z":
                 animationRotationNode.upRotation = ispressed;
+                cameraTiltRotation.downRotation = ispressed;
                 animationRotationNode.axisToRotateAround = new Vector(1, 0, 0, 0)
                 break;
-            case "f":
+            case "h":
                 animationRotationNode.downRotation = ispressed;
+                cameraTiltRotation.upRotation = ispressed;
                 animationRotationNode.axisToRotateAround = new Vector(1, 0, 0, 1)
                 break;
 
@@ -290,14 +315,14 @@ window.addEventListener('load', async () => {
                 animationJumperNode.isJumping = true;
                 break;
             case "w":
-                animationDriverNode.forward = ispressed;
+                //animationDriverNode.forward = ispressed;
                 cameraDriverNode.forward = ispressed;
                 break;
             case "a":
                 animationDriverNode.left = ispressed
                 break;
             case "s":
-                animationDriverNode.backward = ispressed;
+                //animationDriverNode.backward = ispressed;
                 cameraDriverNode.backward = ispressed;
                 break;
             case "d":

@@ -45,6 +45,7 @@ export class RasterVisitor implements Visitor {
   ambientFactor: number;
   diffuseFactor: number;
   specularFactor: number;
+  formerPosition: Vector;
 
   camera:Camera;
   /**
@@ -287,11 +288,15 @@ export class RasterVisitor implements Visitor {
     let toWorld = this.transformation[this.transformation.length - 1];
     // TODO calculate the model matrix for the box
     position = toWorld.mulVec(position);
-    if (this.perspective) {
+    position = this.lookat.mulVec(position);
+    /*if (this.perspective) {
       position = this.perspective.mulVec(position);
     }
-    position = this.lookat.mulVec(position);
-    //console.log(position);
+    /*if (position != this.formerPosition){
+      console.log(this.formerPosition);
+      console.log(position);
+      this.formerPosition = position;
+    }*/
     this.lightPositions.push(position);
     this.updateLightArray();
   }
@@ -313,12 +318,12 @@ export class RasterVisitor implements Visitor {
   visitCameraNode(node: CameraNode) {
     let toWorld = this.transformation[this.transformation.length - 1]
     let fromWorld = this.inverseTransformation[this.inverseTransformation.length - 1];
-    /*this.lookat =
-        Matrix.lookat(
+    this.lookat =
+        toWorld.mul(Matrix.lookat(
         node.eye,
         node.center,
         node.up
-        ).mul(toWorld);
+        ));
 
     this.perspective =
         Matrix.perspective(
@@ -326,12 +331,12 @@ export class RasterVisitor implements Visitor {
         node.aspect,
         node.near,
         node.far
-    ).mul(toWorld);*/
-    const eye = this.camera.eye = MatrixHelper.getPositionOfMatrix(toWorld)
+    );
+    /*const eye = this.camera.eye = MatrixHelper.getPositionOfMatrix(toWorld)
     const localDir = new Vector(0, 0, -1, 0);
     const globalDir = toWorld.mulVec(localDir);
     this.camera.center = eye.add(globalDir)
-    this.setupCamera(this.camera);
+    this.setupCamera(this.camera);*/
   }
 }
 
