@@ -92,7 +92,7 @@ export default class RayVisitor implements Visitor {
             data[4 * (width * y + x) + 3] = 255;
           } else {
             let color;
-            color = phong(this.intersectionColor, this.intersection, this.lightPositions, 10, camera.origin);
+            color = phong(this.intersectionColor, this.intersection, this.lightPositions, 10, camera.origin, ambientFactor, diffuseFactor, specularFactor);
 
             /*
             //Test, der den Abstand zw. Schnittpunkt und Kamera als Farbe anzeigt.

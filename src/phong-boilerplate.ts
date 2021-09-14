@@ -63,7 +63,7 @@ function animate() {
                } else {
                    let color = phong(
                        Object.assign(Object.create(Vector.prototype), minObj.color),
-                       minIntersection, lightPositions, shininess, camera.origin);
+                       minIntersection, lightPositions, shininess, camera.origin, 0.3, 0.4, 0.8);
                    setPixel(x, y, color);
                }
 

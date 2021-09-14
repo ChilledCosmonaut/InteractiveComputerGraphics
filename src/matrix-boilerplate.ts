@@ -51,7 +51,7 @@ window.addEventListener('load', () => {
                 const ray = Ray.makeRay(x, y, camera);
                 const intersection = sphere.intersect(ray);
                 if (intersection) {
-                    const color = phong(sphere.color, intersection, lightPositions, shininess, camera.origin);
+                    const color = phong(sphere.color, intersection, lightPositions, shininess, camera.origin, 0.3, 0.4, 0.8);
                     setPixel(x, y, color);
 
                 }

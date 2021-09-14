@@ -164,7 +164,7 @@ window.addEventListener('load', async () => {
     //SphereOrbit.rightRotation = true;
     let lightOrbit = new RotationNode(lightRotation, new Vector(0,1,0,0));
     lightOrbit.rightRotation = true;
-    let animationDriverNode = new DriverNode(desktopNode);
+    let animationDriverNode = new DriverNode(sphereGroupNode);
     let animationJumperNode = new JumperNode(desktopNode);
 
     let cameraFreeFlight = new CameraFreeFlight(camera, desktopNode);
