@@ -1,4 +1,5 @@
 import Vector from './vector';
+import Matrix from "./matrix";
 
 /**
  * Class representing a ray
@@ -21,9 +22,8 @@ export default class Ray {
    */
   static makeRay(x: number, y: number,
     //camera: { eye: Vector, center: Vector, up: Vector, width: number, height: number, alpha: number }
-    camera: { origin: Vector, width: number, height: number, alpha: number }
-  ): Ray {
-    let origin = camera.origin
+    camera: { origin: Vector, width: number, height: number, alpha: number }, cameraTransform: Matrix ): Ray {
+    let origin = cameraTransform.mulVec(camera.origin);
     let direction: Vector = new Vector( //todo nochmal nachvollziehen!!!!!!!!!!!!!!!!!!!!
         x - (camera.width-1)/2,
         (camera.height-1)/2 - y,

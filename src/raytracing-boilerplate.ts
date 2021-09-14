@@ -3,6 +3,7 @@ import 'bootstrap/scss/bootstrap.scss';
 import Sphere from './sphere';
 import Vector from './vector';
 import Ray from './ray';
+import Matrix from "./matrix";
 
 window.addEventListener('load', evt => {
     const canvas = document.getElementById("raytracer") as HTMLCanvasElement;
@@ -31,7 +32,7 @@ window.addEventListener('load', evt => {
     //     }
     for (let x = 0; x < canvas.width; x++) {
         for (let y = 0; y < canvas.height; y++) {
-            const ray = Ray.makeRay(x, y, camera);
+            const ray = Ray.makeRay(x, y, camera, new Matrix([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]));
             if (sphere.intersect(ray)) {
                 data[4 * (canvas.width * y + x) + 3] = 255;
             }

@@ -9,11 +9,12 @@ import Visitor from './visitor';
 import {
   Node, GroupNode,
   SphereNode, AABoxNode,
-  TextureBoxNode, PyramidNode, ObjNode, LightNode
+  TextureBoxNode, PyramidNode, ObjNode, LightNode, CameraNode
 } from './nodes';
 import Shader from './shader';
 import {Camera} from "./camera";
 import LightSource from "./lightSource";
+import MatrixHelper from "./matrix-helper";
 
 /*
 * interface Camera {
@@ -44,6 +45,8 @@ export class RasterVisitor implements Visitor {
   ambientFactor: number;
   diffuseFactor: number;
   specularFactor: number;
+
+  camera:Camera;
   /**
    * Creates a new RasterVisitor
    * @param gl The 3D context to render to
@@ -95,6 +98,8 @@ export class RasterVisitor implements Visitor {
     this.diffuseFactor = diffuseFactor;
     this.specularFactor = specularFactor;
 
+    this.camera = camera;
+
     this.shader.getUniformFloat("ambientFactor").set(this.ambientFactor);
     this.shader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
     this.shader.getUniformFloat("specularFactor").set(this.specularFactor);
@@ -107,9 +112,9 @@ export class RasterVisitor implements Visitor {
     // clear
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
-    if (camera) {
+    /*if (camera) {
       this.setupCamera(camera);
-    }
+    }*/
 
     // traverse and render
     rootNode.accept(this);
@@ -304,6 +309,30 @@ export class RasterVisitor implements Visitor {
     let textureLightPositions = this.gl.getUniformLocation(this.textureshader.shaderProgram,'lightingLocation');
     this.gl.uniform4fv(textureLightPositions, lightPositions);
   }
+
+  visitCameraNode(node: CameraNode) {
+    let toWorld = this.transformation[this.transformation.length - 1]
+    let fromWorld = this.inverseTransformation[this.inverseTransformation.length - 1];
+    /*this.lookat =
+        Matrix.lookat(
+        node.eye,
+        node.center,
+        node.up
+        ).mul(toWorld);
+
+    this.perspective =
+        Matrix.perspective(
+        node.fovy,
+        node.aspect,
+        node.near,
+        node.far
+    ).mul(toWorld);*/
+    const eye = this.camera.eye = MatrixHelper.getPositionOfMatrix(toWorld)
+    const localDir = new Vector(0, 0, -1, 0);
+    const globalDir = toWorld.mulVec(localDir);
+    this.camera.center = eye.add(globalDir)
+    this.setupCamera(this.camera);
+  }
 }
 
 
@@ -427,13 +456,24 @@ export class RasterSetupVisitor implements Visitor {
   }
 
   visitLightNode(node: LightNode) {
-    this.objects.set(
+    /*this.objects.set(
         node,
         new LightSource(
             this.gl,
             new Vector(0,0,0,1),
             node.Colour
         )
-    );
+    );*/
+  }
+
+  visitCameraNode(node: CameraNode) {
+    /*this.objects.set(
+        node,
+        new LightSource(
+            this.gl,
+            new Vector(0,0,0,1),
+            node.Colour
+        )
+    );*/
   }
 }

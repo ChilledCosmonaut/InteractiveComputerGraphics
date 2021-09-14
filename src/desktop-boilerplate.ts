@@ -5,7 +5,7 @@ import {
     GroupNode,
     SphereNode,
     TextureBoxNode,
-    AABoxNode, PyramidNode, ObjNode, LightNode
+    AABoxNode, PyramidNode, ObjNode, LightNode, CameraNode
 } from './nodes';
 import {
     RasterVisitor,
@@ -66,6 +66,15 @@ window.addEventListener('load', async () => {
     //Camera Node
     const cameraNode = new GroupNode(new Translation(new Vector(0,0,0,0)));
     sg.add(cameraNode);
+    const cameraAsNode = new CameraNode(
+        new Vector(0, 0, 0, 1),
+        new Vector(0, 0, -1,1),
+        new Vector(0, 1, 0, 0),
+        60,
+        canvasRaster.width / canvasRaster.height,
+        0.1,
+        100);
+    cameraNode.add(cameraAsNode);
 
     //Light Nodes
     const lightNode = new GroupNode(new Translation(new Vector(0,0,0,0)));
@@ -158,6 +167,7 @@ window.addEventListener('load', async () => {
     const visitor_raytracer = new RayVisitor(context2D, 500, 500); //todo
 
     let animationRotationNode = new RotationNode(desktopNode, new Vector(0, 1, 0, 0));
+    let cameraDriverNode = new DriverNode(cameraNode);
     //let SphereOrbit = new RotationNode(sphereOrbit, new Vector(0,1,0,0))
     //SphereOrbit.rightRotation = true;
     let lightOrbit = new RotationNode(lightRotation, new Vector(0,1,0,0));
@@ -165,15 +175,16 @@ window.addEventListener('load', async () => {
     let animationDriverNode = new DriverNode(desktopNode);
     let animationJumperNode = new JumperNode(desktopNode);
 
-    let cameraFreeFlight = new CameraFreeFlight(camera, desktopNode);
+    //let cameraFreeFlight = new CameraFreeFlight(camera, desktopNode);
 
     function simulate(deltaT: number) {
         animationDriverNode.simulate(deltaT);
         animationRotationNode.simulate(deltaT);
+        cameraDriverNode.simulate(deltaT);
         //SphereOrbit.simulate(deltaT);
         lightOrbit.simulate(deltaT);
         animationJumperNode.simulate(deltaT);
-        cameraFreeFlight.simulate(deltaT)
+        //cameraFreeFlight.simulate(deltaT)
 
         /*console.log(vectorToString("cam", camera.eye));
         console.log(vectorToString("gn0", MatrixHelper.getPositionOfMatrix(gn0.transform.getMatrix())));
@@ -247,7 +258,7 @@ window.addEventListener('load', async () => {
                 break;
             //todo: Temp testing for camera.
             case "t":
-                cameraFreeFlight.pressed = ispressed;
+                //cameraFreeFlight.pressed = ispressed;
                 break;
 
             case "j":
@@ -280,12 +291,14 @@ window.addEventListener('load', async () => {
                 break;
             case "w":
                 animationDriverNode.forward = ispressed;
+                cameraDriverNode.forward = ispressed;
                 break;
             case "a":
                 animationDriverNode.left = ispressed
                 break;
             case "s":
                 animationDriverNode.backward = ispressed;
+                cameraDriverNode.backward = ispressed;
                 break;
             case "d":
                 animationDriverNode.right = ispressed;
