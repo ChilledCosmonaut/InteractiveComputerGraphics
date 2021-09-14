@@ -7,6 +7,12 @@ varying vec2 v_texCoord;
 varying vec2 v_normalCoord;
 varying vec3 vertexPosition;
 
+uniform float ambientFactor;
+uniform float diffuseFactor;
+uniform float specularFactor;
+
+uniform vec4 lightingLocation[8];
+
 const vec3 lightPos = vec3(1.0, 1.0, 1.0);
 const float shininess = 16.0;
 const float kA = 0.3;
@@ -21,16 +27,21 @@ void main(void) {
   // Read fragment color from texture
   // TODO
 
-  vec3 ambientColor = color * kA;
+  vec3 ambientColor = color * ambientFactor;
+  vec3 diffuseSpecular;
 
-  vec3 toLightVector = normalize(lightPos - vertexPosition);
-  vec3 diffuseColor = color * kD * max ( 0.0, dot ( normal ,toLightVector ));
+  for(int lightCounter = 0; lightCounter < 8; lightCounter++){
 
-  vec3 toEyeVector = normalize(vertexPosition - vec3 (0,0,0));
-  vec3 reflectionDirection = normalize(reflect (toLightVector.xyz, normal));
-  float factor2 = pow( max ( 0.0, dot (reflectionDirection, toEyeVector)), shininess);
-  vec3 specular = color * (factor2 * kS);
+    vec3 toLightVector = normalize(lightPos - vertexPosition);
+    vec3 diffuse = color * diffuseFactor * max (0.0, dot (normal, toLightVector));
 
-  vec3 accumulatedColor = ambientColor + diffuseColor + specular;
+    vec3 toEyeVector = normalize(vertexPosition - vec3 (0, 0, 0));
+    vec3 reflectionDirection = normalize(reflect (toLightVector.xyz, normal));
+    float factor2 = pow(max (0.0, dot (reflectionDirection, toEyeVector)), shininess);
+    vec3 specular = color * (factor2 * specularFactor);
+    diffuseSpecular += (diffuse + specular) * lightingLocation[lightCounter].a;
+  }
+
+  vec3 accumulatedColor = ambientColor + diffuseSpecular;
   gl_FragColor = vec4(accumulatedColor, 1.0);
 }

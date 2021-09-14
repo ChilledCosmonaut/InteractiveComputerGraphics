@@ -29,5 +29,5 @@ void main() {
   v_color = a_color.xyz;
   vertexPosition = (V * M * vec4(a_position, 1.0)).xyz;
 
-  v_normal = normalize((V * N * vec4(a_normal, 0)).xyz);
+  v_normal = normalize((V * M * vec4(a_normal, 0)).xyz);
 }

@@ -7,7 +7,12 @@ varying vec3 vertexPosition;
 
 varying vec3 v_normal;
 
-const vec3 lightPos = vec3(1.0, 1.0, 1.0);
+uniform float ambientFactor;
+uniform float diffuseFactor;
+uniform float specularFactor;
+
+uniform vec4 lightingLocation[8];
+
 const float shininess = 16.0;
 const float kA = 0.3;
 const float kD = 0.6;
@@ -19,17 +24,22 @@ void main(void) {
   // TODO
   vec3 lightColor = vec3(1.0, 1.0, 1.0);
 
-  vec3 ambientColor = v_color * kA;
+  vec3 ambientColor = v_color * ambientFactor;
+  vec3 diffuseSpecular;
 
-  vec3 toLightVector = normalize(lightPos - vertexPosition);
-  vec3 diffuseColor = v_color * kD * max ( 0.0, dot ( v_normal ,toLightVector ));
+  for(int lightCounter = 0; lightCounter < 8; lightCounter++){
+    vec3 toLightVector = normalize(lightingLocation[lightCounter].xyz - vertexPosition);
+    vec3 diffuse = v_color * diffuseFactor * max ( 0.0, dot ( v_normal ,toLightVector ));
 
-  vec3 toEyeVector = normalize(vertexPosition - vec3 (0,0,0));
-  vec3 reflectionDirection = normalize(reflect (toLightVector.xyz, v_normal));
-  float factor2 = pow( max ( 0.0, dot (reflectionDirection, toEyeVector)), shininess);
-  vec3 specular = v_color * (factor2 * kS);
+    vec3 toEyeVector = normalize(vertexPosition - vec3 (0,0,0));
+    vec3 reflectionDirection = normalize(reflect (toLightVector.xyz, v_normal));
+    float factor2 = pow( max ( 0.0, dot (reflectionDirection, toEyeVector)), shininess);
+    vec3 specular = v_color * (factor2 * specularFactor);
+    diffuseSpecular += (diffuse + specular) * lightingLocation[lightCounter].a;
+  }
 
-  vec3 accumulatedColor = ambientColor + diffuseColor + specular;
+  vec3 accumulatedColor = ambientColor + diffuseSpecular;
+
   gl_FragColor = vec4(accumulatedColor, 1.0);
 }
 

@@ -11,7 +11,6 @@ import {
     RasterSetupVisitor
 } from './rastervisitor';
 import Shader from './shader';
-
 import phongVertexShader from './phong-vertex-perspective-shader.glsl';
 import phongFragmentShader from './phong-fragment-shader.glsl';
 import textureVertexShader from './texture-vertex-perspective-shader.glsl';
@@ -41,7 +40,7 @@ window.addEventListener('load', () => {
     sg.add(gn2);
     const gn3 = new GroupNode(new Translation(new Vector(0, 0, 0, 0)));
     gn2.add(gn3);
-    const cube = new TextureBoxNode('hci-logo.png', 'test_normal.jpg');
+    const cube = new TextureBoxNode('hci-logo.png', 'test_normal.jpg', 1);
     gn3.add(cube);
 
 
@@ -84,7 +83,7 @@ window.addEventListener('load', () => {
 
     function animate(timestamp: number) {
         simulate(timestamp - lastTimestamp);
-        visitor.render(sg, camera, []);
+        visitor.render(sg, camera, [], 0.3,0.6,0.7);
         lastTimestamp = timestamp;
         window.requestAnimationFrame(animate);
     }
@@ -98,7 +97,7 @@ window.addEventListener('load', () => {
     window.addEventListener('keydown', function (event) {
         switch (event.key) {
             case "ArrowUp":
-                animationNodes[0].toggleActive();
+                //animationNodes[0].toggleActive();
                 break;
         }
     });

@@ -101,11 +101,12 @@ export default class RasterSphere {
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
         this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), this.gl.STATIC_DRAW);
         this.indexBuffer = indexBuffer;
+        this.elements = indices.length;
         const normalBuffer = this.gl.createBuffer();
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, normalBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(normals), this.gl.STATIC_DRAW);
         this.normalBuffer = normalBuffer;
-        this.elements = indices.length;
+
 
         // TODO create colorBuffer
         const colorBuffer = gl.createBuffer();

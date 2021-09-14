@@ -35,7 +35,7 @@ window.addEventListener('load', () => {
     let gn3 = new GroupNode(new Translation(new Vector(.5, 0, 0, 0)));
     gn0.add(gn3);
     sg2.add(gn0);
-    const cube = new TextureBoxNode('hci-logo.png', '');
+    const cube = new TextureBoxNode('hci-logo.png', '', 1);
     gn3.add(cube);
 
     // setup for rendering
@@ -65,7 +65,7 @@ window.addEventListener('load', () => {
     function animate(timestamp: number) {
         gn0.transform = new Rotation(new Vector(0, 0, 1, 0), timestamp / 1000);
         gn3.transform = new Rotation(new Vector(0, 1, 0, 0), timestamp / 1000);
-        visitor.render(sg, camera, []);
+        visitor.render(sg, camera, [], 0.3,0.6,0.7);
         window.requestAnimationFrame(animate);
     }
 

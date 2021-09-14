@@ -13,15 +13,15 @@ import Intersection from './intersection';
 export default function phong(
   color: Vector, intersection: Intersection,
   lightPositions: Array<Vector>, shininess: number,
-  cameraPosition: Vector
+  cameraPosition: Vector,
+  ambientFactor: number,
+  diffuseFactor: number,
+  specularFactor: number
 ): Vector {
-  const lightColor = new Vector(0.8, 0.8, 0.8, 0);
-  const kA = 0.8;
-  const kD = 0.5;
-  const kS = 0.5;
+  const lightColor = new Vector(0.8, 0.8, 0.8, 0);3
   
-  color = ambientLight(kA, color).add(diffuseLight(kD, lightPositions, intersection, lightColor).add(
-    specularLight(kS, shininess, lightPositions, intersection, lightColor, cameraPosition)
+  color = ambientLight(ambientFactor, color).add(diffuseLight(diffuseFactor, lightPositions, intersection, lightColor).add(
+    specularLight(specularFactor, shininess, lightPositions, intersection, lightColor, cameraPosition)
   ))
 
     color.w = 255
@@ -37,8 +37,10 @@ function diffuseLight(kD: number, lightPositions: Array<Vector>, intersection: I
   let diffuse: Vector = new Vector(0,0,0,0);
 
   lightPositions.forEach(element => {
-    let lightDirection: Vector = element.sub(intersection.point).normalize()
-    diffuse = diffuse.add(lJ.mul(Math.max(0, intersection.normal.dot(lightDirection))))
+    if(element != null) {
+      let lightDirection: Vector = element.sub(intersection.point).normalize()
+      diffuse = diffuse.add(lJ.mul(Math.max(0, intersection.normal.dot(lightDirection))))
+    }
   });
   return diffuse.mul(kD)
 }
@@ -48,10 +50,12 @@ function specularLight(kS: number, kE: number, lightPositions: Array<Vector>, in
   let diffuse: Vector = new Vector(0,0,0,0);
 
   lightPositions.forEach(element => {
-    let lightDirection: Vector = element.sub(intersection.point).normalize()
-    let viewDirection: Vector = cameraPosition.sub(intersection.point).normalize()
-    let rJ: Vector = intersection.normal.mul(2 * intersection.normal.dot(lightDirection)).sub(lightDirection)
-    diffuse = diffuse.add(lJ.mul(Math.pow(Math.max(0, rJ.dot(viewDirection)), kE)))
+    if(element != null) {
+      let lightDirection: Vector = element.sub(intersection.point).normalize()
+      let viewDirection: Vector = cameraPosition.sub(intersection.point).normalize()
+      let rJ: Vector = intersection.normal.mul(2 * intersection.normal.dot(lightDirection)).sub(lightDirection)
+      diffuse = diffuse.add(lJ.mul(Math.pow(Math.max(0, rJ.dot(viewDirection)), kE)))
+    }
   });
   return diffuse.mul(kS)
 }

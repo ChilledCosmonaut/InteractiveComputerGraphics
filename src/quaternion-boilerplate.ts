@@ -11,7 +11,6 @@ import {
     RasterSetupVisitor
 } from './rastervisitor';
 import Shader from './shader';
-
 import phongVertexShader from './phong-vertex-perspective-shader.glsl';
 import phongFragmentShader from './phong-fragment-shader.glsl';
 import textureVertexShader from './texture-vertex-perspective-shader.glsl';
@@ -26,7 +25,7 @@ window.addEventListener('load', () => {
 
     // construct scene graph
     const sg = new GroupNode(new SQT(new Vector(1, 1, 1, 0), { angle: 0.6, axis: new Vector(0, 1, 0, 0) }, new Vector(0, 0, 0, 0)));
-    const cube = new TextureBoxNode('hci-logo.png', '');
+    const cube = new TextureBoxNode('hci-logo.png', '', 1);
     sg.add(cube);
 
     // setup for rendering
@@ -70,7 +69,7 @@ window.addEventListener('load', () => {
 
     function animate(timestamp: number) {
         simulate(timestamp - lastTimestamp);
-        visitor.render(sg, camera, []);
+        visitor.render(sg, camera, [], 0.3,0.6,0.7);
         lastTimestamp = timestamp;
         window.requestAnimationFrame(animate);
     }

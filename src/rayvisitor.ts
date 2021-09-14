@@ -7,7 +7,7 @@ import Visitor from './visitor';
 import phong from './phong';
 import {
   Node, GroupNode, SphereNode,
-  AABoxNode, TextureBoxNode, PyramidNode
+  AABoxNode, TextureBoxNode, PyramidNode, ObjNode, LightNode
 } from './nodes';
 import AABox from './aabox';
 import {Transformation} from "./transformation";
@@ -33,6 +33,8 @@ export default class RayVisitor implements Visitor {
   ray: Ray;
   transformation: Array<Matrix>;
   inverseTransformation: Array<Matrix>;
+  lightPositions: Array<Vector>;
+  lightSourceCounter: number;
 
   /**
    * Creates a new RayVisitor
@@ -57,17 +59,22 @@ export default class RayVisitor implements Visitor {
   render(
     rootNode: Node,
     camera: { origin: Vector, width: number, height: number, alpha: number },
-    lightPositions: Array<Vector>
+    lightPositions: Array<Vector>,
+    ambientFactor: number,
+    diffuseFactor: number,
+    specularFactor: number
   ) {
     // clear
     let data = this.imageData.data;
     data.fill(0);
+    this.lightPositions = new Array<Vector>(8);
 
     // raytrace
     const width = this.imageData.width;
     const height = this.imageData.height;
     for (let x = 0; x < width; x++) {
       for (let y = 0; y < height; y++) {
+        this.lightSourceCounter = 0;
         this.ray = Ray.makeRay(x, y, camera);
         this.inverseTransformation = new Array<Matrix>();
         this.inverseTransformation.push(Matrix.identity());
@@ -76,7 +83,7 @@ export default class RayVisitor implements Visitor {
 
         this.intersection = null;
         rootNode.accept(this);
-
+        //console.log(this.lightPositions.size)
         if (this.intersection) {
           if (!this.intersectionColor) {
             data[4 * (width * y + x) + 0] = 0;
@@ -84,7 +91,21 @@ export default class RayVisitor implements Visitor {
             data[4 * (width * y + x) + 2] = 0;
             data[4 * (width * y + x) + 3] = 255;
           } else {
-            let color = phong(this.intersectionColor, this.intersection, lightPositions, 10, camera.origin);
+            let color;
+            color = phong(this.intersectionColor, this.intersection, this.lightPositions, 10, camera.origin);
+
+            /*
+            //Test, der den Abstand zw. Schnittpunkt und Kamera als Farbe anzeigt.
+            const colorFromDistance = (t: number) => {
+              if(isNaN(t)) {return new Vector(255,0,255,255)}
+              if(typeof t !== 'number') {return new Vector(0,255,255,255)}
+              t*=0.02
+              if(t<0) {return new Vector(255,0,0,255)}
+              if(t>255) {return new Vector(255, 255, 0, 255)}
+              return new Vector(t, t, t, 255)
+            }
+            color = colorFromDistance(this.intersection.t);*/
+
             data[4 * (width * y + x) + 0] = color.r * 255;
             data[4 * (width * y + x) + 1] = color.g * 255;
             data[4 * (width * y + x) + 2] = color.b * 255;
@@ -128,7 +149,7 @@ export default class RayVisitor implements Visitor {
       const intersectionPointWorld = toWorld.mulVec(intersection.point);
       const intersectionNormalWorld = toWorld.mulVec(intersection.normal).normalize();
       intersection = new Intersection(
-        (intersectionPointWorld.x - ray.origin.x) / ray.direction.x,
+        (intersectionPointWorld.z - ray.origin.z) / ray.direction.z,
         intersectionPointWorld,
         intersectionNormalWorld
       );
@@ -143,7 +164,7 @@ export default class RayVisitor implements Visitor {
    * Visits an axis aligned box node
    * @param node The node to visit
    */
-  visitAABoxNode(node: AABoxNode) {
+  visitAABoxNode(node: AABoxNode) {}/*
     let toWorld = this.transformation[this.transformation.length - 1];
     let fromWorld = this.inverseTransformation[this.inverseTransformation.length - 1];
     // TODO assign the model matrix and its inverse
@@ -155,7 +176,7 @@ export default class RayVisitor implements Visitor {
       const intersectionPointWorld = toWorld.mulVec(intersection.point);
       const intersectionNormalWorld = toWorld.mulVec(intersection.normal).normalize();
       intersection = new Intersection(
-        (intersectionPointWorld.x - ray.origin.x) / ray.direction.x,
+        (intersectionPointWorld.z - ray.origin.z) / ray.direction.z,
         intersectionPointWorld,
         intersectionNormalWorld
       );
@@ -165,6 +186,7 @@ export default class RayVisitor implements Visitor {
       }
     }
   }
+  */
 
   /**
    * Visits a textured box node
@@ -178,4 +200,19 @@ export default class RayVisitor implements Visitor {
    * @param node The node to visit
    */
   visitPyramidNode(node: PyramidNode) { }
+
+
+  /**
+   * Visits a textured box node
+   * @param node The node to visit
+   */
+  visitObjNode(node: ObjNode) { }
+
+  visitLightNode(node: LightNode): void {
+    let position = new Vector(0,0,0,1);
+    let toWorld = this.transformation[this.transformation.length - 1];
+    position = toWorld.mulVec(position);
+    this.lightPositions[this.lightSourceCounter] = (position);
+    this.lightSourceCounter++;
+  }
 }

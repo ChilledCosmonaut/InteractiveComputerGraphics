@@ -2,7 +2,7 @@ import 'bootstrap';
 import 'bootstrap/scss/bootstrap.scss';
 import Vector from './vector';
 import {
-    GroupNode,
+    GroupNode, LightNode,
     SphereNode
 } from './nodes';
 import RayVisitor from './rayvisitor';
@@ -13,6 +13,14 @@ window.addEventListener('load', () => {
     const ctx = canvas.getContext("2d");
 
     const sg = new GroupNode(new Translation(new Vector(0, 0, -5, 0)));
+    const lightGroupNode = new GroupNode(new Translation(new Vector(5,3,6,0)));
+    sg.add(lightGroupNode);
+    const light = new LightNode(new Vector(1,1,1,1));
+    lightGroupNode.add(light);
+    const lightGroupNode1 = new GroupNode(new Translation(new Vector(-5,-3,6,0)));
+    sg.add(lightGroupNode1);
+    const light2 = new LightNode(new Vector(1,1,1,1));
+    lightGroupNode1.add(light2);
     const gnRotation = new Rotation(new Vector(1, 0, 0, 0), 0)
     const gn = new GroupNode(gnRotation);
     sg.add(gn);
