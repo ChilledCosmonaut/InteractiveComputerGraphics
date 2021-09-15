@@ -5,6 +5,7 @@ import Sphere from './sphere';
 import Ray from './ray';
 import Intersection from './intersection';
 import phong from './phong';
+import Matrix from "./matrix";
 
 window.addEventListener('load', () => {
     const canvas = document.getElementById("raytracer") as HTMLCanvasElement;
@@ -47,7 +48,7 @@ function animate() {
    data.fill(0);
    for (let x = 0; x < canvas.width; x++) {
        for (let y = 0; y < canvas.height; y++) {
-           const ray = Ray.makeRay(x, y, camera);
+           const ray = Ray.makeRay(x, y, camera, new Matrix([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]));
            let minIntersection = new Intersection(Infinity, null, null);
            let minObj = null;
            for (let shape of objects) {
@@ -63,7 +64,7 @@ function animate() {
                } else {
                    let color = phong(
                        Object.assign(Object.create(Vector.prototype), minObj.color),
-                       minIntersection, lightPositions, shininess, camera.origin);
+                       minIntersection, lightPositions, shininess, camera.origin, 0.3,0.7,0.8);
                    setPixel(x, y, color);
                }
 

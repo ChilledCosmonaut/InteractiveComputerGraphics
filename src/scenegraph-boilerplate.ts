@@ -59,7 +59,7 @@ window.addEventListener('load', () => {
         lastTimestamp = timestamp;
         gnRotation.angle = animationTime / 2000;
 
-        visitor.render(sg, camera, lightPositions);
+        visitor.render(sg, camera, lightPositions, 0.3,0.7,0.8);
         // animationHandle = window.requestAnimationFrame(animate);
     }
 
