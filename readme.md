@@ -41,5 +41,8 @@ h: nach unten rotieren
 
 r: Wechseln zwischen dem Rasterizer und dem Raytracer Renderer
 
+t: Bewegt den Desktop Node(Texturierte Box und Anhänge) nach vorne
+g: Bewegt den Desktop Node(Texturierte Box und Anhänge) nach hinten
+
 
 
