@@ -41,11 +41,11 @@ export class RasterVisitor implements Visitor {
   transformation: Array<Matrix>;
   inverseTransformation: Array<Matrix>;
   lightPositions: Array<Vector>;
+  LightPositionNumbers: Array<number>;
 
   ambientFactor: number;
   diffuseFactor: number;
   specularFactor: number;
-  formerPosition: Vector;
 
   camera:Camera;
   /**
@@ -100,14 +100,9 @@ export class RasterVisitor implements Visitor {
     this.specularFactor = specularFactor;
 
     this.camera = camera;
+    /*
 
-    this.shader.getUniformFloat("ambientFactor").set(this.ambientFactor);
-    this.shader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
-    this.shader.getUniformFloat("specularFactor").set(this.specularFactor);
-    this.textureshader.getUniformFloat("ambientFactor").set(this.ambientFactor);
-    this.textureshader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
-    this.textureshader.getUniformFloat("specularFactor").set(this.specularFactor);
-
+    */
     this.lightPositions = new Array<Vector>();
 
     // clear
@@ -195,6 +190,14 @@ export class RasterVisitor implements Visitor {
     normalMatrix.setVal(3, 1, 0);
     normalMatrix.setVal(3, 2, 0);
     shader.getUniformMatrix("N").set(normalMatrix);
+
+    this.shader.getUniformFloat("ambientFactor").set(this.ambientFactor);
+    this.shader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
+    this.shader.getUniformFloat("specularFactor").set(this.specularFactor);
+
+    let colorLightPositions = this.gl.getUniformLocation(this.shader.shaderProgram,'lightingLocation');
+    this.gl.uniform4fv(colorLightPositions, this.LightPositionNumbers);
+
     this.renderables.get(node).render(shader);
   }
 
@@ -216,6 +219,13 @@ export class RasterVisitor implements Visitor {
     if (P && this.perspective) {
       P.set(this.perspective);
     }
+
+    this.shader.getUniformFloat("ambientFactor").set(this.ambientFactor);
+    this.shader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
+    this.shader.getUniformFloat("specularFactor").set(this.specularFactor);
+
+    let colorLightPositions = this.gl.getUniformLocation(this.shader.shaderProgram,'lightingLocation');
+    this.gl.uniform4fv(colorLightPositions, this.LightPositionNumbers);
 
     this.renderables.get(node).render(shader);
   }
@@ -240,6 +250,13 @@ export class RasterVisitor implements Visitor {
       P.set(this.perspective);
     }
 
+    this.shader.getUniformFloat("ambientFactor").set(this.ambientFactor);
+    this.shader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
+    this.shader.getUniformFloat("specularFactor").set(this.specularFactor);
+
+    let colorLightPositions = this.gl.getUniformLocation(this.shader.shaderProgram,'lightingLocation');
+    this.gl.uniform4fv(colorLightPositions, this.LightPositionNumbers);
+
     this.renderables.get(node).render(shader);
   }
 
@@ -251,6 +268,9 @@ export class RasterVisitor implements Visitor {
     this.textureshader.use();
     let shader = this.textureshader;
 
+    this.textureshader.getUniformFloat("ambientFactor").set(this.ambientFactor);
+    this.textureshader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
+    this.textureshader.getUniformFloat("specularFactor").set(this.specularFactor);
     let toWorld = this.transformation[this.transformation.length - 1];
     // TODO calculate the model matrix for the box
     shader.getUniformMatrix("M").set(toWorld);
@@ -259,6 +279,9 @@ export class RasterVisitor implements Visitor {
       P.set(this.perspective);
     }
     shader.getUniformMatrix("V").set(this.lookat);
+
+    let textureLightPositions = this.gl.getUniformLocation(this.textureshader.shaderProgram,'lightingLocation');
+    this.gl.uniform4fv(textureLightPositions, this.LightPositionNumbers);
 
     this.renderables.get(node).render(shader);
   }
@@ -279,6 +302,13 @@ export class RasterVisitor implements Visitor {
       P.set(this.perspective);
     }
     shader.getUniformMatrix("V").set(this.lookat);
+
+    this.shader.getUniformFloat("ambientFactor").set(this.ambientFactor);
+    this.shader.getUniformFloat("diffuseFactor").set(this.diffuseFactor);
+    this.shader.getUniformFloat("specularFactor").set(this.specularFactor);
+
+    let colorLightPositions = this.gl.getUniformLocation(this.shader.shaderProgram,'lightingLocation');
+    this.gl.uniform4fv(colorLightPositions, this.LightPositionNumbers);
 
     this.renderables.get(node).render(shader);
   }
@@ -302,17 +332,13 @@ export class RasterVisitor implements Visitor {
   }
 
   updateLightArray(){
-    let lightPositions = new Array<number>();
+    this.LightPositionNumbers = new Array<number>();
     for (let lightCounter = 0; lightCounter < this.lightPositions.length; lightCounter++){
-      lightPositions.push(this.lightPositions[lightCounter].x);
-      lightPositions.push(this.lightPositions[lightCounter].y);
-      lightPositions.push(this.lightPositions[lightCounter].z);
-      lightPositions.push(1);
+      this.LightPositionNumbers.push(this.lightPositions[lightCounter].x);
+      this.LightPositionNumbers.push(this.lightPositions[lightCounter].y);
+      this.LightPositionNumbers.push(this.lightPositions[lightCounter].z);
+      this.LightPositionNumbers.push(1);
     }
-    let colorLightPositions = this.gl.getUniformLocation(this.shader.shaderProgram,'lightingLocation');
-    this.gl.uniform4fv(colorLightPositions, lightPositions);
-    let textureLightPositions = this.gl.getUniformLocation(this.textureshader.shaderProgram,'lightingLocation');
-    this.gl.uniform4fv(textureLightPositions, lightPositions);
   }
 
   visitCameraNode(node: CameraNode) {
