@@ -69,10 +69,10 @@ window.addEventListener('load', async () => {
     //Camera Node
     const cameraNode = new GroupNode(new Translation(new Vector(0,0,0,0)));
     sg.add(cameraNode);
-    const cameraRotation = new GroupNode(new Translation(new Vector(0,0,0,0)));
-    cameraNode.add(cameraRotation);
     const cameraTilt = new GroupNode(new Translation(new Vector(0,0,0,0)));
-    cameraRotation.add(cameraTilt);
+    cameraNode.add(cameraTilt);
+    const cameraRotation = new GroupNode(new Translation(new Vector(0,0,0,0)));
+    cameraTilt.add(cameraRotation);
 
     const cameraAsNode = new CameraNode(
         new Vector(0, 0, 0, 1),
@@ -82,7 +82,7 @@ window.addEventListener('load', async () => {
         canvasRaster.width / canvasRaster.height,
         0.1,
         100);
-    cameraTilt.add(cameraAsNode);
+    cameraRotation.add(cameraAsNode);
 
     //Light Nodes
     const lightNode = new GroupNode(new Translation(new Vector(0,0,0,0)));
@@ -171,7 +171,7 @@ window.addEventListener('load', async () => {
     lightOrbit.rightRotation = true;
     let cameraYRotation = new RotationNode(cameraRotation, new Vector(0,1,0,0));
     let cameraTiltRotation = new RotationNode(cameraTilt, new Vector(1,0,0,0));
-    let cameraDriverNode = new CombinedDriverNode(cameraNode, cameraRotation, cameraTilt);
+    let cameraDriverNode = new CombinedDriverNode(cameraNode, cameraTilt, cameraRotation);
     let animationDriverNode = new DriverNode(desktopNode);
     let animationJumperNode = new JumperNode(desktopNode);
 

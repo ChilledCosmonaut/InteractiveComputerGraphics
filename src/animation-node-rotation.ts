@@ -39,6 +39,7 @@ export class RotationNode extends AnimationNode {
             let matrix = this.groupNode.transform.getMatrix();
             let inverseMatrix = this.groupNode.transform.getInverseMatrix();
 
+
             let rotationPerSec: number = 0.52359877;
             const sign = (this.leftRotation ? 1 : 0) + (this.rightRotation ? -1 : 0) + (this.upRotation ? 1 : 0) + (this.downRotation ? -1 : 0)
             const dAngle = sign * rotationPerSec * (deltaT/1000);
