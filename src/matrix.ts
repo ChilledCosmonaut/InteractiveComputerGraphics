@@ -18,8 +18,14 @@ export default class Matrix {
     this.data = new Float32Array(16);
     for (let row = 0; row < 4; row++) {
       for (let col = 0; col < 4; col++) {
-        this.data[row * 4 + col] = mat[col * 4 + row];
+        this.data[row * 4+ col] = mat[col * 4 + row];
       }
+    }
+  }
+
+  copyArray(array:Array<number>) {
+    for(let i = 0; this.data.length > i; i++) {
+      this.data[i] = array[i];
     }
   }
 
