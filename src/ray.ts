@@ -23,12 +23,12 @@ export default class Ray {
   static makeRay(x: number, y: number,
     //camera: { eye: Vector, center: Vector, up: Vector, width: number, height: number, alpha: number }
     camera: { origin: Vector, width: number, height: number, alpha: number }, cameraTransform: Matrix ): Ray {
-    let origin = cameraTransform.mulVec(camera.origin);
+    //let origin = cameraTransform.mulVec(camera.origin);//Todo Watch out for errors
     let direction: Vector = new Vector( //todo nochmal nachvollziehen!!!!!!!!!!!!!!!!!!!!
         x - (camera.width-1)/2,
         (camera.height-1)/2 - y,
         -((camera.width/2)/Math.tan(camera.alpha/2)),
         0)
-    return new Ray(origin, direction.normalize())
+    return new Ray(camera.origin, direction.normalize())
   }
 }

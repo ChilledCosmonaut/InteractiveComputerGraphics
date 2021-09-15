@@ -81,7 +81,7 @@ window.addEventListener('load', async () => {
 
     //Light Nodes
     const lightNode = new GroupNode(new Translation(new Vector(0,0,0,0)));
-    cameraNode.add(lightNode);
+    sg.add(lightNode);
     const lightRotation = new GroupNode(new Rotation(new Vector(0,0,0,0),0));
     lightNode.add(lightRotation);
     const lightTranslation1 = new GroupNode(new Translation(new Vector(1,1,1,1)));
@@ -92,18 +92,6 @@ window.addEventListener('load', async () => {
     lightRotation.add(lightTranslation2);
     const light2 = new LightNode(new Vector(0,0,0,0));
     lightTranslation2.add(light2);
-
-    //Light Visualisation
-    const lightVis = new GroupNode(new Rotation(new Vector(0,0,0,0),0));
-    lightNode.add(lightVis);
-    const lightVis1 = new GroupNode(new Translation(new Vector(1,1,1,1)));
-    lightVis.add(lightVis1);
-    const lightVis11 = new SphereNode(new Vector(0,0,0,0));
-    lightVis1.add(lightVis11);
-    const lightVis2 = new GroupNode(new Translation(new Vector(-1,-1,-1,1)));
-    lightVis.add(lightVis2);
-    const lightVis22 = new SphereNode(new Vector(0,0,0,0));
-    lightVis2.add(lightVis22);
 
     const sphereGroupNode = new GroupNode(new Translation(new Vector(0, 0, -3, 1)));
     sg.add(sphereGroupNode);
@@ -152,10 +140,10 @@ window.addEventListener('load', async () => {
     sg.add(gn4);
     gn4.add(new SphereNode(new Vector(1, 0, 1, 0)));
 
-    //
+    //createEnvironment(sg);
 
     * */
-    createEnvironment(sg);
+
     // setup for rendering
     const setupVisitor = new RasterSetupVisitor(contextWebGl);
     setupVisitor.setup(sg);
@@ -188,8 +176,6 @@ window.addEventListener('load', async () => {
     //SphereOrbit.rightRotation = true;
     let lightOrbit = new RotationNode(lightRotation, new Vector(0,1,0,0));
     lightOrbit.rightRotation = true;
-    let lightVisOrbit = new RotationNode(lightVis, new Vector(0,1,0,0));
-    lightVisOrbit.rightRotation = true;
     let cameraTiltRotation = new RotationNode(cameraTilt, new Vector(1,0,0,0));
     let animationDriverNode = new DriverNode(desktopNode);
     let animationJumperNode = new JumperNode(desktopNode);
@@ -203,7 +189,6 @@ window.addEventListener('load', async () => {
         //SphereOrbit.simulate(deltaT);
         cameraTiltRotation.simulate(deltaT);
         //lightOrbit.simulate(deltaT);
-        //lightVisOrbit.simulate(deltaT);
         //animationJumperNode.simulate(deltaT);
         //cameraFreeFlight.simulate(deltaT)
 

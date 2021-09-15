@@ -331,11 +331,6 @@ export class RasterVisitor implements Visitor {
         node.near,
         node.far
     );
-    /*const eye = this.camera.eye = MatrixHelper.getPositionOfMatrix(toWorld)
-    const localDir = new Vector(0, 0, -1, 0);
-    const globalDir = toWorld.mulVec(localDir);
-    this.camera.center = eye.add(globalDir)
-    this.setupCamera(this.camera);*/
   }
 }
 
