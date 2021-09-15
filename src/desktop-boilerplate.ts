@@ -275,13 +275,13 @@ window.addEventListener('load', async () => {
                 animationRotationNode.axisToRotateAround = new Vector(0, 1, 0, 1)
                 break;
         //nicken
-            case "z":
+            case "h":
                 animationRotationNode.upRotation = ispressed;
                 cameraYRotation.axisToRotateAround = new Vector(1,0,0,1);
                 cameraYRotation.downRotation = ispressed;
                 animationRotationNode.axisToRotateAround = new Vector(1, 0, 0, 0)
                 break;
-            case "h":
+            case "z":
                 animationRotationNode.downRotation = ispressed;
                 cameraYRotation.axisToRotateAround = new Vector(1,0,0,1);
                 cameraYRotation.upRotation = ispressed;
