@@ -18,3 +18,28 @@ Erfüllte zusätzliche Erweiterungen:
 - [8 Punkte] Mehrere (>2) bewegte Lichtquellen-Knoten als Bestandteil des Szenegraphen. -fertig-
 
 - [6 Punkte] Free-Flight Modus (Kamerabewegung vor, zurück, links, rechts, aufwärts, abwärts Kamerarotation nicken, gieren) -unvollständig-
+
+
+
+Tastenbefehle und ihre Bedeutungen:
+
+w: vorwärts bewegen
+s: rückwärts bewegen
+
+a: nach links bewegen
+d: nach rechts bewegen
+
+Leertaste: hüpfen
+j: nach oben bewegen
+m: nach unten bewegen
+
+q: nach links drehen
+e: nach rechts drehen
+
+z: nach oben rotieren
+h: nach unten rotieren
+
+r: Wechseln zwischen dem Rasterizer und dem Raytracer Renderer
+
+
+
