@@ -48,10 +48,10 @@ window.addEventListener('load', () => {
         const sphere = new Sphere(matrix.mulVec(new Vector(0.1, 0, 0, 1)), 0.7, new Vector(.3, 0, 0, 1));
         for (let x = 0; x < canvas.width; x++) {
             for (let y = 0; y < canvas.height; y++) {
-                const ray = Ray.makeRay(x, y, camera);
+                const ray = Ray.makeRay(x, y, camera, new Matrix([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]));
                 const intersection = sphere.intersect(ray);
                 if (intersection) {
-                    const color = phong(sphere.color, intersection, lightPositions, shininess, camera.origin, 0.3, 0.4, 0.8);
+                    const color = phong(sphere.color, intersection, lightPositions, shininess, camera.origin, 0.3,0.7,0.8);
                     setPixel(x, y, color);
 
                 }

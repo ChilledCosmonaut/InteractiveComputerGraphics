@@ -7,7 +7,7 @@ import Visitor from './visitor';
 import phong from './phong';
 import {
   Node, GroupNode, SphereNode,
-  AABoxNode, TextureBoxNode, PyramidNode, ObjNode, LightNode
+  AABoxNode, TextureBoxNode, PyramidNode, ObjNode, LightNode, CameraNode
 } from './nodes';
 import AABox from './aabox';
 import {Transformation} from "./transformation";
@@ -35,6 +35,8 @@ export default class RayVisitor implements Visitor {
   inverseTransformation: Array<Matrix>;
   lightPositions: Array<Vector>;
   lightSourceCounter: number;
+  cameraTransformation: Matrix;
+  fromCameraSpace: Matrix;
 
   /**
    * Creates a new RayVisitor
@@ -75,7 +77,7 @@ export default class RayVisitor implements Visitor {
     for (let x = 0; x < width; x++) {
       for (let y = 0; y < height; y++) {
         this.lightSourceCounter = 0;
-        this.ray = Ray.makeRay(x, y, camera);
+        this.ray = Ray.makeRay(x, y, camera, this.cameraTransformation);
         this.inverseTransformation = new Array<Matrix>();
         this.inverseTransformation.push(Matrix.identity());
         this.transformation = new Array<Matrix>();
@@ -92,7 +94,7 @@ export default class RayVisitor implements Visitor {
             data[4 * (width * y + x) + 3] = 255;
           } else {
             let color;
-            color = phong(this.intersectionColor, this.intersection, this.lightPositions, 10, camera.origin, ambientFactor, diffuseFactor, specularFactor);
+            color = phong(this.intersectionColor, this.intersection, this.lightPositions, 10, this.fromCameraSpace.mulVec(camera.origin), ambientFactor, diffuseFactor, specularFactor);
 
             /*
             //Test, der den Abstand zw. Schnittpunkt und Kamera als Farbe anzeigt.
@@ -142,7 +144,7 @@ export default class RayVisitor implements Visitor {
     let fromWorld = this.inverseTransformation[this.inverseTransformation.length - 1];
     // TODO assign the model matrix and its inverse
 
-    const ray = new Ray(fromWorld.mulVec(this.ray.origin), fromWorld.mulVec(this.ray.direction).normalize());
+    const ray = new Ray(fromWorld.mulVec(this.fromCameraSpace.mulVec(this.ray.origin)), fromWorld.mulVec(this.fromCameraSpace.mulVec(this.ray.direction)).normalize());
     let intersection = UNIT_SPHERE.intersect(ray);
 
     if (intersection) {
@@ -214,5 +216,9 @@ export default class RayVisitor implements Visitor {
     position = toWorld.mulVec(position);
     this.lightPositions[this.lightSourceCounter] = (position);
     this.lightSourceCounter++;
+  }
+
+  visitCameraNode(node: CameraNode): void {
+    this.fromCameraSpace = this.transformation[this.transformation.length - 1];
   }
 }

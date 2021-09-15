@@ -13,6 +13,8 @@ uniform float specularFactor;
 
 uniform vec4 lightingLocation[8];
 
+
+const vec4 light = vec4(1,1,1,1);
 const float shininess = 16.0;
 const float kA = 0.3;
 const float kD = 0.6;
@@ -28,7 +30,7 @@ void main(void) {
   vec3 diffuseSpecular;
 
   for(int lightCounter = 0; lightCounter < 8; lightCounter++){
-    vec3 toLightVector = normalize(lightingLocation[lightCounter].xyz - vertexPosition);
+    vec3 toLightVector = normalize(/*light.xyz - vertexPosition);*/lightingLocation[lightCounter].xyz - vertexPosition);
     vec3 diffuse = v_color * diffuseFactor * max ( 0.0, dot ( v_normal ,toLightVector ));
 
     vec3 toEyeVector = normalize(vertexPosition - vec3 (0,0,0));

@@ -121,8 +121,6 @@ export default class RasterObjObject {
         }
 
         let vertices = createIndexedVectors(vertexStorage, indices);
-        console.log(vertices.length / 3);
-        console.log(indices.length)
         //let colours = createIndexedColours(colorStorage, colorIndices);
         let normals = createIndexedVectors(normalStorage, normalIndices);
 

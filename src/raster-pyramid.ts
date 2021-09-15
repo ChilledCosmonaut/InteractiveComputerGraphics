@@ -92,7 +92,6 @@ export default class RasterPyramid {
 
         for (let i = 0; i < vertices.length; i += 9){
             let normal: Vector = this.CalculateNormalsForTriangle(i, i+3, i+6, vertices).normalize();
-            console.log(normal);
             for (let j = 0; j < 3; j++) {
                 normals.push(normal.x);
                 normals.push(normal.y);
