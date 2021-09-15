@@ -24,6 +24,7 @@ import {Camera, CameraFreeFlight} from "./camera";
 import {createEnvironment} from "./createEnvironment";
 import RayVisitor from "./rayvisitor";
 import Sphere from "./sphere";
+import {CombinedDriverNode} from "./relative_driver";
 
 const UseRasterizer = false;
 const UseRaytracer = true;
@@ -65,12 +66,13 @@ window.addEventListener('load', async () => {
     const sg = new GroupNode(new Translation(new Vector(0, 0, 0, 0)));
 
     //Camera Node
+    const cameraNode = new GroupNode(new Translation(new Vector(0,0,0,0)));
+    sg.add(cameraNode);
     const cameraRotation = new GroupNode(new Translation(new Vector(0,0,0,0)));
-    sg.add(cameraRotation);
+    cameraNode.add(cameraRotation);
     const cameraTilt = new GroupNode(new Translation(new Vector(0,0,0,0)));
     cameraRotation.add(cameraTilt);
-    const cameraNode = new GroupNode(new Translation(new Vector(0,0,0,0)));
-    cameraTilt.add(cameraNode);
+
     const cameraAsNode = new CameraNode(
         new Vector(0, 0, 0, 1),
         new Vector(0, 0, -1,1),
@@ -79,7 +81,7 @@ window.addEventListener('load', async () => {
         canvasRaster.width / canvasRaster.height,
         0.1,
         100);
-    cameraNode.add(cameraAsNode);
+    cameraTilt.add(cameraAsNode);
 
     //Light Nodes
     const lightNode = new GroupNode(new Translation(new Vector(0,0,0,0)));
@@ -168,7 +170,7 @@ window.addEventListener('load', async () => {
     lightOrbit.rightRotation = true;
     let cameraYRotation = new RotationNode(cameraRotation, new Vector(0,1,0,0));
     let cameraTiltRotation = new RotationNode(cameraTilt, new Vector(1,0,0,0));
-    let cameraDriverNode = new DriverNode(cameraNode);
+    let cameraDriverNode = new CombinedDriverNode(cameraNode, cameraRotation, cameraTilt);
     let animationDriverNode = new DriverNode(desktopNode);
     let animationJumperNode = new JumperNode(desktopNode);
 
@@ -266,6 +268,7 @@ window.addEventListener('load', async () => {
             case "q":
                 animationRotationNode.leftRotation = ispressed;
                 cameraYRotation.leftRotation = ispressed;
+                console.log("Turn Left")
                 animationRotationNode.axisToRotateAround = new Vector(0, 1, 0, 1)
                 break;
             case "e":
