@@ -24,6 +24,7 @@ import {Camera, CameraFreeFlight} from "./camera";
 import {createEnvironment} from "./createEnvironment";
 import RayVisitor from "./rayvisitor";
 import Sphere from "./sphere";
+import Matrix from "./matrix";
 
 const UseRasterizer = false;
 const UseRaytracer = true;
