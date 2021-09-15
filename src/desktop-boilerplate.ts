@@ -197,14 +197,14 @@ window.addEventListener('load', async () => {
     //let cameraFreeFlight = new CameraFreeFlight(camera, desktopNode);
 
     function simulate(deltaT: number) {
-        animationDriverNode.simulate(deltaT);
-        animationRotationNode.simulate(deltaT);
+        //animationDriverNode.simulate(deltaT);
+        //animationRotationNode.simulate(deltaT);
         cameraDriverNode.simulate(deltaT);
         //SphereOrbit.simulate(deltaT);
         cameraTiltRotation.simulate(deltaT);
-        lightOrbit.simulate(deltaT);
-        lightVisOrbit.simulate(deltaT);
-        animationJumperNode.simulate(deltaT);
+        //lightOrbit.simulate(deltaT);
+        //lightVisOrbit.simulate(deltaT);
+        //animationJumperNode.simulate(deltaT);
         //cameraFreeFlight.simulate(deltaT)
 
         /*console.log(vectorToString("cam", camera.eye));
@@ -312,6 +312,7 @@ window.addEventListener('load', async () => {
                 break;
 
             case ' ':
+
                 animationJumperNode.isJumping = true;
                 break;
             case "w":

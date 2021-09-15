@@ -316,14 +316,13 @@ export class RasterVisitor implements Visitor {
   }
 
   visitCameraNode(node: CameraNode) {
-    let toWorld = this.transformation[this.transformation.length - 1]
     let fromWorld = this.inverseTransformation[this.inverseTransformation.length - 1];
     this.lookat =
-        toWorld.mul(Matrix.lookat(
+        Matrix.lookat(
         node.eye,
         node.center,
         node.up
-        ));
+        ).mul(fromWorld);
 
     this.perspective =
         Matrix.perspective(
