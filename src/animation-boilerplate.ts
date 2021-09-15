@@ -75,7 +75,7 @@ window.addEventListener('load', () => {
 
     function simulate(deltaT: number) {
         for (let animationNode of animationNodes) {
-            //animationNode.simulate(deltaT);
+            animationNode.simulate(deltaT);
         }
     }
 

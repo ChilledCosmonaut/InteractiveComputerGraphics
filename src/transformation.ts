@@ -5,6 +5,8 @@ import Quaternion from './quaternion';
 export interface Transformation {
     getMatrix(): Matrix;
     getInverseMatrix(): Matrix;
+    setMatrix(matrix:Matrix):any;
+    setInverseMatrix(matrix:Matrix):any;
 }
 
 class MatrixTransformation implements Transformation {
@@ -20,8 +22,16 @@ class MatrixTransformation implements Transformation {
         return this.matrix;
     }
 
+    setMatrix(matrix:Matrix) {
+        this.matrix = matrix;
+    }
+
     getInverseMatrix(): Matrix {
         return this.inverse;
+    }
+
+    setInverseMatrix(matrix:Matrix) {
+        this.inverse = matrix;
     }
 }
 

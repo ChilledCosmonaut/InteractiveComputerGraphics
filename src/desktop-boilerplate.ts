@@ -25,6 +25,7 @@ import {createEnvironment} from "./createEnvironment";
 import RayVisitor from "./rayvisitor";
 import Sphere from "./sphere";
 import {CombinedDriverNode} from "./relative_driver";
+import Matrix from "./matrix";
 
 const UseRasterizer = false;
 const UseRaytracer = true;
@@ -268,7 +269,6 @@ window.addEventListener('load', async () => {
             case "q":
                 animationRotationNode.leftRotation = ispressed;
                 cameraYRotation.leftRotation = ispressed;
-                console.log("Turn Left")
                 animationRotationNode.axisToRotateAround = new Vector(0, 1, 0, 1)
                 break;
             case "e":
@@ -308,6 +308,74 @@ window.addEventListener('load', async () => {
                 //animationDriverNode.right = ispressed;
                 cameraDriverNode.right = ispressed;
                 break;
-        }
+        }}
+
+    let jsonContent: any;
+
+    document.getElementById("saveButton").onclick = function () {
+        save("saveFile.json")
     }
-});
+
+    function save(filename:any) {
+        jsonContent = JSON.stringify(sg,null, "\t" );
+        let element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonContent));
+        element.setAttribute('download', filename);
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+    }
+
+    let loadButton = document.getElementById("loadButton") as HTMLInputElement;
+    loadButton.addEventListener( "change", function () {
+        let file = this.files[0];
+        let fileReader = new FileReader();
+        let savedFile: string;
+        let save;
+        fileReader.readAsText(file);
+        fileReader.onload = function () {
+            savedFile = fileReader.result.toString();
+            save = JSON.parse(savedFile);
+            traverse(sg, save);
+            console.log("savedFile:",savedFile);
+            console.log("rootNode:",sg);
+            console.log("save:",save);
+        };
+        fileReader.onerror = function () {
+            alert(fileReader.error);
+        };
+    });
+
+    function process(key:any, value:any) {
+        console.log(key + " : " + value);
+    }
+
+    function traverse(sgNode:GroupNode, savedNode:any) {
+        let transformation: Matrix = new Matrix(savedNode.transform.matrix.data);
+        transformation.copyArray(savedNode.transform.matrix.data);
+        let inverseTransformation: Matrix = new Matrix(savedNode.transform.inverse.data);
+        inverseTransformation.copyArray(savedNode.transform.inverse.data);
+        sgNode.transform.setMatrix(transformation);
+        sgNode.transform.setInverseMatrix(inverseTransformation);
+        for(let childCounter = 0; childCounter < sgNode.child.length; childCounter++) {
+            let currentChild:GroupNode;
+            if(sgNode.child[childCounter] instanceof GroupNode) {
+                currentChild = sgNode.child[childCounter] as GroupNode;
+                traverse(currentChild, savedNode.child[childCounter]);
+            }
+        }
+        /*for (let i in sgNode) {
+            func.apply(this, [i,o[i]]);
+            if(o[i] !== null && typeof(o[i]) == "object") {
+                traverse(o[i], func);
+            }
+        }*/
+    }
+
+})
+
+
