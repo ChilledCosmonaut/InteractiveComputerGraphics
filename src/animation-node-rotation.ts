@@ -15,7 +15,7 @@ export class RotationNode extends AnimationNode {
     rightRotation = false;
     upRotation = false;
     downRotation = false;
-    axisToRotateAround = new Vector(0, 1, 0, 0);
+    axisToRotateAround = new Vector(0, 0, 0, 0);
 
     /**
      * Creates a new RotationNode

@@ -21,18 +21,16 @@ export class CombinedDriverNode extends AnimationNode {
     up = false;
     down = false;
 
-    firstRotation: GroupNode;
-    secondRotation: GroupNode;
+    relativeRotation: GroupNode;
 
     /**
      * Creates a new DriverNode
      * @param groupNode The group node to attach to
      * @param axis The axis to move along
      */
-    constructor(groupNode: GroupNode, firstRotation: GroupNode, secondRotation: GroupNode) {
+    constructor(groupNode: GroupNode, relativeRotation: GroupNode) {
         super(groupNode);
-        this.firstRotation = firstRotation;
-        this.secondRotation = secondRotation;
+        this.relativeRotation = relativeRotation;
     }
 
     /**
@@ -44,7 +42,7 @@ export class CombinedDriverNode extends AnimationNode {
         if(this.active){
             const matrix = this.groupNode.transform.getMatrix();
             const inverseMatrix = this.groupNode.transform.getInverseMatrix();
-            let transformMatrix = this.firstRotation.transform.getMatrix().mul(this.secondRotation.transform.getMatrix());
+            let transformMatrix = this.relativeRotation.transform.getMatrix();
 
             let unitsPerSec: number = 1; // Geschwindigkeit: v = unitsPerSec
             const s = unitsPerSec * (deltaT/1000);

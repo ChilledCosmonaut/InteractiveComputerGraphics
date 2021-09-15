@@ -67,12 +67,10 @@ window.addEventListener('load', async () => {
     const sg = new GroupNode(new Translation(new Vector(0, 0, 0, 0)));
 
     //Camera Node
-    const cameraNode = new GroupNode(new Translation(new Vector(0,0,0,0)));
+    const cameraNode = new GroupNode(new Translation(new Vector(0,0,11,0)));
     sg.add(cameraNode);
-    const cameraTilt = new GroupNode(new Translation(new Vector(0,0,0,0)));
-    cameraNode.add(cameraTilt);
     const cameraRotation = new GroupNode(new Translation(new Vector(0,0,0,0)));
-    cameraTilt.add(cameraRotation);
+    cameraNode.add(cameraRotation);
 
     const cameraAsNode = new CameraNode(
         new Vector(0, 0, 0, 1),
@@ -170,8 +168,7 @@ window.addEventListener('load', async () => {
     let lightOrbit = new RotationNode(lightRotation, new Vector(0,1,0,0));
     lightOrbit.rightRotation = true;
     let cameraYRotation = new RotationNode(cameraRotation, new Vector(0,1,0,0));
-    let cameraTiltRotation = new RotationNode(cameraTilt, new Vector(1,0,0,0));
-    let cameraDriverNode = new CombinedDriverNode(cameraNode, cameraTilt, cameraRotation);
+    let cameraDriverNode = new CombinedDriverNode(cameraNode, cameraRotation);
     let animationDriverNode = new DriverNode(desktopNode);
     let animationJumperNode = new JumperNode(desktopNode);
 
@@ -182,7 +179,6 @@ window.addEventListener('load', async () => {
         //animationRotationNode.simulate(deltaT);
         SphereOrbit.simulate(deltaT);
         cameraYRotation.simulate(deltaT);
-        cameraTiltRotation.simulate(deltaT);
         cameraDriverNode.simulate(deltaT);
         lightOrbit.simulate(deltaT);
         animationJumperNode.simulate(deltaT);
@@ -268,23 +264,27 @@ window.addEventListener('load', async () => {
         //gieren
             case "q":
                 animationRotationNode.leftRotation = ispressed;
+                cameraYRotation.axisToRotateAround = new Vector(0,1,0,1);
                 cameraYRotation.leftRotation = ispressed;
                 animationRotationNode.axisToRotateAround = new Vector(0, 1, 0, 1)
                 break;
             case "e":
                 animationRotationNode.rightRotation = ispressed;
+                cameraYRotation.axisToRotateAround = new Vector(0,1,0,1);
                 cameraYRotation.rightRotation = ispressed;
                 animationRotationNode.axisToRotateAround = new Vector(0, 1, 0, 1)
                 break;
         //nicken
             case "z":
                 animationRotationNode.upRotation = ispressed;
-                cameraTiltRotation.downRotation = ispressed;
+                cameraYRotation.axisToRotateAround = new Vector(1,0,0,1);
+                cameraYRotation.downRotation = ispressed;
                 animationRotationNode.axisToRotateAround = new Vector(1, 0, 0, 0)
                 break;
             case "h":
                 animationRotationNode.downRotation = ispressed;
-                cameraTiltRotation.upRotation = ispressed;
+                cameraYRotation.axisToRotateAround = new Vector(1,0,0,1);
+                cameraYRotation.upRotation = ispressed;
                 animationRotationNode.axisToRotateAround = new Vector(1, 0, 0, 1)
                 break;
 
